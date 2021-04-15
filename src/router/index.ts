@@ -1,5 +1,10 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
+import SignUp from "../views/authentication/SignUp.vue";
+import SignIn from "../views/authentication/SignIn.vue";
+// import { store } from "../store";
+import firebase from "firebase";
+// import { MutationTypes } from "@/store/mutations/mutation-types";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -8,19 +13,37 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+    path: "/sign-up",
+    name: "sign-up",
+    component: SignUp,
+    meta: {
+      isPublic: true,
+    },
+  },
+  {
+    path: "/sign-in",
+    name: "sign-in",
+    component: SignIn,
+    meta: {
+      isPublic: true,
+    },
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const isPublic = to.matched.some((record) => record.meta.isPublic);
+  const currentUser = firebase.auth().currentUser;
+  console.log(currentUser);
+
+  if (!currentUser && !isPublic) {
+    return next("/sign-in");
+  }
+  next();
 });
 
 export default router;

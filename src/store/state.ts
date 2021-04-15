@@ -1,5 +1,5 @@
 export const state = {
-  currentUser: null,
+  currentUser: {},
 };
 
 export type State = typeof state;
