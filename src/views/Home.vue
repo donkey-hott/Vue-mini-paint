@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <p>You have been authenticated!</p>
+    <router-link to="/new-canvas">Create new picture</router-link>
   </div>
 </template>
 

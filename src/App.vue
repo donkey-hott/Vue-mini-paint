@@ -8,14 +8,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { ActionTypes } from './store/actions/action-types';
+import { defineComponent } from "vue";
+import { ActionTypes } from "./store/actions/action-types";
 export default defineComponent({
   methods: {
     logOut() {
       this.$store.dispatch(ActionTypes.LOG_OUT);
-    }
-  }
+    },
+  },
 });
 </script>
 
