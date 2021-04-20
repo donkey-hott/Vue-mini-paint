@@ -4,6 +4,7 @@
       @changeDrawFunction="setDrawFunction"
       @clearCanvas="clearCanvas"
       @setStyleOptions="setStyleOptions"
+      @savePicture="savePicture"
     ></paint-controlls>
     <canvas
       width="600"
@@ -30,11 +31,6 @@ type Coordinates = {
   y: number;
 };
 
-type PolygonConfiguration = {
-  sides: number;
-  angle: number;
-};
-
 type StyleOptions = {
   lineWidth: number;
   strokeColor: string;
@@ -42,13 +38,20 @@ type StyleOptions = {
   isShapeFilled: boolean;
 };
 
-type DrawFunctionType = {
+export type PolygonConfiguration = {
+  sides: number;
+  angle: number;
+};
+
+export type DrawFunctionType = {
   funcName: string;
   polygonParameters?: PolygonConfiguration;
 };
 
 import { defineComponent, ref, reactive, onMounted } from "vue";
+import { useStore } from "../store";
 import PaintControlls from "../components/PaintControlls.vue";
+import { ActionTypes } from "@/store/actions/action-types";
 
 export default defineComponent({
   components: {
@@ -57,6 +60,7 @@ export default defineComponent({
   setup() {
     const canvas = ref<HTMLCanvasElement | null>(null);
     let context: CanvasRenderingContext2D | null | undefined;
+
     const isDrawing = ref(false);
     let drawFunction = reactive<DrawFunctionType>({ funcName: "drawLine" });
     let styleOptions: StyleOptions = {
@@ -65,9 +69,12 @@ export default defineComponent({
       fillColor: "#000000",
       isShapeFilled: false,
     };
-    let currentCursorPosition = ref<Coordinates | null>(null);
-    let initialCursorPosition: Coordinates | null = null;
     const canvasState = ref<ImageData | null>(null);
+
+    const currentCursorPosition = ref<Coordinates | null>(null);
+    let initialCursorPosition: Coordinates | null = null;
+
+    const store = useStore();
 
     function getCursorPosition(e: MouseEvent): Coordinates | null {
       const x = canvas?.value?.offsetLeft
@@ -109,6 +116,11 @@ export default defineComponent({
       styleOptions = styleObj;
     }
 
+    function savePicture() {
+      const dataURL = canvas.value?.toDataURL();
+      store.dispatch(ActionTypes.SAVE_PICTURE, dataURL);
+    }
+
     // ==== DRAWING ====
 
     function drawStart(e: MouseEvent) {
@@ -128,15 +140,14 @@ export default defineComponent({
       currentCursorPosition.value = getCursorPosition(e);
       if (isDrawing.value) {
         restoreCanvasState();
-        const currentCursorPosition = getCursorPosition(e);
         // if polygonal shape was chosen
         if (drawFunction.polygonParameters) {
           drawFunctions[drawFunction.funcName](
-            currentCursorPosition,
+            currentCursorPosition.value,
             drawFunction.polygonParameters
           );
         } else {
-          drawFunctions[drawFunction.funcName](currentCursorPosition);
+          drawFunctions[drawFunction.funcName](currentCursorPosition.value);
         }
       }
     }
@@ -145,6 +156,7 @@ export default defineComponent({
       isDrawing.value = false;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const drawFunctions: { [funcName: string]: any } = {
       drawLine(position: Coordinates | null) {
         if (!context || !initialCursorPosition || !position) return;
@@ -180,6 +192,7 @@ export default defineComponent({
 
         const { width, height } = this.calcSize(position);
         const radius = this.getRadiusBySize(width, height);
+
         context.beginPath();
         context.arc(
           initialCursorPosition.x,
@@ -259,6 +272,7 @@ export default defineComponent({
         return Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
       },
     };
+
     onMounted(() => {
       context = canvas.value?.getContext("2d") || null || undefined;
     });
@@ -266,6 +280,7 @@ export default defineComponent({
       setDrawFunction,
       clearCanvas,
       setStyleOptions,
+      savePicture,
       drawStart,
       draw,
       drawEnd,

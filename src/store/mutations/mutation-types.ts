@@ -1,3 +1,3 @@
 export enum MutationTypes {
-  SET_USER = "SET_USER",
+  SET_PICTURES = "SET_PICTURES",
 }

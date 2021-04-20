@@ -2,4 +2,6 @@ export enum ActionTypes {
   SIGN_UP = "SIGN_UP",
   SIGN_IN = "SIGN_IN",
   LOG_OUT = "LOG_OUT",
+  SAVE_PICTURE = "SAVE_PICTURE",
+  LOAD_PICTURES = "LOAD_PICTURES",
 }

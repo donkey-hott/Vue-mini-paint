@@ -35,3 +35,7 @@ export type Store = Omit<
   //   [K in keyof Getters]: ReturnType<Getters[K]>;
   // };
 };
+
+export function useStore(): Store {
+  return store as Store;
+}

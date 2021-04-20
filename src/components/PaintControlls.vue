@@ -55,6 +55,7 @@
         </button>
       </li>
       <li><button @click="emitClearCanvasEvent">Clear canvas</button></li>
+      <li><button @click="savePicture">Save picture</button></li>
       <li>
         <label for="lineWidth">Line width:</label>
         <input
@@ -93,19 +94,15 @@
 
 <script lang="ts">
 import { defineComponent, reactive, watch } from "vue";
-
-type PolygonConfiguration = {
-  sides: number;
-  angle: number;
-};
-
-type DrawFunctionType = {
-  funcName: string;
-  polygonParameters?: PolygonConfiguration;
-};
+import { PolygonConfiguration, DrawFunctionType } from "../views/Paint.vue";
 
 export default defineComponent({
-  emits: ["changeDrawFunction", "clearCanvas", "setStyleOptions"],
+  emits: [
+    "changeDrawFunction",
+    "clearCanvas",
+    "setStyleOptions",
+    "savePicture",
+  ],
 
   setup(_, { emit }) {
     const drawFunction = reactive<DrawFunctionType>({ funcName: "drawLine" });
@@ -129,6 +126,10 @@ export default defineComponent({
       emit("clearCanvas");
     }
 
+    function savePicture() {
+      emit("savePicture");
+    }
+
     watch(styleOptions, (_, newVal) => {
       emit("setStyleOptions", newVal);
     });
@@ -137,6 +138,7 @@ export default defineComponent({
       styleOptions,
       setDrawFunction,
       emitClearCanvasEvent,
+      savePicture,
     };
   },
 });

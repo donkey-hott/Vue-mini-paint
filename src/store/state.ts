@@ -1,5 +1,5 @@
 export const state = {
-  currentUser: {},
+  userPictures: [],
 };
 
 export type State = typeof state;
