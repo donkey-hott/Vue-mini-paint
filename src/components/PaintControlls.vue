@@ -1,6 +1,8 @@
 <template>
   <nav class="controls">
     <ul class="controls__buttons">
+      <li><button @click="setDrawFunction('useBrush')">Brush</button></li>
+      <li><button @click="setDrawFunction('erase')">Eraser</button></li>
       <li><button @click="setDrawFunction('drawLine')">Line</button></li>
       <li><button @click="setDrawFunction('drawRect')">Rectangle</button></li>
       <li><button @click="setDrawFunction('drawCircle')">Circle</button></li>
@@ -105,7 +107,7 @@ export default defineComponent({
   ],
 
   setup(_, { emit }) {
-    const drawFunction = reactive<DrawFunctionType>({ funcName: "drawLine" });
+    const drawFunction = reactive<DrawFunctionType>({ funcName: "useBrush" });
     const styleOptions = reactive({
       lineWidth: 1,
       strokeColor: "#000000",

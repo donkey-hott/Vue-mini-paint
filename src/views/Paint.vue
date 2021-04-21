@@ -124,7 +124,6 @@ export default defineComponent({
     // ==== DRAWING ====
 
     function drawStart(e: MouseEvent) {
-      // console.log(context);
       isDrawing.value = true;
       initialCursorPosition = getCursorPosition(e);
       if (!context) return;
@@ -139,25 +138,49 @@ export default defineComponent({
     function draw(e: MouseEvent) {
       currentCursorPosition.value = getCursorPosition(e);
       if (isDrawing.value) {
-        restoreCanvasState();
+        if (drawFunction.funcName !== "erase") {
+          restoreCanvasState();
+        }
         // if polygonal shape was chosen
         if (drawFunction.polygonParameters) {
-          drawFunctions[drawFunction.funcName](
+          return drawFunctions[drawFunction.funcName](
             currentCursorPosition.value,
             drawFunction.polygonParameters
           );
-        } else {
-          drawFunctions[drawFunction.funcName](currentCursorPosition.value);
         }
+        return drawFunctions[drawFunction.funcName](
+          currentCursorPosition.value
+        );
       }
     }
 
     function drawEnd() {
       isDrawing.value = false;
+      // initialCursorPosition = null;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const drawFunctions: { [funcName: string]: any } = {
+      useBrush(position: Coordinates | null) {
+        if (!context || !initialCursorPosition || !position) return;
+        context.beginPath();
+
+        context.moveTo(initialCursorPosition.x, initialCursorPosition.y);
+        context.lineTo(position.x, position.y);
+        initialCursorPosition = position;
+
+        context.stroke();
+        context.closePath();
+      },
+
+      erase(position: Coordinates | null) {
+        if (!context) return;
+        context.save();
+        context.strokeStyle = "#ffffff";
+        this.useBrush(position);
+        context.restore();
+      },
+
       drawLine(position: Coordinates | null) {
         if (!context || !initialCursorPosition || !position) return;
         context.beginPath();
