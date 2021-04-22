@@ -1,19 +1,19 @@
 <template>
   <section class="gallery">
     <figure
-      v-for="(pictureURL, pictureId, idx) in pictures"
+      v-for="(pictureObj, pictureId, idx) in pictures"
       :key="idx"
       class="card"
     >
       <img
         class="card__picture"
         :class="{ 'card__picture--shown': expandedPicture === pictureId }"
-        :src="pictureURL"
+        :src="pictureObj.imgURL"
         :alt="pictureId"
         @click="expandPicture(pictureId)"
       />
       <hr />
-      <figcaption class="card__title">Untitled</figcaption>
+      <figcaption class="card__title">{{ pictureObj.title }}</figcaption>
     </figure>
   </section>
   <div

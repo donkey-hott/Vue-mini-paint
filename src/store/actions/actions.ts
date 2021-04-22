@@ -7,6 +7,9 @@ import { MutationTypes } from "../mutations/mutation-types";
 
 import { State } from "../state";
 import { UserCredentials } from "../types";
+import { DbRecord } from "../../utils/createDbRecord";
+
+// TODO: ADD TIMESTAMP AND TITLE TO THE PICTURES
 
 type AugmentedActionContext = {
   commit<K extends keyof Mutations>(
@@ -29,7 +32,7 @@ export interface Actions {
   [ActionTypes.LOG_OUT](): Promise<void>;
   [ActionTypes.SAVE_PICTURE](
     context: AugmentedActionContext,
-    payload: string | undefined
+    payload: DbRecord | undefined
   ): Promise<void>;
   [ActionTypes.LOAD_PICTURES]({
     commit,
@@ -55,7 +58,7 @@ export const actions: ActionTree<State, State> & Actions = {
 
   // PICTURES LOGIC
 
-  async [ActionTypes.SAVE_PICTURE](_, payload: string | undefined) {
+  async [ActionTypes.SAVE_PICTURE](_, payload: DbRecord | undefined) {
     if (!payload) return;
 
     const userID = firebase.auth().currentUser?.uid;

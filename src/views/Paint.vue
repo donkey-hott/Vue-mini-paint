@@ -4,6 +4,7 @@
       @changeDrawFunction="setDrawFunction"
       @clearCanvas="clearCanvas"
       @setStyleOptions="setStyleOptions"
+      @setPictureTitle="setPictureTitle"
       @savePicture="savePicture"
     ></paint-controlls>
     <canvas
@@ -49,9 +50,13 @@ export type DrawFunctionType = {
 };
 
 import { defineComponent, ref, reactive, onMounted } from "vue";
+
 import { useStore } from "../store";
-import PaintControlls from "../components/PaintControlls.vue";
 import { ActionTypes } from "@/store/actions/action-types";
+
+import { createDbRecord } from "../utils/createDbRecord";
+
+import PaintControlls from "../components/PaintControlls.vue";
 
 export default defineComponent({
   components: {
@@ -69,6 +74,7 @@ export default defineComponent({
       fillColor: "#000000",
       isShapeFilled: false,
     };
+    let pictureTitle = "Untitled";
     const canvasState = ref<ImageData | null>(null);
 
     const currentCursorPosition = ref<Coordinates | null>(null);
@@ -116,9 +122,14 @@ export default defineComponent({
       styleOptions = styleObj;
     }
 
+    function setPictureTitle(title: string) {
+      pictureTitle = title;
+    }
+
     function savePicture() {
-      const dataURL = canvas.value?.toDataURL();
-      store.dispatch(ActionTypes.SAVE_PICTURE, dataURL);
+      const imgURL = canvas.value?.toDataURL();
+      const dbRecord = createDbRecord(imgURL, pictureTitle)
+      store.dispatch(ActionTypes.SAVE_PICTURE, dbRecord);
     }
 
     // ==== DRAWING ====
@@ -138,25 +149,30 @@ export default defineComponent({
     function draw(e: MouseEvent) {
       currentCursorPosition.value = getCursorPosition(e);
       if (isDrawing.value) {
-        if (drawFunction.funcName !== "erase") {
+        if (
+          drawFunction.funcName !== "erase" &&
+          drawFunction.funcName !== "useBrush"
+        ) {
           restoreCanvasState();
         }
+
         // if polygonal shape was chosen
-        if (drawFunction.polygonParameters) {
-          return drawFunctions[drawFunction.funcName](
-            currentCursorPosition.value,
-            drawFunction.polygonParameters
-          );
-        }
+        // if (drawFunction.polygonParameters) {
+        //   return drawFunctions[drawFunction.funcName](
+        //     currentCursorPosition.value,
+        //     drawFunction.polygonParameters
+        //   );
+        // }
+
         return drawFunctions[drawFunction.funcName](
-          currentCursorPosition.value
+          currentCursorPosition.value,
+          drawFunction.polygonParameters
         );
       }
     }
 
     function drawEnd() {
       isDrawing.value = false;
-      // initialCursorPosition = null;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -176,8 +192,10 @@ export default defineComponent({
       erase(position: Coordinates | null) {
         if (!context) return;
         context.save();
+
         context.strokeStyle = "#ffffff";
         this.useBrush(position);
+
         context.restore();
       },
 
@@ -303,6 +321,7 @@ export default defineComponent({
       setDrawFunction,
       clearCanvas,
       setStyleOptions,
+      setPictureTitle,
       savePicture,
       drawStart,
       draw,

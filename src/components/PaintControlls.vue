@@ -1,5 +1,6 @@
 <template>
   <nav class="controls">
+    <input type="text" id="title" v-model="pictureTitle" />
     <ul class="controls__buttons">
       <li><button @click="setDrawFunction('useBrush')">Brush</button></li>
       <li><button @click="setDrawFunction('erase')">Eraser</button></li>
@@ -95,7 +96,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, watch } from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 import { PolygonConfiguration, DrawFunctionType } from "../views/Paint.vue";
 
 export default defineComponent({
@@ -104,9 +105,11 @@ export default defineComponent({
     "clearCanvas",
     "setStyleOptions",
     "savePicture",
+    "setPictureTitle",
   ],
 
   setup(_, { emit }) {
+    // remove next line
     const drawFunction = reactive<DrawFunctionType>({ funcName: "useBrush" });
     const styleOptions = reactive({
       lineWidth: 1,
@@ -114,6 +117,7 @@ export default defineComponent({
       fillColor: "#000000",
       isShapeFilled: false,
     });
+    const pictureTitle = ref<string>("Untitled");
 
     function setDrawFunction(
       funcName: string,
@@ -136,8 +140,12 @@ export default defineComponent({
       emit("setStyleOptions", newVal);
     });
 
+    watch(pictureTitle, (oldVal) => {
+      emit("setPictureTitle", oldVal);
+    });
     return {
       styleOptions,
+      pictureTitle,
       setDrawFunction,
       emitClearCanvasEvent,
       savePicture,
