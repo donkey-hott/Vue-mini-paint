@@ -2,7 +2,7 @@
   <nav class="controls">
     <input type="text" id="title" v-model="pictureTitle" />
     <ul class="controls__buttons">
-      <li><button @click="setDrawFunction('useBrush')">Brush</button></li>
+      <li><button @click="setDrawFunction('brush')">Brush</button></li>
       <li><button @click="setDrawFunction('erase')">Eraser</button></li>
       <li><button @click="setDrawFunction('drawLine')">Line</button></li>
       <li><button @click="setDrawFunction('drawRect')">Rectangle</button></li>
@@ -97,7 +97,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, watch } from "vue";
-import { PolygonConfiguration, DrawFunctionType } from "../views/Paint.vue";
+import { PolygonConfiguration, DrawFunctionType } from "../views/paint-types";
 
 export default defineComponent({
   emits: [
@@ -109,8 +109,6 @@ export default defineComponent({
   ],
 
   setup(_, { emit }) {
-    // remove next line
-    const drawFunction = reactive<DrawFunctionType>({ funcName: "useBrush" });
     const styleOptions = reactive({
       lineWidth: 1,
       strokeColor: "#000000",
@@ -123,8 +121,10 @@ export default defineComponent({
       funcName: string,
       polygonParameters?: PolygonConfiguration
     ) {
-      drawFunction.funcName = funcName;
-      drawFunction.polygonParameters = polygonParameters;
+      const drawFunction: DrawFunctionType = {
+        funcName,
+        polygonParameters,
+      };
       emit("changeDrawFunction", drawFunction);
     }
 

@@ -25,38 +25,31 @@
 </template>
 
 <script lang="ts">
-// types
-
-type Coordinates = {
-  x: number;
-  y: number;
-};
-
-type StyleOptions = {
-  lineWidth: number;
-  strokeColor: string;
-  fillColor: string;
-  isShapeFilled: boolean;
-};
-
-export type PolygonConfiguration = {
-  sides: number;
-  angle: number;
-};
-
-export type DrawFunctionType = {
-  funcName: string;
-  polygonParameters?: PolygonConfiguration;
-};
-
 import { defineComponent, ref, reactive, onMounted } from "vue";
 
+/* store */
 import { useStore } from "../store";
 import { ActionTypes } from "@/store/actions/action-types";
 
-import { createDbRecord } from "../utils/createDbRecord";
-
+/* components */
 import PaintControlls from "../components/PaintControlls.vue";
+
+/* types */
+import {
+  Coordinates,
+  StyleOptions,
+  PolygonConfiguration,
+  DrawFunctionType,
+  DrawFunctionsInterface,
+} from "./paint-types";
+
+/* utilities */
+import { createDbRecord } from "../utils/createDbRecord";
+import {
+  calcRectangleSize,
+  getRadiusBySize,
+  isShape,
+} from "../utils/paintHelpers";
 
 export default defineComponent({
   components: {
@@ -67,7 +60,7 @@ export default defineComponent({
     let context: CanvasRenderingContext2D | null | undefined;
 
     const isDrawing = ref(false);
-    let drawFunction = reactive<DrawFunctionType>({ funcName: "drawLine" });
+    let drawFunction = reactive<DrawFunctionType>({ funcName: "brush" });
     let styleOptions: StyleOptions = {
       lineWidth: 1,
       strokeColor: "#000000",
@@ -77,29 +70,36 @@ export default defineComponent({
     let pictureTitle = "Untitled";
     const canvasState = ref<ImageData | null>(null);
 
-    const currentCursorPosition = ref<Coordinates | null>(null);
-    let initialCursorPosition: Coordinates | null = null;
+    const currentCursorPosition = ref<Coordinates | null | undefined>(null);
+    let initialCursorPosition: Coordinates | null | undefined = null;
 
     const store = useStore();
 
-    function getCursorPosition(e: MouseEvent): Coordinates | null {
-      const x = canvas?.value?.offsetLeft
-        ? e.pageX - canvas.value.offsetLeft
-        : 0;
-      const y = canvas?.value?.offsetTop ? e.pageY - canvas.value.offsetTop : 0;
-      return { x, y } || null;
+    function getCursorPosition(e: MouseEvent): Coordinates | undefined {
+      if (!canvas.value) return;
+
+      const x = e.pageX - canvas.value.offsetLeft;
+      const y = e.pageY - canvas.value.offsetTop;
+      return { x, y };
     }
 
+    /* Saves a snapshot of canvas
+      in order to correctly display
+      shapes when drawing */
     function saveCanvasState() {
       let canvasWidth = canvas.value?.width;
       let canvasHeight = canvas.value?.height;
-      canvasState.value =
-        context?.getImageData(0, 0, canvasWidth || 0, canvasHeight || 0) ||
-        null;
+      if (!canvasWidth || !canvasHeight || !context) return;
+
+      canvasState.value = context.getImageData(0, 0, canvasWidth, canvasHeight);
     }
 
+    /* Brings canvas back to the state
+    that was before the "draw" function
+    was fired */
     function restoreCanvasState() {
       if (!canvasState.value || !context) return;
+
       context.putImageData(canvasState.value, 0, 0);
     }
 
@@ -110,12 +110,9 @@ export default defineComponent({
     }
 
     function clearCanvas() {
-      context?.clearRect(
-        0,
-        0,
-        canvas.value?.width || 0,
-        canvas.value?.height || 0
-      );
+      if (!context || !canvas.value) return;
+
+      context.clearRect(0, 0, canvas.value.width, canvas.value.height);
     }
 
     function setStyleOptions(styleObj: StyleOptions) {
@@ -128,7 +125,8 @@ export default defineComponent({
 
     function savePicture() {
       const imgURL = canvas.value?.toDataURL();
-      const dbRecord = createDbRecord(imgURL, pictureTitle)
+      const dbRecord = createDbRecord(imgURL, pictureTitle);
+
       store.dispatch(ActionTypes.SAVE_PICTURE, dbRecord);
     }
 
@@ -142,6 +140,7 @@ export default defineComponent({
       context.strokeStyle = styleOptions.strokeColor;
       context.fillStyle = styleOptions.fillColor;
       context.lineWidth = styleOptions.lineWidth;
+      context.lineCap = "round";
 
       saveCanvasState();
     }
@@ -149,24 +148,23 @@ export default defineComponent({
     function draw(e: MouseEvent) {
       currentCursorPosition.value = getCursorPosition(e);
       if (isDrawing.value) {
-        if (
-          drawFunction.funcName !== "erase" &&
-          drawFunction.funcName !== "useBrush"
-        ) {
+        /* Brush functions are based on multiple
+        repetitions of small fragments, so we
+        don't have to restore canvas's state
+        every time in this case. */
+        if (isShape(drawFunction.funcName)) {
           restoreCanvasState();
         }
 
-        // if polygonal shape was chosen
-        // if (drawFunction.polygonParameters) {
-        //   return drawFunctions[drawFunction.funcName](
-        //     currentCursorPosition.value,
-        //     drawFunction.polygonParameters
-        //   );
-        // }
-
-        return drawFunctions[drawFunction.funcName](
-          currentCursorPosition.value,
-          drawFunction.polygonParameters
+        /* Parameters for polygons are passed
+        to all draw functions for convenience.
+        Draw function is selected dynamically 
+        from the object below. */
+        return drawFunctions[
+          drawFunction.funcName as keyof typeof drawFunctions
+        ](
+          currentCursorPosition.value as Coordinates,
+          drawFunction.polygonParameters as PolygonConfiguration
         );
       }
     }
@@ -176,8 +174,8 @@ export default defineComponent({
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const drawFunctions: { [funcName: string]: any } = {
-      useBrush(position: Coordinates | null) {
+    const drawFunctions: DrawFunctionsInterface = {
+      brush(position: Coordinates | null) {
         if (!context || !initialCursorPosition || !position) return;
         context.beginPath();
 
@@ -191,10 +189,12 @@ export default defineComponent({
 
       erase(position: Coordinates | null) {
         if (!context) return;
+        /* Save context's state so that chosen
+        stroke color is not overwritten by white. */
         context.save();
 
         context.strokeStyle = "#ffffff";
-        this.useBrush(position);
+        this.brush(position);
 
         context.restore();
       },
@@ -211,8 +211,13 @@ export default defineComponent({
       },
 
       drawRect(position: Coordinates | null) {
-        const { width, height } = this.calcSize(position);
-        if (!context || !initialCursorPosition) return;
+        if (!context || !position || !initialCursorPosition) return;
+
+        const { width, height } = calcRectangleSize(
+          position,
+          initialCursorPosition
+        );
+
         context.beginPath();
         context.moveTo(initialCursorPosition.x, initialCursorPosition.y);
         context.rect(
@@ -229,10 +234,13 @@ export default defineComponent({
       },
 
       drawCircle(position: Coordinates) {
-        if (!context || !initialCursorPosition) return;
+        if (!context || !position || !initialCursorPosition) return;
 
-        const { width, height } = this.calcSize(position);
-        const radius = this.getRadiusBySize(width, height);
+        const { width, height } = calcRectangleSize(
+          position,
+          initialCursorPosition
+        );
+        const radius = getRadiusBySize(width, height);
 
         context.beginPath();
         context.arc(
@@ -249,7 +257,7 @@ export default defineComponent({
         context.stroke();
         context.closePath();
       },
-      // RA stands for "right-angled"
+      /* RA stands for "right-angled" */
       drawRATriangle(position: Coordinates) {
         if (!context || !initialCursorPosition) return;
 
@@ -273,10 +281,14 @@ export default defineComponent({
         position: Coordinates,
         polygonConfiguration: PolygonConfiguration
       ) {
-        if (!context || !initialCursorPosition) return;
-        const { width, height } = this.calcSize(position);
+        if (!context || !position || !initialCursorPosition) return;
+
+        const { width, height } = calcRectangleSize(
+          position,
+          initialCursorPosition
+        );
         let { sides, angle } = polygonConfiguration;
-        const radius = this.getRadiusBySize(width, height);
+        const radius = getRadiusBySize(width, height);
         const coordinatesArray = [];
 
         for (let i = 0; i <= sides; i += 1) {
@@ -290,27 +302,16 @@ export default defineComponent({
 
         context.beginPath();
         context.moveTo(coordinatesArray[0].x, coordinatesArray[0].y);
+
         for (let i = 1; i <= sides; i += 1) {
           context.lineTo(coordinatesArray[i].x, coordinatesArray[i].y);
         }
+
         if (styleOptions.isShapeFilled) {
           context.fill();
         }
         context.stroke();
         context.closePath();
-      },
-
-      calcSize(position: Coordinates) {
-        if (!initialCursorPosition) return;
-
-        const width = position.x - initialCursorPosition.x;
-        const height = position.y - initialCursorPosition.y;
-        return { width, height };
-      },
-
-      // According to the Pythagorean theorem
-      getRadiusBySize(width: number, height: number) {
-        return Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
       },
     };
 

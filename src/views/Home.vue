@@ -17,11 +17,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.home {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-</style>
