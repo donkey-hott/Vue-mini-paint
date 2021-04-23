@@ -3,9 +3,7 @@ import Home from "../views/Home.vue";
 import SignUp from "../views/authentication/SignUp.vue";
 import SignIn from "../views/authentication/SignIn.vue";
 import Paint from "../views/Paint.vue";
-// import { store } from "../store";
-import firebase from "firebase";
-// import { MutationTypes } from "@/store/mutations/mutation-types";
+import { store } from "../store";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -43,8 +41,9 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const isPublic = to.matched.some((record) => record.meta.isPublic);
-  const currentUser = firebase.auth().currentUser;
-  console.log(currentUser);
+  const currentUser = store.state.currentUser;
+
+  console.log("Current user from router:", currentUser);
 
   if (!currentUser && !isPublic) {
     return next("/sign-in");

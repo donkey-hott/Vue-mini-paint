@@ -26,6 +26,7 @@
 <script lang="ts">
 import { defineComponent, computed, ref } from "vue";
 import { useStore } from "../store";
+// TODO: FIX INCORRECT BEHAVIOR OF IMAGE EXPANDING
 
 export default defineComponent({
   setup() {

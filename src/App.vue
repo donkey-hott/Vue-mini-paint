@@ -1,20 +1,18 @@
 <template>
   <div id="nav">
     <router-link to="/">Home</router-link> |
-    <router-link to="/sign-up">Sign up</router-link>
-    <button @click="logOut">Log out</button>
+    <log-out></log-out>
   </div>
   <router-view />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { ActionTypes } from "./store/actions/action-types";
+import LogOut from "./components/LogOut.vue";
+
 export default defineComponent({
-  methods: {
-    logOut() {
-      this.$store.dispatch(ActionTypes.LOG_OUT);
-    },
+  components: {
+    LogOut,
   },
 });
 </script>

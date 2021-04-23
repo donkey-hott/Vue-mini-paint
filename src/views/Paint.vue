@@ -55,6 +55,7 @@ export default defineComponent({
   components: {
     PaintControlls,
   },
+
   setup() {
     const canvas = ref<HTMLCanvasElement | null>(null);
     let context: CanvasRenderingContext2D | null | undefined;

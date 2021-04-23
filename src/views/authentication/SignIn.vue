@@ -17,45 +17,58 @@
     <template v-slot:change-action>
       Don't have an account? <router-link to="/sign-up">Sign up</router-link>
     </template>
-    {{ refs }}
   </base-card>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, watch } from "vue";
+
 import { ActionTypes } from "../../store/actions/action-types";
+import { useStore } from "../../store";
+import { useRouter } from "vue-router";
+
 import BaseCard from "../../components/UI/BaseCard.vue";
 
 export default defineComponent({
   components: {
     BaseCard,
   },
-  data() {
-    return {
-      email: "",
-      password: "",
-      isPasswordShown: false,
-    };
-  },
-  methods: {
-    async signIn() {
+
+  setup() {
+    const email = ref<string>("");
+    const password = ref<string>("");
+    const isPasswordShown = ref<boolean>(false);
+    const passField = ref<HTMLInputElement | null>(null);
+
+    const store = useStore();
+    const router = useRouter();
+
+    async function signIn() {
       try {
-        await this.$store.dispatch(ActionTypes.SIGN_IN, {
-          email: this.email,
-          password: this.password,
+        await store.dispatch(ActionTypes.SIGN_IN, {
+          email: email.value,
+          password: password.value,
         });
-        this.$router.push("/");
+        router.push("/");
         console.log("User has been signed in");
       } catch (error) {
         console.error("cannot sign in:", error);
       }
-    },
-  },
-  watch: {
-    isPasswordShown(isPasswordShown: boolean) {
-      const passwordField = this.$refs.passField as HTMLInputElement;
-      passwordField.value = isPasswordShown ? "text" : "password";
-    },
+    }
+
+    watch(isPasswordShown, () => {
+      if (!passField.value) return;
+
+      passField.value.type = isPasswordShown.value ? "text" : "password";
+    });
+
+    return {
+      email,
+      password,
+      isPasswordShown,
+      passField,
+      signIn,
+    };
   },
 });
 </script>

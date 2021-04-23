@@ -21,45 +21,56 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { ActionTypes } from "../../store/actions/action-types";
-import BaseCard from "../../components/UI/BaseCard.vue";
+import { defineComponent, ref, watch } from "vue";
 
-// TODO: UNITE SIGNIN AND SIGNUP COMPONENTS;
-// TODO: FIX SHOW PASSWORD FUNC;
+import { ActionTypes } from "../../store/actions/action-types";
+import { useStore } from "../../store";
+import { useRouter } from "vue-router";
+
+import BaseCard from "../../components/UI/BaseCard.vue";
 
 export default defineComponent({
   components: {
     BaseCard,
   },
-  data() {
-    return {
-      email: "",
-      password: "",
-      isPasswordShown: false,
-    };
-  },
-  methods: {
-    async signUp() {
+
+  setup() {
+    const email = ref<string>("");
+    const password = ref<string>("");
+    const isPasswordShown = ref<boolean>(false);
+    const passField = ref<HTMLInputElement | null>(null);
+
+    const store = useStore();
+    const router = useRouter();
+
+    async function signUp() {
       try {
-        await this.$store.dispatch(ActionTypes.SIGN_UP, {
-          email: this.email,
-          password: this.password,
+        await store.dispatch(ActionTypes.SIGN_UP, {
+          email: email.value,
+          password: password.value,
         });
-        this.$router.push("/");
+
+        router.push("/");
         console.log("User has been signed up");
       } catch (error) {
         console.error("Cannot sign up:", error);
       }
-    },
-  },
-  watch: {
-    isPasswordShown(isPasswordShown: boolean) {
-      const passwordField = this.$refs.passField as HTMLInputElement;
-      passwordField.value = isPasswordShown ? "text" : "password";
-    },
+    }
+
+    watch(isPasswordShown, () => {
+      if (!passField.value) return;
+
+      passField.value.type = isPasswordShown.value ? "text" : "password";
+    });
+
+    return {
+      email,
+      password,
+      isPasswordShown,
+      passField,
+      signUp,
+    };
   },
 });
 </script>
-
 <style></style>

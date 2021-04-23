@@ -9,8 +9,6 @@ import { State } from "../state";
 import { UserCredentials } from "../types";
 import { DbRecord } from "../../utils/createDbRecord";
 
-// TODO: ADD TIMESTAMP AND TITLE TO THE PICTURES
-
 type AugmentedActionContext = {
   commit<K extends keyof Mutations>(
     key: K,
@@ -29,14 +27,12 @@ export interface Actions {
     { commit }: AugmentedActionContext,
     payload: UserCredentials
   ): void;
-  [ActionTypes.LOG_OUT](): Promise<void>;
+  [ActionTypes.LOG_OUT]({ commit }: AugmentedActionContext): Promise<void>;
   [ActionTypes.SAVE_PICTURE](
     context: AugmentedActionContext,
     payload: DbRecord | undefined
   ): Promise<void>;
-  [ActionTypes.LOAD_PICTURES]({
-    commit,
-  }: AugmentedActionContext): Promise<void>;
+  [ActionTypes.LOAD_PICTURES](context: AugmentedActionContext): Promise<void>;
 }
 
 // ==== FUNCTIONS ====
@@ -52,33 +48,41 @@ export const actions: ActionTree<State, State> & Actions = {
     const { email, password } = payload;
     await firebase.app().auth().signInWithEmailAndPassword(email, password);
   },
-  async [ActionTypes.LOG_OUT]() {
+  async [ActionTypes.LOG_OUT]({ commit }) {
+    commit(MutationTypes.SET_USER, null);
     await firebase.app().auth().signOut();
   },
 
   // PICTURES LOGIC
 
-  async [ActionTypes.SAVE_PICTURE](_, payload: DbRecord | undefined) {
+  async [ActionTypes.SAVE_PICTURE](context, payload: DbRecord | undefined) {
     if (!payload) return;
 
-    const userID = firebase.auth().currentUser?.uid;
+    const { currentUser }: any = context.state;
+    console.log(currentUser.uid);
+
     try {
-      await firebase.database().ref(userID).child("pictures").push(payload);
+      await firebase
+        .database()
+        .ref(currentUser.uid)
+        .child("pictures")
+        .push(payload);
       console.log("%cPicture has been saved", "color:#67FF3D");
     } catch (error) {
       console.error(error);
     }
   },
-  async [ActionTypes.LOAD_PICTURES]({ commit }) {
+  async [ActionTypes.LOAD_PICTURES](context) {
+    const { currentUser }: any = context.state;
+    if (!currentUser) return;
     try {
-      const userID = firebase.auth().currentUser?.uid;
       await firebase
         .database()
-        .ref(userID)
+        .ref(currentUser.uid)
         .child("pictures")
         .on("value", (snapshot) => {
           const pictures = snapshot.val();
-          commit(MutationTypes.SET_PICTURES, pictures);
+          context.commit(MutationTypes.SET_PICTURES, pictures);
           console.log(
             "%cPictures have been loaded!",
             "color:#67FF3D",
