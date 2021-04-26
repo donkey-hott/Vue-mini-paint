@@ -1,40 +1,57 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <log-out></log-out>
-  </div>
+  <the-header></the-header>
   <router-view />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import LogOut from "./components/LogOut.vue";
+import TheHeader from "./components/UI/TheHeader.vue";
 
 export default defineComponent({
   components: {
-    LogOut,
+    TheHeader,
   },
 });
 </script>
 
 <style lang="scss">
+@import "./assets/colors.scss";
+
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   font-size: 100%;
 }
+html,
+body,
+#app {
+  height: 100%;
+}
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Nunito Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: $dark-contrast;
+  background: $dark-background;
   font-size: 16px;
 }
 
-@media (min-width: 768px) {
+select,
+input {
+  font-size: inherit;
+  font-family: inherit;
+}
+
+input {
+  background: transparent;
+  border: 0;
+  color: #fff;
+}
+
+@media (min-width: 767px) {
   #app {
     font-size: 20px;
   }

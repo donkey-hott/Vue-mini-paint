@@ -1,8 +1,7 @@
 <template>
-  <button v-show="isUserAuthenticated" @click="logOut" class="logout-btn">
+  <base-button class="logout-btn" v-show="isUserAuthenticated" @click="logOut">
     Log out
-  </button>
-  <div>{{ isUserAuthenticated }}</div>
+  </base-button>
 </template>
 
 <script lang="ts">
@@ -31,3 +30,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import "../assets/colors.scss";
+
+.logout-btn {
+  background: #e72c44;
+}
+</style>

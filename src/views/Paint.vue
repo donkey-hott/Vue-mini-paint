@@ -1,23 +1,29 @@
 <template>
-  <section class="desktop">
+  <section class="workspace">
+    <input
+      type="text"
+      placeholder="Enter title..."
+      class="workspace__title"
+      v-model="pictureTitle"
+    />
     <paint-controlls
+      class="workspace__controlls"
       @changeDrawFunction="setDrawFunction"
       @clearCanvas="clearCanvas"
       @setStyleOptions="setStyleOptions"
-      @setPictureTitle="setPictureTitle"
       @savePicture="savePicture"
     ></paint-controlls>
     <canvas
       width="600"
       height="500"
-      class="desktop__canvas"
+      class="workspace__canvas"
       id="canvas"
       ref="canvas"
       @mousedown="drawStart($event)"
       @mousemove="draw($event)"
       @mouseup="drawEnd($event)"
     ></canvas>
-    <div class="coordinates">
+    <div class="workspace__coordinates">
       <span>x: {{ currentCursorPosition?.x }}</span>
       <span>y: {{ currentCursorPosition?.y }}</span>
     </div>
@@ -68,7 +74,7 @@ export default defineComponent({
       fillColor: "#000000",
       isShapeFilled: false,
     };
-    let pictureTitle = "Untitled";
+    const pictureTitle = ref<string>("Untitled");
     const canvasState = ref<ImageData | null>(null);
 
     const currentCursorPosition = ref<Coordinates | null | undefined>(null);
@@ -120,13 +126,9 @@ export default defineComponent({
       styleOptions = styleObj;
     }
 
-    function setPictureTitle(title: string) {
-      pictureTitle = title;
-    }
-
     function savePicture() {
       const imgURL = canvas.value?.toDataURL();
-      const dbRecord = createDbRecord(imgURL, pictureTitle);
+      const dbRecord = createDbRecord(imgURL, pictureTitle.value);
 
       store.dispatch(ActionTypes.SAVE_PICTURE, dbRecord);
     }
@@ -316,18 +318,32 @@ export default defineComponent({
       },
     };
 
+    function resizeCanvasToDisplaySize() {
+      // look up the size the canvas is being displayed
+      // If it's resolution does not match change it
+      if (!canvas.value) return;
+      const width = canvas.value.clientWidth;
+      const height = canvas.value.clientHeight;
+
+      if (canvas.value.width !== width || canvas.value.height !== height) {
+        canvas.value.width = width;
+        canvas.value.height = height;
+      }
+    }
+
     onMounted(() => {
       context = canvas.value?.getContext("2d") || null || undefined;
+      window.addEventListener("resize", resizeCanvasToDisplaySize);
     });
     return {
       setDrawFunction,
       clearCanvas,
       setStyleOptions,
-      setPictureTitle,
       savePicture,
       drawStart,
       draw,
       drawEnd,
+      pictureTitle,
       currentCursorPosition,
       canvas,
     };
@@ -336,18 +352,28 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.desktop {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+@import "../assets/colors.scss";
 
-  &__canvas {
-    // width: 600px;
-    // height: 500px;
-    border: 1px solid #000;
+.workspace {
+  display: grid;
+  grid-template-areas:
+    "title ."
+    "controlls canvas"
+    "controlls coordinates";
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 25% auto;
+  justify-items: center;
+  background: inherit;
+
+  &__title {
+    grid-area: title;
+    border-bottom: 2px solid $emphasizing;
+    margin-bottom: 0.5em;
   }
 
-  .controls {
+  &__controlls {
+    grid-area: controlls;
+
     &__buttons {
       display: flex;
       justify-content: center;
@@ -359,6 +385,25 @@ export default defineComponent({
         margin: 0 0.3em;
       }
     }
+  }
+
+  &__canvas {
+    background: #fff !important;
+    border: 1px solid #000;
+    grid-area: canvas;
+    width: 500px;
+    height: 400px;
+  }
+
+  &__coordinates {
+    grid-area: coordinates;
+  }
+}
+
+@media (min-width: 1024px) {
+  .workspace__canvas {
+    width: 600px;
+    height: 500px;
   }
 }
 </style>

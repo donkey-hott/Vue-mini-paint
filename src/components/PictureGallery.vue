@@ -15,6 +15,9 @@
       <hr />
       <figcaption class="card__title">{{ pictureObj.title }}</figcaption>
     </figure>
+    <div class="card new-picture">
+      <router-link to="/new-canvas">New picture</router-link>
+    </div>
   </section>
   <div
     @click="collapsePicture"
@@ -53,6 +56,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "../assets/colors.scss";
+
 .gallery {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -70,6 +75,7 @@ export default defineComponent({
     padding: 0.3em;
     margin: 0.5em 1em;
     width: 90%;
+    background: $light-background;
     box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
 
     &__picture {
@@ -77,6 +83,7 @@ export default defineComponent({
       height: 100%;
       margin-bottom: 1em;
       cursor: pointer;
+      background: #fff !important;
 
       &--shown {
         position: fixed;
@@ -93,6 +100,21 @@ export default defineComponent({
     }
     figcaption {
       margin-top: 0.3em;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
+  .new-picture {
+    border: 4px dashed $emphasizing;
+    & > a {
+      height: 100%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      color: #fff;
     }
   }
 }

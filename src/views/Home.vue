@@ -1,7 +1,5 @@
 <template>
   <div class="home">
-    <p>You have been authenticated!</p>
-    <router-link to="/new-canvas">Create new picture</router-link>
     <picture-gallery></picture-gallery>
   </div>
 </template>
@@ -17,3 +15,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import "../assets/colors.scss";
+
+.home {
+  background: $dark-background;
+}
+</style>

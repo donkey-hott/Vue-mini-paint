@@ -1,89 +1,239 @@
 <template>
-  <nav class="controls">
-    <input type="text" id="title" v-model="pictureTitle" />
-    <ul class="controls__buttons">
-      <li><button @click="setDrawFunction('brush')">Brush</button></li>
-      <li><button @click="setDrawFunction('erase')">Eraser</button></li>
-      <li><button @click="setDrawFunction('drawLine')">Line</button></li>
-      <li><button @click="setDrawFunction('drawRect')">Rectangle</button></li>
-      <li><button @click="setDrawFunction('drawCircle')">Circle</button></li>
-      <li>
-        <button @click="setDrawFunction('drawRATriangle')">
-          Right-angled triangle
-        </button>
-      </li>
-      <li>
-        <button
+  <aside class="controls">
+    <!-- <input type="text" id="title" v-model="pictureTitle" /> -->
+    <ul class="buttons">
+      <li class="item">
+        <base-button
+          class="item__button"
+          :class="{ 'item__button--active': currentInstrument === 'brush' }"
+          title="Pencil"
           @click="
-            setDrawFunction('drawPolygon', { sides: 3, angle: Math.PI / 2 })
+            setDrawFunction('brush');
+            currentInstrument = 'brush';
           "
         >
-          Isoceles triangle
-        </button>
+          <img
+            alt="Pencil"
+            src="https://img.icons8.com/windows/50/ffffff/pencil.png"
+          />
+        </base-button>
       </li>
-      <li>
-        <button
+      <li class="item">
+        <base-button
+          title="Eraser"
+          class="item__button"
+          :class="{ 'item__button--active': currentInstrument === 'eraser' }"
           @click="
-            setDrawFunction('drawPolygon', { sides: 4, angle: Math.PI / 4 })
+            setDrawFunction('erase');
+            currentInstrument = 'eraser';
           "
         >
-          Square
-        </button>
+          <img
+            alt="Eraser"
+            src="https://img.icons8.com/windows/50/ffffff/eraser.png"
+          />
+        </base-button>
       </li>
-      <li>
-        <button
+      <li class="item">
+        <base-button
+          title="Line"
+          class="item__button"
+          :class="{ 'item__button--active': currentInstrument === 'line' }"
           @click="
-            setDrawFunction('drawPolygon', { sides: 5, angle: Math.PI / 2 })
+            setDrawFunction('drawLine');
+            currentInstrument = 'line';
           "
         >
-          Pentagon
-        </button>
+          <img
+            alt="Line"
+            src="https://img.icons8.com/windows/50/ffffff/line.png"
+          />
+        </base-button>
       </li>
-      <li>
-        <button
+      <li class="item">
+        <base-button
+          title="Rectangle"
+          class="item__button"
+          :class="{ 'item__button--active': currentInstrument === 'rect' }"
           @click="
-            setDrawFunction('drawPolygon', { sides: 6, angle: Math.PI / 2 })
+            setDrawFunction('drawRect');
+            currentInstrument = 'rect';
           "
         >
-          Hexagon
-        </button>
+          <img
+            alt="Rectangle"
+            src="https://img.icons8.com/windows/50/ffffff/rectangle-stroked.png"
+          />
+        </base-button>
       </li>
-      <li>
-        <button
+      <li class="item">
+        <base-button
+          title="Circle"
+          class="item__button"
+          :class="{
+            'item__button--active': currentInstrument === 'circle',
+          }"
           @click="
-            setDrawFunction('drawPolygon', { sides: 8, angle: Math.PI / 2 })
+            setDrawFunction('drawCircle');
+            currentInstrument = 'circle';
           "
         >
-          Octagon
-        </button>
+          <img
+            alt="Circle"
+            src="https://img.icons8.com/windows/50/ffffff/circled--v1.png"
+          />
+        </base-button>
       </li>
-      <li><button @click="emitClearCanvasEvent">Clear canvas</button></li>
-      <li><button @click="savePicture">Save picture</button></li>
-      <li>
+      <li class="item">
+        <base-button
+          title="Square"
+          class="item__button"
+          :class="{
+            'item__button--active': currentInstrument === 'square',
+          }"
+          @click="
+            setDrawFunction('drawPolygon', { sides: 4, angle: Math.PI / 4 });
+            currentInstrument = 'square';
+          "
+        >
+          <img
+            alt="Square"
+            src="https://img.icons8.com/windows/50/ffffff/rounded-square.png"
+          />
+        </base-button>
+      </li>
+      <li class="item">
+        <base-button
+          title="Isosceles triangle"
+          class="item__button"
+          :class="{
+            'item__button--active': currentInstrument === 'isoscelesTriangle',
+          }"
+          @click="
+            setDrawFunction('drawPolygon', { sides: 3, angle: Math.PI / 2 });
+            currentInstrument = 'isoscelesTriangle';
+          "
+        >
+          <img
+            alt="Isosceles triangle"
+            src="https://img.icons8.com/windows/50/ffffff/triangle-stroked.png"
+          />
+        </base-button>
+      </li>
+      <li class="item">
+        <base-button
+          title="More shapes"
+          class="item__button"
+          @click="togglePolygonsBlock"
+        >
+          ...
+        </base-button>
+        <div class="polygons" v-show="arePolygonsShown">
+          <base-button
+            title="Right-angled triangle"
+            class="item__button"
+            :class="{
+              'item__button--active':
+                currentInstrument === 'rightAngledTriangle',
+            }"
+            @click="
+              setDrawFunction('drawRATriangle');
+              currentInstrument = 'rightAngledTriangle';
+            "
+          >
+            <img
+              alt="Right-angled triangle"
+              src="https://img.icons8.com/windows/50/ffffff/trigonometry.png"
+            />
+          </base-button>
+          <base-button
+            title="Pentagon"
+            class="item__button"
+            :class="{
+              'item__button--active': currentInstrument === 'pentagon',
+            }"
+            @click="
+              setDrawFunction('drawPolygon', { sides: 5, angle: Math.PI / 2 });
+              currentInstrument === 'pentagon';
+            "
+          >
+            <img
+              alt="Pentagon"
+              src="https://img.icons8.com/windows/50/ffffff/pentagon.png"
+            />
+          </base-button>
+          <base-button
+            title="Hexagon"
+            class="item__button"
+            :class="{
+              'item__button--active': currentInstrument === 'hexagon',
+            }"
+            @click="
+              setDrawFunction('drawPolygon', { sides: 6, angle: Math.PI / 2 });
+              currentInstrument = 'hexagon';
+            "
+          >
+            <img
+              alt="Hexagon"
+              src="https://img.icons8.com/windows/50/ffffff/hexagon.png"
+            />
+          </base-button>
+          <base-button
+            title="Octagon"
+            class="item__button"
+            :class="{
+              'item__button--active': currentInstrument === 'octagon',
+            }"
+            @click="
+              setDrawFunction('drawPolygon', { sides: 8, angle: Math.PI / 2 });
+              currentInstrument = 'octagon';
+            "
+          >
+            <img
+              title="Octagon"
+              src="https://img.icons8.com/windows/50/ffffff/octagon.png"
+            />
+          </base-button>
+        </div>
+      </li>
+      <li class="item">
+        <base-button class="item__button" @click="emitClearCanvasEvent"
+          >Clear</base-button
+        >
+      </li>
+      <li class="item">
+        <base-button title="Save" class="item__button" @click="savePicture">
+          <img
+            alt="Save"
+            src="https://img.icons8.com/windows/50/ffffff/save--v1.png"
+          />
+        </base-button>
+      </li>
+      <li class="item">
         <label for="lineWidth">Line width:</label>
         <input
           v-model.number="styleOptions.lineWidth"
           min="1"
           max="20"
-          type="range"
+          type="number"
           id="lineWidth"
         />
-        <span>{{ styleOptions.lineWidth }} px.</span>
+        <span>px.</span>
       </li>
-      <li>
-        <label for="strokeColor">Stroke color:</label>
+      <li class="item">
+        <label for="strokeColor">Color:</label>
         <input
           v-model="styleOptions.strokeColor"
           type="color"
           id="strokeColor"
         />
       </li>
-      <li>
-        <label for="fill">Fill:</label>
+      <li class="item">
+        <label for="fill">Fill: </label>
         <input v-model="styleOptions.isShapeFilled" type="checkbox" id="fill" />
       </li>
-      <li>
-        <label for="fillColor">Fill color:</label>
+      <li class="item">
+        <label for="fillColor">Color:</label>
         <input
           :disabled="!styleOptions.isShapeFilled"
           v-model="styleOptions.fillColor"
@@ -92,7 +242,7 @@
         />
       </li>
     </ul>
-  </nav>
+  </aside>
 </template>
 
 <script lang="ts">
@@ -105,7 +255,6 @@ export default defineComponent({
     "clearCanvas",
     "setStyleOptions",
     "savePicture",
-    "setPictureTitle",
   ],
 
   setup(_, { emit }) {
@@ -115,7 +264,12 @@ export default defineComponent({
       fillColor: "#000000",
       isShapeFilled: false,
     });
-    const pictureTitle = ref<string>("Untitled");
+    const arePolygonsShown = ref<boolean>(false);
+    const currentInstrument = ref<string>("");
+
+    function togglePolygonsBlock() {
+      arePolygonsShown.value = !arePolygonsShown.value;
+    }
 
     function setDrawFunction(
       funcName: string,
@@ -126,6 +280,7 @@ export default defineComponent({
         polygonParameters,
       };
       emit("changeDrawFunction", drawFunction);
+      arePolygonsShown.value = false;
     }
 
     function emitClearCanvasEvent() {
@@ -136,16 +291,15 @@ export default defineComponent({
       emit("savePicture");
     }
 
-    watch(styleOptions, (_, newVal) => {
-      emit("setStyleOptions", newVal);
+    watch(styleOptions, (_, oldVal) => {
+      emit("setStyleOptions", oldVal);
     });
 
-    watch(pictureTitle, (oldVal) => {
-      emit("setPictureTitle", oldVal);
-    });
     return {
       styleOptions,
-      pictureTitle,
+      arePolygonsShown,
+      currentInstrument,
+      togglePolygonsBlock,
       setDrawFunction,
       emitClearCanvasEvent,
       savePicture,
@@ -155,16 +309,45 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.controls {
-  &__buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    align-items: center;
-    list-style: none;
+@import "../assets/colors.scss";
 
-    > li {
-      margin: 0 0.3em;
+.buttons {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.5em;
+  list-style: none;
+
+  .item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &__button {
+      width: 50px;
+      height: 50px;
+      padding: 0;
+      background: $light-background;
+
+      &--active {
+        background: $emphasizing;
+      }
+    }
+
+    & input[type="number"] {
+      border-bottom: 2px solid $emphasizing;
+    }
+
+    & > .polygons {
+      position: absolute;
+      top: 100%;
+      z-index: 10;
+      width: max-content;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      & > button {
+        background: $light-background;
+      }
     }
   }
 }
