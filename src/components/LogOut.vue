@@ -9,18 +9,25 @@ import { defineComponent, ComputedRef, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "../store";
 import { ActionTypes } from "../store/actions/action-types";
+import { useToast } from "vue-toastification";
 
 export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+    const toast = useToast();
+
     const isUserAuthenticated: ComputedRef<boolean> = computed(() => {
       return store.state.currentUser !== null;
     });
 
-    function logOut() {
-      store.dispatch(ActionTypes.LOG_OUT);
-      router.push("sign-in");
+    async function logOut() {
+      try {
+        await store.dispatch(ActionTypes.LOG_OUT);
+        router.push("sign-in");
+      } catch (error) {
+        toast.error(`Cannot log out: ${error.message}`);
+      }
     }
 
     return {

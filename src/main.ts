@@ -11,6 +11,8 @@ import { ActionTypes } from "./store/actions/action-types";
 import { MutationTypes } from "./store/mutations/mutation-types";
 
 import BaseButton from "./components/UI/BaseButton.vue";
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 firebase.initializeApp(firebaseConfig);
 let app: any;
@@ -22,6 +24,7 @@ firebase.auth().onAuthStateChanged((user) => {
       .use(store)
       .use(router)
       .component("base-button", BaseButton)
+      .use(Toast)
       .mount("#app");
   }
   store.dispatch(ActionTypes.LOAD_PICTURES);

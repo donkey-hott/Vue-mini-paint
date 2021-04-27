@@ -57,20 +57,13 @@ export const actions: ActionTree<State, State> & Actions = {
 
   async [ActionTypes.SAVE_PICTURE](context, payload: DbRecord | undefined) {
     if (!payload) return;
-
     const { currentUser }: any = context.state;
-    console.log(currentUser.uid);
 
-    try {
-      await firebase
-        .database()
-        .ref(currentUser.uid)
-        .child("pictures")
-        .push(payload);
-      console.log("%cPicture has been saved", "color:#67FF3D");
-    } catch (error) {
-      console.error(error);
-    }
+    await firebase
+      .database()
+      .ref(currentUser.uid)
+      .child("pictures")
+      .push(payload);
   },
   async [ActionTypes.LOAD_PICTURES](context) {
     const { currentUser }: any = context.state;

@@ -56,6 +56,8 @@ import {
   getRadiusBySize,
   isShape,
 } from "../utils/paintHelpers";
+/* Third-party libs */
+import { useToast } from "vue-toastification";
 
 export default defineComponent({
   components: {
@@ -81,6 +83,7 @@ export default defineComponent({
     let initialCursorPosition: Coordinates | null | undefined = null;
 
     const store = useStore();
+    const toast = useToast();
 
     function getCursorPosition(e: MouseEvent): Coordinates | undefined {
       if (!canvas.value) return;
@@ -126,11 +129,16 @@ export default defineComponent({
       styleOptions = styleObj;
     }
 
-    function savePicture() {
+    async function savePicture() {
       const imgURL = canvas.value?.toDataURL();
       const dbRecord = createDbRecord(imgURL, pictureTitle.value);
 
-      store.dispatch(ActionTypes.SAVE_PICTURE, dbRecord);
+      try {
+        await store.dispatch(ActionTypes.SAVE_PICTURE, dbRecord);
+        toast.success("Picture has been saved!");
+      } catch (error) {
+        toast.error(`Cannot save picture:`, error.message);
+      }
     }
 
     // ==== DRAWING ====
