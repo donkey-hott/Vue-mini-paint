@@ -326,9 +326,9 @@ export default defineComponent({
       },
     };
 
+/*  Look up the size the canvas is being displayed
+    If it's resolution does not match change it */
     function resizeCanvasToDisplaySize() {
-      // look up the size the canvas is being displayed
-      // If it's resolution does not match change it
       if (!canvas.value) return;
       const width = canvas.value.clientWidth;
       const height = canvas.value.clientHeight;
@@ -342,6 +342,7 @@ export default defineComponent({
     onMounted(() => {
       context = canvas.value?.getContext("2d") || null || undefined;
       window.addEventListener("resize", resizeCanvasToDisplaySize);
+      resizeCanvasToDisplaySize();
     });
     return {
       setDrawFunction,
@@ -369,7 +370,7 @@ export default defineComponent({
     "controlls canvas"
     "controlls coordinates";
   grid-template-rows: auto 1fr auto;
-  grid-template-columns: 25% auto;
+  grid-template-columns: 30% auto;
   justify-items: center;
   background: inherit;
 
@@ -405,6 +406,9 @@ export default defineComponent({
 
   &__coordinates {
     grid-area: coordinates;
+    & span:first-child {
+      margin-right: 0.3em;
+    }
   }
 }
 
