@@ -23,8 +23,8 @@ firebase.auth().onAuthStateChanged((user) => {
     app = createApp(App)
       .use(store)
       .use(router)
-      .component("base-button", BaseButton)
       .use(Toast)
+      .component("base-button", BaseButton)
       .mount("#app");
   }
   store.dispatch(ActionTypes.LOAD_PICTURES);
