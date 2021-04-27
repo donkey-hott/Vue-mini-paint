@@ -6,7 +6,7 @@ import { Mutations } from "../mutations/mutations";
 import { MutationTypes } from "../mutations/mutation-types";
 
 import { State } from "../state";
-import { UserCredentials } from "../types";
+import { Pictures, UserCredentials } from "../types";
 import { DbRecord } from "../../utils/createDbRecord";
 
 type AugmentedActionContext = {
@@ -56,17 +56,18 @@ export const actions: ActionTree<State, State> & Actions = {
   // PICTURES LOGIC
 
   async [ActionTypes.SAVE_PICTURE](context, payload: DbRecord | undefined) {
-    if (!payload) return;
-    const { currentUser }: any = context.state;
+    const currentUser: firebase.User | null = context.state.currentUser;
+    if (!payload || !currentUser) return;
+    // const { currentUser }: firebase.User | null = context.state;
 
     await firebase
       .database()
-      .ref(currentUser.uid)
+      .ref(currentUser?.uid)
       .child("pictures")
       .push(payload);
   },
   async [ActionTypes.LOAD_PICTURES](context) {
-    const { currentUser }: any = context.state;
+    const { currentUser } = context.state;
     if (!currentUser) return;
     try {
       await firebase
@@ -74,7 +75,7 @@ export const actions: ActionTree<State, State> & Actions = {
         .ref(currentUser.uid)
         .child("pictures")
         .on("value", (snapshot) => {
-          const pictures = snapshot.val();
+          const pictures: Pictures = snapshot.val();
           context.commit(MutationTypes.SET_PICTURES, pictures);
           console.log(
             "%cPictures have been loaded!",

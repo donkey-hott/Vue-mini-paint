@@ -29,7 +29,6 @@
 <script lang="ts">
 import { defineComponent, computed, ref } from "vue";
 import { useStore } from "../store";
-// TODO: FIX INCORRECT BEHAVIOR OF IMAGE EXPANDING
 
 export default defineComponent({
   setup() {
@@ -108,6 +107,8 @@ export default defineComponent({
 
   .new-picture {
     border: 4px dashed $emphasizing;
+    min-height: 8em;
+
     & > a {
       height: 100%;
       display: inline-flex;
@@ -133,10 +134,11 @@ export default defineComponent({
   &--shown {
     pointer-events: all;
     transform: scale(1);
+    cursor: default;
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 767px) {
   .gallery {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }

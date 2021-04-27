@@ -7,8 +7,10 @@
 <script lang="ts">
 import { defineComponent, ComputedRef, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useStore } from "../store";
-import { ActionTypes } from "../store/actions/action-types";
+
+import { useStore } from "../../store";
+import { ActionTypes } from "../../store/actions/action-types";
+
 import { useToast } from "vue-toastification";
 
 export default defineComponent({
@@ -39,7 +41,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/colors.scss";
+@import "../../assets/colors.scss";
 
 .logout-btn {
   background: #e72c44;

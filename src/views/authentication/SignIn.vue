@@ -13,7 +13,7 @@ import { useStore } from "../../store";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
-import BaseAuthentication from "../../components/BaseAuthentication.vue";
+import BaseAuthentication from "../../components/authentication/BaseAuthentication.vue";
 
 export default defineComponent({
   components: {

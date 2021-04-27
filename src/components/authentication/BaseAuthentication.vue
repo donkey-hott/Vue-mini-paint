@@ -90,7 +90,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/colors.scss";
+@import "../../assets/colors.scss";
 
 .card {
   width: max-content;

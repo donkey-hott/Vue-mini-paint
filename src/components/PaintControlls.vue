@@ -169,7 +169,7 @@
               'item__button--active': currentInstrument === 'hexagon',
             }"
             @click="
-              setDrawFunction('drawPolygon', { sides: 6, angle: Math.PI / 2 });
+              setDrawFunction('drawPolygon', { sides: 6, angle: Math.PI / 3 });
               currentInstrument = 'hexagon';
             "
           >
@@ -185,7 +185,7 @@
               'item__button--active': currentInstrument === 'octagon',
             }"
             @click="
-              setDrawFunction('drawPolygon', { sides: 8, angle: Math.PI / 2 });
+              setDrawFunction('drawPolygon', { sides: 8, angle: Math.PI / 8 });
               currentInstrument = 'octagon';
             "
           >
@@ -247,7 +247,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, watch } from "vue";
-import { PolygonConfiguration, DrawFunctionType } from "../views/paint-types";
+import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
 
 export default defineComponent({
   emits: [

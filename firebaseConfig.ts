@@ -1,9 +1,9 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyCJbB3n35INDYnmjEfu98yCD4dEK3ln25M",
-  authDomain: "mini-paint-edf3c.firebaseapp.com",
-  databaseURL: "https://mini-paint-edf3c-default-rtdb.firebaseio.com",
-  projectId: "mini-paint-edf3c",
-  storageBucket: "mini-paint-edf3c.appspot.com",
-  messagingSenderId: "996552153655",
-  appId: "1:996552153655:web:f9b16aaa4a045bfc34fdb2",
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_FIREBASE_APP_ID,
 };

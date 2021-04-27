@@ -1,4 +1,4 @@
-import { Coordinates, RectSize } from "../views/paint-types";
+import { Coordinates, RectSize } from "../components/paint-types";
 
 export function calcRectangleSize(
   currentPosition: Coordinates,
@@ -16,4 +16,14 @@ export function getRadiusBySize(width: number, height: number): number {
 
 export function isShape(funcName: string): boolean {
   return funcName !== "brush" && funcName !== "erase";
+}
+
+export function getRelativeCursorPosition(
+  e: MouseEvent,
+  offsetLeft: number,
+  offsetTop: number
+): Coordinates | undefined {
+  const x = e.pageX - offsetLeft;
+  const y = e.pageY - offsetTop;
+  return { x, y };
 }

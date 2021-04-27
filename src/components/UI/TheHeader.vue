@@ -18,7 +18,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import LogOut from "../LogOut.vue";
+import LogOut from "../authentication/LogOut.vue";
 
 export default defineComponent({
   components: {
