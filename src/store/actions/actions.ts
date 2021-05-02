@@ -16,7 +16,7 @@ type AugmentedActionContext = {
   ): ReturnType<Mutations[K]>;
 } & Omit<ActionContext<State, State>, "commit">;
 
-// ==== ACTIONS INTERFACE ====
+/* ==== ACTIONS INTERFACE ==== */
 
 export interface Actions {
   [ActionTypes.SIGN_UP](
@@ -33,12 +33,13 @@ export interface Actions {
     payload: DbRecord | undefined
   ): Promise<void>;
   [ActionTypes.LOAD_PICTURES](context: AugmentedActionContext): Promise<void>;
+  [ActionTypes.INIT](context: AugmentedActionContext): Promise<void>;
 }
 
-// ==== FUNCTIONS ====
+/* ==== FUNCTIONS ==== */
 
 export const actions: ActionTree<State, State> & Actions = {
-  // AUTHENTICATION LOGIC
+  /* AUTHENTICATION LOGIC */
 
   async [ActionTypes.SIGN_UP](_, payload: UserCredentials) {
     const { email, password } = payload;
@@ -53,7 +54,7 @@ export const actions: ActionTree<State, State> & Actions = {
     await firebase.app().auth().signOut();
   },
 
-  // PICTURES LOGIC
+  /* PICTURES LOGIC */
 
   async [ActionTypes.SAVE_PICTURE](context, payload: DbRecord | undefined) {
     const currentUser: firebase.User | null = context.state.currentUser;
@@ -86,5 +87,18 @@ export const actions: ActionTree<State, State> & Actions = {
     } catch (error) {
       console.error(error);
     }
+  },
+
+  /* INITIALIZATION: CHECKING AUTH STATUS AND
+    LOADING PICTURES */
+
+  async [ActionTypes.INIT]({ commit, dispatch }) {
+    return new Promise((resolve) => {
+      firebase.auth().onAuthStateChanged((user) => {
+        commit(MutationTypes.SET_USER, user);
+        dispatch(ActionTypes.LOAD_PICTURES);
+        resolve();
+      });
+    });
   },
 };
