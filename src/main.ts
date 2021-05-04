@@ -10,9 +10,6 @@ import BaseButton from "./components/UI/BaseButton.vue";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
-import { initializeFirebase } from "./firebase/firebaseInitialization";
-initializeFirebase();
-
 let app: any;
 
 store.dispatch(ActionTypes.INIT).then(() => {

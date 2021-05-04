@@ -1,4 +1,6 @@
+import { initializeFirebase } from "../../firebase/firebaseInitialization";
 import firebase from "firebase";
+
 import { ActionTypes } from "./action-types";
 import { ActionContext, ActionTree } from "vuex";
 
@@ -89,11 +91,9 @@ export const actions: ActionTree<State, State> & Actions = {
     }
   },
 
-  /* INITIALIZATION: CHECKING AUTH STATUS AND
-    LOADING PICTURES */
-
   async [ActionTypes.INIT]({ commit, dispatch }) {
     return new Promise((resolve) => {
+      initializeFirebase();
       firebase.auth().onAuthStateChanged((user) => {
         commit(MutationTypes.SET_USER, user);
         dispatch(ActionTypes.LOAD_PICTURES);
