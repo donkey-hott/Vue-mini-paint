@@ -1,213 +1,55 @@
 <template>
   <aside class="controls">
-    <!-- <input type="text" id="title" v-model="pictureTitle" /> -->
     <ul class="buttons">
-      <li class="item">
+      <li
+        v-for="(mainInstrument, idx) in mainInstruments"
+        :key="idx"
+        class="item"
+      >
         <base-button
-          class="item__button"
-          :class="{ 'item__button--active': currentInstrument === 'pencil' }"
-          title="Pencil"
-          @click="
-            setDrawFunction('PencilStrategy');
-            currentInstrument = 'pencil';
-          "
-        >
-          <img
-            alt="Pencil"
-            src="https://img.icons8.com/windows/50/ffffff/pencil.png"
-          />
-        </base-button>
-      </li>
-      <li class="item">
-        <base-button
-          title="Eraser"
-          class="item__button"
-          :class="{ 'item__button--active': currentInstrument === 'eraser' }"
-          @click="
-            setDrawFunction('EraseStrategy');
-            currentInstrument = 'eraser';
-          "
-        >
-          <img
-            alt="Eraser"
-            src="https://img.icons8.com/windows/50/ffffff/eraser.png"
-          />
-        </base-button>
-      </li>
-      <li class="item">
-        <base-button
-          title="Line"
-          class="item__button"
-          :class="{ 'item__button--active': currentInstrument === 'line' }"
-          @click="
-            setDrawFunction('LineStrategy');
-            currentInstrument = 'line';
-          "
-        >
-          <img
-            alt="Line"
-            src="https://img.icons8.com/windows/50/ffffff/line.png"
-          />
-        </base-button>
-      </li>
-      <li class="item">
-        <base-button
-          title="Rectangle"
-          class="item__button"
-          :class="{ 'item__button--active': currentInstrument === 'rect' }"
-          @click="
-            setDrawFunction('RectStrategy');
-            currentInstrument = 'rect';
-          "
-        >
-          <img
-            alt="Rectangle"
-            src="https://img.icons8.com/windows/50/ffffff/rectangle-stroked.png"
-          />
-        </base-button>
-      </li>
-      <li class="item">
-        <base-button
-          title="Circle"
           class="item__button"
           :class="{
-            'item__button--active': currentInstrument === 'circle',
+            'item__button--active': mainInstrument.title === currentInstrument,
           }"
+          :title="mainInstrument.title"
           @click="
-            setDrawFunction('CircleStrategy');
-            currentInstrument = 'circle';
+            setDrawFunction(
+              mainInstrument.funcName,
+              mainInstrument.polygonParams
+            ),
+              (currentInstrument = mainInstrument.title)
           "
         >
-          <img
-            alt="Circle"
-            src="https://img.icons8.com/windows/50/ffffff/circled--v1.png"
-          />
-        </base-button>
-      </li>
-      <li class="item">
-        <base-button
-          title="Square"
-          class="item__button"
-          :class="{
-            'item__button--active': currentInstrument === 'square',
-          }"
-          @click="
-            setDrawFunction('PolygonStrategy', {
-              sides: 4,
-              angle: Math.PI / 4,
-            });
-            currentInstrument = 'square';
-          "
-        >
-          <img
-            alt="Square"
-            src="https://img.icons8.com/windows/50/ffffff/rounded-square.png"
-          />
-        </base-button>
-      </li>
-      <li class="item">
-        <base-button
-          title="Isosceles triangle"
-          class="item__button"
-          :class="{
-            'item__button--active': currentInstrument === 'isoscelesTriangle',
-          }"
-          @click="
-            setDrawFunction('PolygonStrategy', {
-              sides: 3,
-              angle: Math.PI / 2,
-            });
-            currentInstrument = 'isoscelesTriangle';
-          "
-        >
-          <img
-            alt="Isosceles triangle"
-            src="https://img.icons8.com/windows/50/ffffff/triangle-stroked.png"
-          />
+          <img :alt="mainInstrument.title" :src="mainInstrument.iconLink" />
         </base-button>
       </li>
       <li class="item">
         <base-button
           title="More shapes"
           class="item__button"
-          @click="togglePolygonsBlock"
+          @click="toggleAdditionalShapesBlock"
         >
           ...
         </base-button>
         <div class="polygons" v-show="arePolygonsShown">
           <base-button
-            title="Right-angled triangle"
+            v-for="(additInstrument, idx) in additionalInstruments"
+            :key="idx"
+            :title="additInstrument.title"
             class="item__button"
             :class="{
               'item__button--active':
-                currentInstrument === 'rightAngledTriangle',
+                currentInstrument === additInstrument.title,
             }"
             @click="
-              setDrawFunction('RATriangleStrategy');
-              currentInstrument = 'rightAngledTriangle';
+              setDrawFunction(
+                additInstrument.funcName,
+                additInstrument.polygonParams
+              );
+              currentInstrument = additInstrument.title;
             "
           >
-            <img
-              alt="Right-angled triangle"
-              src="https://img.icons8.com/windows/50/ffffff/trigonometry.png"
-            />
-          </base-button>
-          <base-button
-            title="Pentagon"
-            class="item__button"
-            :class="{
-              'item__button--active': currentInstrument === 'pentagon',
-            }"
-            @click="
-              setDrawFunction('PolygonStrategy', {
-                sides: 5,
-                angle: Math.PI / 2,
-              });
-              currentInstrument === 'pentagon';
-            "
-          >
-            <img
-              alt="Pentagon"
-              src="https://img.icons8.com/windows/50/ffffff/pentagon.png"
-            />
-          </base-button>
-          <base-button
-            title="Hexagon"
-            class="item__button"
-            :class="{
-              'item__button--active': currentInstrument === 'hexagon',
-            }"
-            @click="
-              setDrawFunction('PolygonStrategy', {
-                sides: 6,
-                angle: Math.PI / 3,
-              });
-              currentInstrument = 'hexagon';
-            "
-          >
-            <img
-              alt="Hexagon"
-              src="https://img.icons8.com/windows/50/ffffff/hexagon.png"
-            />
-          </base-button>
-          <base-button
-            title="Octagon"
-            class="item__button"
-            :class="{
-              'item__button--active': currentInstrument === 'octagon',
-            }"
-            @click="
-              setDrawFunction('PolygonStrategy', {
-                sides: 8,
-                angle: Math.PI / 8,
-              });
-              currentInstrument = 'octagon';
-            "
-          >
-            <img
-              title="Octagon"
-              src="https://img.icons8.com/windows/50/ffffff/octagon.png"
-            />
+            <img :alt="additInstrument.title" :src="additInstrument.iconLink" />
           </base-button>
         </div>
       </li>
@@ -281,8 +123,90 @@ export default defineComponent({
     });
     const arePolygonsShown = ref<boolean>(false);
     const currentInstrument = ref<string>("");
+    const mainInstruments = [
+      {
+        title: "Pencil",
+        funcName: "PencilStrategy",
+        iconLink: "https://img.icons8.com/windows/50/ffffff/pencil.png",
+      },
+      {
+        title: "Eraser",
+        funcName: "EraseStrategy",
+        iconLink: "https://img.icons8.com/windows/50/ffffff/eraser.png",
+      },
+      {
+        title: "Line",
+        funcName: "LineStrategy",
+        iconLink: "https://img.icons8.com/windows/50/ffffff/line.png",
+      },
+      {
+        title: "Rectangle",
+        funcName: "RectStrategy",
+        iconLink:
+          "https://img.icons8.com/windows/50/ffffff/rectangle-stroked.png",
+      },
+      {
+        title: "Circle",
+        funcName: "CircleStrategy",
+        iconLink: "https://img.icons8.com/windows/50/ffffff/circled--v1.png",
+      },
+      {
+        title: "Square",
+        funcName: "PolygonStrategy",
+        polygonParams: {
+          sides: 4,
+          angle: Math.PI / 4,
+        },
+        iconLink: "https://img.icons8.com/windows/50/ffffff/rounded-square.png",
+      },
+      {
+        title: "Isosceles triangle",
+        funcName: "PolygonStrategy",
+        polygonParams: {
+          sides: 3,
+          angle: Math.PI / 2,
+        },
+        iconLink:
+          "https://img.icons8.com/windows/50/ffffff/triangle-stroked.png",
+      },
+    ];
 
-    function togglePolygonsBlock() {
+    const additionalInstruments = [
+      {
+        title: "Right-angled triangle",
+        funcName: "RATriangleStrategy",
+        iconLink: "https://img.icons8.com/windows/50/ffffff/trigonometry.png",
+      },
+      {
+        title: "Pentagon",
+        funcName: "PolygonStrategy",
+        polygonParams: {
+          sides: 5,
+          angle: Math.PI / 2,
+        },
+        iconLink: "https://img.icons8.com/windows/50/ffffff/pentagon.png",
+      },
+      {
+        title: "Hexagon",
+        funcName: "PolygonStrategy",
+        polygonParams: {
+          sides: 6,
+          angle: Math.PI / 3,
+        },
+        iconLink: "https://img.icons8.com/windows/50/ffffff/hexagon.png",
+      },
+      {
+        title: "Octagon",
+        funcName: "PolygonStrategy",
+        polygonParams: {
+          sides: 8,
+          angle: Math.PI / 8,
+        },
+        iconLink: "https://img.icons8.com/windows/50/ffffff/octagon.png",
+      },
+    ];
+
+    function toggleAdditionalShapesBlock() {
       arePolygonsShown.value = !arePolygonsShown.value;
     }
 
@@ -314,7 +238,9 @@ export default defineComponent({
       styleOptions,
       arePolygonsShown,
       currentInstrument,
-      togglePolygonsBlock,
+      mainInstruments,
+      additionalInstruments,
+      toggleAdditionalShapesBlock,
       setDrawFunction,
       emitClearCanvasEvent,
       savePicture,
