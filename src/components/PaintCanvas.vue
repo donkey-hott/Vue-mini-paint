@@ -48,7 +48,7 @@ import {
   StyleOptions,
   PolygonConfiguration,
   DrawFunctionType,
-  DrawFunctionsInterface,
+  Strategy,
 } from "./paint-types";
 
 /* utilities */
@@ -86,62 +86,19 @@ export default defineComponent({
 
     /* related to drawing */
     const isDrawing = ref(false);
-    let drawFunction = reactive<DrawFunctionType>({ funcName: "brush" });
-    const pictureTitle = ref<string>("Untitled");
+    let drawFunction = reactive<DrawFunctionType>({
+      funcName: "BrushStrategy",
+    });
+    let strategyContext: StrategyContext;
+    let chosenStrategy: Strategy;
 
-    const currentCursorPosition = ref<Coordinates | null | undefined>(null);
+    /* mouse position */
+    const currentCursorPosition = ref<Coordinates | null>(null);
     let initialCursorPosition: Coordinates | null | undefined = null;
 
-    /* Saves a snapshot of canvas
-      in order to correctly display
-      shapes when drawing */
-    function saveCanvasState() {
-      const canvasWidth = canvas.value?.width;
-      const canvasHeight = canvas.value?.height;
-      if (!canvasWidth || !canvasHeight || !context) return;
+    const pictureTitle = ref<string>("Untitled");
 
-      canvasState.value = context.getImageData(0, 0, canvasWidth, canvasHeight);
-    }
-
-    /* Brings canvas back to the state
-    that was before the "draw" function
-    was fired */
-    function restoreCanvasState() {
-      if (!canvasState.value || !context) return;
-
-      context.putImageData(canvasState.value, 0, 0);
-    }
-
-    // ==== PAINT CONTROLLS HANDLERS ====
-
-    function setDrawFunction(drawFunctionObj: DrawFunctionType) {
-      drawFunction = drawFunctionObj;
-    }
-
-    function clearCanvas() {
-      if (!context || !canvas.value) return;
-
-      context.clearRect(0, 0, canvas.value.width, canvas.value.height);
-    }
-
-    function setStyleOptions(styleObj: StyleOptions) {
-      styleOptions = styleObj;
-    }
-
-    // HOW TO IMPLEMENT THIS FUNCTIONS BETTER?
-    async function savePicture() {
-      const imgURL = canvas.value?.toDataURL();
-      const dbRecord = createDbRecord(imgURL, pictureTitle.value);
-
-      try {
-        await store.dispatch(ActionTypes.SAVE_PICTURE, dbRecord);
-        toast.success("Picture has been saved!");
-      } catch (error) {
-        toast.error(`Cannot save picture:`, error.message);
-      }
-    }
-
-    // ==== DRAWING ====
+    /*  DRAWING */
 
     function drawStart(e: MouseEvent) {
       isDrawing.value = true;
@@ -152,6 +109,11 @@ export default defineComponent({
         canvas.value.offsetLeft,
         canvas.value.offsetTop
       );
+
+      chosenStrategy = new strategies[
+        (drawFunction.funcName as unknown) as keyof typeof strategies
+      ]();
+      strategyContext.setStrategy(chosenStrategy);
 
       context.strokeStyle = styleOptions.strokeColor;
       context.fillStyle = styleOptions.fillColor;
@@ -182,12 +144,7 @@ export default defineComponent({
         to all draw functions for convenience.
         Draw function is selected dynamically 
         from the object below. */
-        return drawFunctions[
-          drawFunction.funcName as keyof typeof drawFunctions
-        ](
-          currentCursorPosition.value as Coordinates,
-          drawFunction.polygonParameters as PolygonConfiguration
-        );
+        strategyContext.executeStrategy();
       }
     }
 
@@ -195,9 +152,34 @@ export default defineComponent({
       isDrawing.value = false;
     }
 
-    const drawFunctions: DrawFunctionsInterface = {
-      brush(position: Coordinates | null) {
+    /* STRATEGIES */
+
+    class StrategyContext {
+      private strategy: Strategy | undefined;
+
+      constructor(strategy?: Strategy) {
+        if (strategy) {
+          this.strategy = strategy;
+        }
+      }
+
+      public setStrategy(strategy: Strategy): StrategyContext {
+        this.strategy = strategy;
+        return this;
+      }
+
+      public executeStrategy() {
+        this.strategy?.execute(
+          currentCursorPosition.value,
+          drawFunction.polygonParameters
+        );
+      }
+    }
+
+    class BrushStrategy implements Strategy {
+      public execute(position: Coordinates | null) {
         if (!context || !initialCursorPosition || !position) return;
+
         context.beginPath();
 
         context.moveTo(initialCursorPosition.x, initialCursorPosition.y);
@@ -206,21 +188,20 @@ export default defineComponent({
 
         context.stroke();
         context.closePath();
-      },
+      }
+    }
 
-      erase(position: Coordinates | null) {
+    class EraseStrategy implements Strategy {
+      public execute() {
         if (!context) return;
-        /* Save context's state so that chosen
-        stroke color is not overwritten by white. */
-        context.save();
 
         context.strokeStyle = "#ffffff";
-        this.brush(position);
+        strategyContext.setStrategy(new BrushStrategy()).executeStrategy();
+      }
+    }
 
-        context.restore();
-      },
-
-      drawLine(position: Coordinates | null) {
+    class LineStrategy implements Strategy {
+      public execute(position: Coordinates | null) {
         if (!context || !initialCursorPosition || !position) return;
         context.beginPath();
 
@@ -229,9 +210,11 @@ export default defineComponent({
 
         context.stroke();
         context.closePath();
-      },
+      }
+    }
 
-      drawRect(position: Coordinates | null) {
+    class RectStrategy implements Strategy {
+      public execute(position: Coordinates) {
         if (!context || !position || !initialCursorPosition) return;
 
         const { width, height } = calcRectangleSize(
@@ -252,9 +235,11 @@ export default defineComponent({
         }
         context.stroke();
         context.closePath();
-      },
+      }
+    }
 
-      drawCircle(position: Coordinates) {
+    class CircleStrategy implements Strategy {
+      public execute(position: Coordinates) {
         if (!context || !position || !initialCursorPosition) return;
 
         const { width, height } = calcRectangleSize(
@@ -277,9 +262,11 @@ export default defineComponent({
         }
         context.stroke();
         context.closePath();
-      },
-      /* RA stands for "right-angled" */
-      drawRATriangle(position: Coordinates) {
+      }
+    }
+
+    class RATriangleStrategy implements Strategy {
+      public execute(position: Coordinates) {
         if (!context || !initialCursorPosition) return;
 
         context.beginPath();
@@ -294,11 +281,11 @@ export default defineComponent({
         }
         context.stroke();
         context.closePath();
-      },
+      }
+    }
 
-      // ==== POLYGONS ====
-
-      drawPolygon(
+    class PolygonStrategy implements Strategy {
+      public execute(
         position: Coordinates,
         polygonConfiguration: PolygonConfiguration
       ) {
@@ -333,8 +320,68 @@ export default defineComponent({
         }
         context.stroke();
         context.closePath();
-      },
+      }
+    }
+
+    /* "strategies" object is needed for
+      the possibility to dynamically
+      access any strategy */
+
+    const strategies = {
+      BrushStrategy,
+      EraseStrategy,
+      LineStrategy,
+      RectStrategy,
+      CircleStrategy,
+      RATriangleStrategy,
+      PolygonStrategy,
     };
+
+    /* Saves a snapshot of canvas
+      in order to correctly display
+      shapes when drawing */
+    function saveCanvasState() {
+      const canvasWidth = canvas.value?.width;
+      const canvasHeight = canvas.value?.height;
+      if (!canvasWidth || !canvasHeight || !context) return;
+
+      canvasState.value = context.getImageData(0, 0, canvasWidth, canvasHeight);
+    }
+
+    /* Brings canvas back to the state
+    that was before the "draw" function
+    was fired */
+    function restoreCanvasState() {
+      if (!canvasState.value || !context) return;
+
+      context.putImageData(canvasState.value, 0, 0);
+    }
+
+    function setDrawFunction(drawFunctionObj: DrawFunctionType) {
+      drawFunction = drawFunctionObj;
+    }
+
+    function clearCanvas() {
+      if (!context || !canvas.value) return;
+
+      context.clearRect(0, 0, canvas.value.width, canvas.value.height);
+    }
+
+    function setStyleOptions(styleObj: StyleOptions) {
+      styleOptions = styleObj;
+    }
+
+    async function savePicture() {
+      const imgURL = canvas.value?.toDataURL();
+      const dbRecord = createDbRecord(imgURL, pictureTitle.value);
+
+      try {
+        await store.dispatch(ActionTypes.SAVE_PICTURE, dbRecord);
+        toast.success("Picture has been saved!");
+      } catch (error) {
+        toast.error(`Cannot save picture:`, error.message);
+      }
+    }
 
     /*  Look up the size the canvas is being displayed
     If it's resolution does not match change it */
@@ -351,9 +398,12 @@ export default defineComponent({
 
     onMounted(() => {
       context = canvas.value?.getContext("2d") || null || undefined;
+      strategyContext = new StrategyContext();
+
       window.addEventListener("resize", resizeCanvasToDisplaySize);
       resizeCanvasToDisplaySize();
     });
+
     return {
       setDrawFunction,
       clearCanvas,

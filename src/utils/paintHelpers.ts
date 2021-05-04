@@ -15,14 +15,14 @@ export function getRadiusBySize(width: number, height: number): number {
 }
 
 export function isShape(funcName: string): boolean {
-  return funcName !== "brush" && funcName !== "erase";
+  return funcName !== "BrushStrategy" && funcName !== "EraseStrategy";
 }
 
 export function getRelativeCursorPosition(
   e: MouseEvent,
   offsetLeft: number,
   offsetTop: number
-): Coordinates | undefined {
+): Coordinates {
   const x = e.pageX - offsetLeft;
   const y = e.pageY - offsetTop;
   return { x, y };

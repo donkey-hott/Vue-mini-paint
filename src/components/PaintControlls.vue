@@ -8,7 +8,7 @@
           :class="{ 'item__button--active': currentInstrument === 'brush' }"
           title="Pencil"
           @click="
-            setDrawFunction('brush');
+            setDrawFunction('BrushStrategy');
             currentInstrument = 'brush';
           "
         >
@@ -24,7 +24,7 @@
           class="item__button"
           :class="{ 'item__button--active': currentInstrument === 'eraser' }"
           @click="
-            setDrawFunction('erase');
+            setDrawFunction('EraseStrategy');
             currentInstrument = 'eraser';
           "
         >
@@ -40,7 +40,7 @@
           class="item__button"
           :class="{ 'item__button--active': currentInstrument === 'line' }"
           @click="
-            setDrawFunction('drawLine');
+            setDrawFunction('LineStrategy');
             currentInstrument = 'line';
           "
         >
@@ -56,7 +56,7 @@
           class="item__button"
           :class="{ 'item__button--active': currentInstrument === 'rect' }"
           @click="
-            setDrawFunction('drawRect');
+            setDrawFunction('RectStrategy');
             currentInstrument = 'rect';
           "
         >
@@ -74,7 +74,7 @@
             'item__button--active': currentInstrument === 'circle',
           }"
           @click="
-            setDrawFunction('drawCircle');
+            setDrawFunction('CircleStrategy');
             currentInstrument = 'circle';
           "
         >
@@ -92,7 +92,10 @@
             'item__button--active': currentInstrument === 'square',
           }"
           @click="
-            setDrawFunction('drawPolygon', { sides: 4, angle: Math.PI / 4 });
+            setDrawFunction('PolygonStrategy', {
+              sides: 4,
+              angle: Math.PI / 4,
+            });
             currentInstrument = 'square';
           "
         >
@@ -110,7 +113,7 @@
             'item__button--active': currentInstrument === 'isoscelesTriangle',
           }"
           @click="
-            setDrawFunction('drawPolygon', { sides: 3, angle: Math.PI / 2 });
+            setDrawFunction('PolygonStrategy', { sides: 3, angle: Math.PI / 2 });
             currentInstrument = 'isoscelesTriangle';
           "
         >
@@ -137,7 +140,7 @@
                 currentInstrument === 'rightAngledTriangle',
             }"
             @click="
-              setDrawFunction('drawRATriangle');
+              setDrawFunction('RATriangleStrategy');
               currentInstrument = 'rightAngledTriangle';
             "
           >
@@ -153,7 +156,7 @@
               'item__button--active': currentInstrument === 'pentagon',
             }"
             @click="
-              setDrawFunction('drawPolygon', { sides: 5, angle: Math.PI / 2 });
+              setDrawFunction('PolygonStrategy', { sides: 5, angle: Math.PI / 2 });
               currentInstrument === 'pentagon';
             "
           >
@@ -169,7 +172,7 @@
               'item__button--active': currentInstrument === 'hexagon',
             }"
             @click="
-              setDrawFunction('drawPolygon', { sides: 6, angle: Math.PI / 3 });
+              setDrawFunction('PolygonStrategy', { sides: 6, angle: Math.PI / 3 });
               currentInstrument = 'hexagon';
             "
           >
@@ -185,7 +188,7 @@
               'item__button--active': currentInstrument === 'octagon',
             }"
             @click="
-              setDrawFunction('drawPolygon', { sides: 8, angle: Math.PI / 8 });
+              setDrawFunction('PolygonStrategy', { sides: 8, angle: Math.PI / 8 });
               currentInstrument = 'octagon';
             "
           >

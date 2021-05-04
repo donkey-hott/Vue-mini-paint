@@ -25,15 +25,9 @@ export type DrawFunctionType = {
   polygonParameters?: PolygonConfiguration | undefined;
 };
 
-export interface DrawFunctionsInterface {
-  brush(position: Coordinates | null): void;
-  erase(position: Coordinates | null): void;
-  drawLine(position: Coordinates | null): void;
-  drawRect(position: Coordinates | null): void;
-  drawCircle(position: Coordinates | null): void;
-  drawRATriangle(position: Coordinates | null): void;
-  drawPolygon(
+export interface Strategy {
+  execute(
     position: Coordinates | null,
-    polygonConfiguration: PolygonConfiguration
+    polygonOptions?: PolygonConfiguration
   ): void;
 }
