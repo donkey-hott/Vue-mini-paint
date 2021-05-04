@@ -87,7 +87,7 @@ export default defineComponent({
     /* related to drawing */
     const isDrawing = ref(false);
     let drawFunction = reactive<DrawFunctionType>({
-      funcName: "BrushStrategy",
+      funcName: "PencilStrategy",
     });
     let strategyContext: StrategyContext;
     let chosenStrategy: Strategy;
@@ -132,7 +132,7 @@ export default defineComponent({
         canvas.value.offsetTop
       );
       if (isDrawing.value) {
-        /* Brush functions are based on multiple
+        /* Pencil functions are based on multiple
         repetitions of small fragments, so we
         don't have to restore canvas's state
         every time in this case. */
@@ -176,7 +176,7 @@ export default defineComponent({
       }
     }
 
-    class BrushStrategy implements Strategy {
+    class PencilStrategy implements Strategy {
       public execute(position: Coordinates | null) {
         if (!context || !initialCursorPosition || !position) return;
 
@@ -196,7 +196,7 @@ export default defineComponent({
         if (!context) return;
 
         context.strokeStyle = "#ffffff";
-        strategyContext.setStrategy(new BrushStrategy()).executeStrategy();
+        strategyContext.setStrategy(new PencilStrategy()).executeStrategy();
       }
     }
 
@@ -328,7 +328,7 @@ export default defineComponent({
       access any strategy */
 
     const strategies = {
-      BrushStrategy,
+      PencilStrategy,
       EraseStrategy,
       LineStrategy,
       RectStrategy,

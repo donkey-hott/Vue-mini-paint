@@ -5,11 +5,11 @@
       <li class="item">
         <base-button
           class="item__button"
-          :class="{ 'item__button--active': currentInstrument === 'brush' }"
+          :class="{ 'item__button--active': currentInstrument === 'pencil' }"
           title="Pencil"
           @click="
-            setDrawFunction('BrushStrategy');
-            currentInstrument = 'brush';
+            setDrawFunction('PencilStrategy');
+            currentInstrument = 'pencil';
           "
         >
           <img
@@ -113,7 +113,10 @@
             'item__button--active': currentInstrument === 'isoscelesTriangle',
           }"
           @click="
-            setDrawFunction('PolygonStrategy', { sides: 3, angle: Math.PI / 2 });
+            setDrawFunction('PolygonStrategy', {
+              sides: 3,
+              angle: Math.PI / 2,
+            });
             currentInstrument = 'isoscelesTriangle';
           "
         >
@@ -156,7 +159,10 @@
               'item__button--active': currentInstrument === 'pentagon',
             }"
             @click="
-              setDrawFunction('PolygonStrategy', { sides: 5, angle: Math.PI / 2 });
+              setDrawFunction('PolygonStrategy', {
+                sides: 5,
+                angle: Math.PI / 2,
+              });
               currentInstrument === 'pentagon';
             "
           >
@@ -172,7 +178,10 @@
               'item__button--active': currentInstrument === 'hexagon',
             }"
             @click="
-              setDrawFunction('PolygonStrategy', { sides: 6, angle: Math.PI / 3 });
+              setDrawFunction('PolygonStrategy', {
+                sides: 6,
+                angle: Math.PI / 3,
+              });
               currentInstrument = 'hexagon';
             "
           >
@@ -188,7 +197,10 @@
               'item__button--active': currentInstrument === 'octagon',
             }"
             @click="
-              setDrawFunction('PolygonStrategy', { sides: 8, angle: Math.PI / 8 });
+              setDrawFunction('PolygonStrategy', {
+                sides: 8,
+                angle: Math.PI / 8,
+              });
               currentInstrument = 'octagon';
             "
           >

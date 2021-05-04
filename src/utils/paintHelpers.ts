@@ -15,7 +15,7 @@ export function getRadiusBySize(width: number, height: number): number {
 }
 
 export function isShape(funcName: string): boolean {
-  return funcName !== "BrushStrategy" && funcName !== "EraseStrategy";
+  return funcName !== "PencilStrategy" && funcName !== "EraseStrategy";
 }
 
 export function getRelativeCursorPosition(
