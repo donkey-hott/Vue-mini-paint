@@ -376,10 +376,14 @@ export default defineComponent({
       const dbRecord = createDbRecord(imgURL, pictureTitle.value);
 
       try {
+        if (!dbRecord.title.length) {
+          throw new Error("title must not be empty");
+        }
         await store.dispatch(ActionTypes.SAVE_PICTURE, dbRecord);
         toast.success("Picture has been saved!");
       } catch (error) {
-        toast.error(`Cannot save picture:`, error.message);
+        console.error(error.message);
+        toast.error(`Cannot save picture: ${error.message}`);
       }
     }
 
