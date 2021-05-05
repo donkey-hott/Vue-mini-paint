@@ -78,7 +78,8 @@ export const actions: ActionTree<State, State> & Actions = {
         .ref(currentUser.uid)
         .child("pictures")
         .on("value", (snapshot) => {
-          const pictures: Pictures = snapshot.val();
+          let pictures: Pictures = snapshot.val();
+          if (pictures === null) pictures = {};
           context.commit(MutationTypes.SET_PICTURES, pictures);
           console.log(
             "%cPictures have been loaded!",

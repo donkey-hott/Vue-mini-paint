@@ -53,6 +53,7 @@ import {
 
 /* utilities */
 import { createDbRecord } from "../utils/createDbRecord";
+import { enumerateTitle } from "../utils/enumerateTitle";
 import {
   calcRectangleSize,
   getRadiusBySize,
@@ -373,7 +374,14 @@ export default defineComponent({
 
     async function savePicture() {
       const imgURL = canvas.value?.toDataURL();
-      const dbRecord = createDbRecord(imgURL, pictureTitle.value);
+      console.log(store.state.userPictures);
+      const enumeratedTitle =
+        enumerateTitle(
+          Object.values(store.state.userPictures),
+          pictureTitle.value
+        ) || pictureTitle.value;
+      console.log(enumeratedTitle);
+      const dbRecord = createDbRecord(imgURL, enumeratedTitle);
 
       try {
         if (!dbRecord.title.length) {
