@@ -1,41 +1,27 @@
-import {
-  createStore,
-  Store as VuexStore,
-  CommitOptions,
-  DispatchOptions,
-} from "vuex";
+import { createStore } from "vuex";
 
-import { State, state } from "./state";
-import { Mutations, mutations } from "./mutations/mutations";
-import { Actions, actions } from "./actions/actions";
+import { auth, Store as AuthStore } from "@/store/modules/auth";
+import { State as AuthState } from "@/store/modules/auth/state";
+
+import { pictures, Store as PictureStore } from "@/store/modules/pictures";
+import { State as PictureState } from "@/store/modules/pictures/state";
+import { rootActions as actions } from "@/store/modules/root/actions/actions";
+
+export type State = {
+  auth: AuthState;
+  pictures: PictureState;
+};
+
+export type Store = AuthStore<Pick<State, "auth">> &
+  PictureStore<Pick<State, "pictures">>;
 
 export const store = createStore({
-  state,
-  mutations,
+  modules: { auth, pictures },
   actions,
 });
-
-export type Store = Omit<
-  VuexStore<State>,
-  "getters" | "commit" | "dispatch"
-> & {
-  commit<K extends keyof Mutations, P extends Parameters<Mutations[K]>[1]>(
-    key: K,
-    payload: P,
-    options?: CommitOptions
-  ): ReturnType<Mutations[K]>;
-} & {
-  dispatch<K extends keyof Actions>(
-    key: K,
-    payload?: Parameters<Actions[K]>[1],
-    options?: DispatchOptions
-  ): ReturnType<Actions[K]>;
-} & {
-  // getters: {
-  //   [K in keyof Getters]: ReturnType<Getters[K]>;
-  // };
-};
 
 export function useStore(): Store {
   return store as Store;
 }
+
+export default store;

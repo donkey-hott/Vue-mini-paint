@@ -37,7 +37,8 @@ import { defineComponent, ref, reactive, onMounted } from "vue";
 
 /* store */
 import { useStore } from "../store";
-import { ActionTypes } from "@/store/actions/action-types";
+import { ActionTypes } from "@/store/modules/pictures/actions/action-types";
+// import { ActionTypes } from "@/store/actions/action-types";
 
 /* components */
 import PaintControlls from "./PaintControlls.vue";
@@ -374,12 +375,11 @@ export default defineComponent({
 
     async function savePicture() {
       const imgURL = canvas.value?.toDataURL();
-      console.log(store.state.userPictures);
-      const enumeratedTitle =
-        enumerateTitle(
-          Object.values(store.state.userPictures),
-          pictureTitle.value
-        ) || pictureTitle.value;
+      // console.log(store.state.userPictures);
+      const enumeratedTitle = enumerateTitle(
+        Object.values(store.state.pictures.userPictures),
+        pictureTitle.value
+      );
       console.log(enumeratedTitle);
       const dbRecord = createDbRecord(imgURL, enumeratedTitle);
 

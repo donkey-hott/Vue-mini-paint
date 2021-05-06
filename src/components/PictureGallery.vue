@@ -33,7 +33,7 @@ import { useStore } from "../store";
 export default defineComponent({
   setup() {
     const store = useStore();
-    const pictures = computed(() => store.state.userPictures);
+    const pictures = computed(() => store.state.pictures.userPictures);
     const expandedPicture = ref<string>("");
 
     function expandPicture(pictureId: string) {

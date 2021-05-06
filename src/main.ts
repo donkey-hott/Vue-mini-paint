@@ -1,18 +1,18 @@
-import { createApp } from "vue";
+import { createApp, ComponentPublicInstance } from "vue";
 import App from "./App.vue";
 
 import router from "./router";
 
 import { store } from "./store";
-import { ActionTypes } from "./store/actions/action-types";
+import { RootActions } from "@/store/modules/root/actions/action-types";
 
 import BaseButton from "./components/UI/BaseButton.vue";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
-let app: any;
+let app: ComponentPublicInstance;
 
-store.dispatch(ActionTypes.INIT).then(() => {
+store.dispatch(RootActions.INIT).then(() => {
   if (!app) {
     app = createApp(App)
       .use(store)

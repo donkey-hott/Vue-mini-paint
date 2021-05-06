@@ -9,7 +9,7 @@ const router = createRouter({
 
 router.beforeEach((to, _, next) => {
   const isPublic = to.matched.some((record) => record.meta.isPublic);
-  const currentUser = store.state.currentUser;
+  const currentUser = store.state.auth.currentUser;
 
   if (!currentUser && !isPublic) {
     return next("/sign-in");

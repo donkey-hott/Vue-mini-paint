@@ -8,7 +8,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import { ActionTypes } from "../../store/actions/action-types";
+import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { useStore } from "../../store";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
@@ -46,5 +46,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped></style>
