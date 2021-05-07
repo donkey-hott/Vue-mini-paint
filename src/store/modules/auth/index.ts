@@ -1,8 +1,15 @@
+import { state } from "@/store/modules/auth/state";
+import { State } from "@/store/modules/auth/state";
+import { State as RootState } from "@/store";
+
 import { Mutations } from "@/store/modules/auth/mutations/mutation-types";
 import { mutations } from "@/store/modules/auth/mutations/mutations";
+
 import { Actions } from "./actions/action-types";
 import { actions } from "@/store/modules/auth/actions/actions";
-import { state } from "@/store/modules/auth/state";
+
+import { Getters } from "./getters/getter-types";
+import { getters } from "./getters/getters";
 
 import {
   CommitOptions,
@@ -10,8 +17,6 @@ import {
   Module,
   Store as VuexStore,
 } from "vuex";
-import { State } from "@/store/modules/auth/state";
-import { State as RootState } from "@/store";
 
 export type Store<S = State> = Omit<
   VuexStore<S>,
@@ -23,9 +28,9 @@ export type Store<S = State> = Omit<
     options?: CommitOptions
   ): ReturnType<Mutations[K]>;
 } & {
-  // getters: {
-  //   [K in keyof Getters]: ReturnType<Getters[K]>;
-  // };
+  getters: {
+    [K in keyof Getters]: ReturnType<Getters[K]>;
+  };
 } & {
   dispatch<K extends keyof Actions>(
     key: K,
@@ -36,6 +41,7 @@ export type Store<S = State> = Omit<
 
 export const auth: Module<State, RootState> = {
   state,
+  getters,
   mutations,
   actions,
 };

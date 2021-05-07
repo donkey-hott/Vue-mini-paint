@@ -20,7 +20,8 @@ export default defineComponent({
     const toast = useToast();
 
     const isUserAuthenticated: ComputedRef<boolean> = computed(() => {
-      return store.state.auth.currentUser !== null;
+      // return store.state.auth.currentUser !== null;
+      return store.getters.isUserAuthenticated;
     });
 
     async function logOut() {
