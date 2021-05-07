@@ -66,15 +66,27 @@ export default defineComponent({
       passField.value.type = isPasswordShown.value ? "text" : "password";
     });
 
-    const oppositeAuthAction = computed(() => {
-      // default value is "sign up"
-      const authActionData = { link: "/sign-up", name: "Sign up" };
+    const oppositeActions = {
+      "Sign up": {
+        link: "/sign-in",
+        name: "Sign in",
+      },
+      "Sign in": {
+        link: "/sign-up",
+        name: "Sign up",
+      },
+    };
 
-      if (props.cardCaption === "Sign up") {
-        authActionData.link = "/sign-in";
-        authActionData.name = "Sign in";
+    const oppositeAuthAction = computed(() => {
+      if (
+        Object.prototype.hasOwnProperty.call(oppositeActions, props.cardCaption)
+      ) {
+        return oppositeActions[
+          props.cardCaption as keyof typeof oppositeActions
+        ];
       }
-      return authActionData;
+      /* return data for signing up to avoid empty caption */
+      return { link: "/sign-up", name: "Sign up" };
     });
 
     return {
