@@ -114,7 +114,7 @@ export default defineComponent({
     "savePicture",
   ],
 
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     const styleOptions = reactive({
       lineWidth: 1,
       strokeColor: "#000000",
@@ -230,7 +230,7 @@ export default defineComponent({
       emit("savePicture");
     }
 
-    watch(styleOptions, (_, oldVal) => {
+    watch(styleOptions, (newVal, oldVal) => {
       emit("setStyleOptions", oldVal);
     });
 

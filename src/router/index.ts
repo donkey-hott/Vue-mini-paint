@@ -7,7 +7,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _, next) => {
+router.beforeEach((to, from, next) => {
   const isPublic = to.matched.some((record) => record.meta.isPublic);
   const currentUser = store.state.auth.currentUser;
 

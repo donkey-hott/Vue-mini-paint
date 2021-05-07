@@ -7,11 +7,11 @@ import { State } from "../state";
 import { MutationTypes } from "../mutations/mutation-types";
 
 export const actions: ActionTree<State, RootState> & Actions = {
-  async [ActionTypes.SIGN_UP](_, payload: UserCredentials) {
+  async [ActionTypes.SIGN_UP](context, payload: UserCredentials) {
     const { email, password } = payload;
     await firebase.app().auth().createUserWithEmailAndPassword(email, password);
   },
-  async [ActionTypes.SIGN_IN](_, payload: UserCredentials) {
+  async [ActionTypes.SIGN_IN](context, payload: UserCredentials) {
     const { email, password } = payload;
     await firebase.app().auth().signInWithEmailAndPassword(email, password);
   },
