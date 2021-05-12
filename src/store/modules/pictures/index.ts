@@ -6,8 +6,12 @@ import {
 } from "vuex";
 import { Actions } from "./actions/action-types";
 import { actions } from "./actions/actions";
+
 import { Mutations } from "./mutations/mutation-types";
 import { mutations } from "./mutations/mutations";
+import { Getters } from "./getters/getter-types";
+import { getters } from "./getters/getters";
+
 import { State, state } from "./state";
 import { State as RootState } from "@/store";
 
@@ -21,9 +25,9 @@ export type Store<S = State> = Omit<
     options?: CommitOptions
   ): ReturnType<Mutations[K]>;
 } & {
-  // getters: {
-  //   [K in keyof Getters]: ReturnType<Getters[K]>;
-  // };
+  getters: {
+    [K in keyof Getters]: ReturnType<Getters[K]>;
+  };
 } & {
   dispatch<K extends keyof Actions>(
     key: K,
@@ -34,6 +38,7 @@ export type Store<S = State> = Omit<
 
 export const pictures: Module<State, RootState> = {
   state,
+  getters,
   mutations,
   actions,
 };

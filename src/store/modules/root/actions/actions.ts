@@ -12,7 +12,7 @@ export const rootActions: ActionTree<RootState, RootState> & Actions = {
       initializeFirebase();
       firebase.auth().onAuthStateChanged((user) => {
         commit(MutationTypes.SET_USER, user);
-        dispatch(ActionTypes.LOAD_PICTURES);
+        dispatch(ActionTypes.LOAD_PICTURES, { start: 1, end: 8 });
         resolve();
       });
     });

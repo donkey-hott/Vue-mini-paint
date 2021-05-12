@@ -27,8 +27,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
+import { ActionTypes } from "@/store/modules/pictures/actions/action-types";
+import { defineComponent, computed, ref, onMounted } from "vue";
 import { useStore } from "../store";
+import { ScrollwisePagination } from "../utils/scrollwisePagination";
 
 export default defineComponent({
   setup() {
@@ -43,6 +45,21 @@ export default defineComponent({
     function collapsePicture() {
       expandedPicture.value = "";
     }
+
+    onMounted(() => {
+      const scrollwisePagination = new ScrollwisePagination();
+
+      document.addEventListener("scroll", () => {
+        const htmlElem = document.querySelector("html");
+        const isViewportEnd = scrollwisePagination.isViewportEnd(htmlElem);
+
+        if (isViewportEnd) {
+          scrollwisePagination.incrementCurrentPage();
+          const selectionBounds = scrollwisePagination.getSelectionBounds();
+          store.dispatch(ActionTypes.LOAD_PICTURES, selectionBounds);
+        }
+      });
+    });
 
     return {
       pictures,
