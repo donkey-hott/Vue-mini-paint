@@ -15,12 +15,13 @@ export class ScrollwisePagination {
     start: number;
     end: number;
   } {
+    /* WTF??? */
     const start = this.itemsPerPage * this.currentPage;
     const end = this.itemsPerPage * this.currentPage;
     return { start, end };
   }
 
-  public isViewportEnd(elem: HTMLElement | null): boolean | undefined {
+  public isScrollEnd(elem: HTMLElement | null): boolean | undefined {
     if (!elem) return;
     if (elem.scrollTop + elem.offsetHeight === elem.scrollHeight) {
       console.log("viewportEnd");

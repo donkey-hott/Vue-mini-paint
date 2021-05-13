@@ -4,12 +4,29 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
 import TheHeader from "./components/UI/TheHeader.vue";
+import { defineComponent, onMounted } from "vue";
+import { PictureLoaderObserver } from "./utils/observer/observers";
+import { ScrollPublisher } from "./utils/observer/publisher";
 
 export default defineComponent({
   components: {
     TheHeader,
+  },
+
+  setup() {
+    let scrollPublisher = new ScrollPublisher();
+    let pictureLoaderObserver = new PictureLoaderObserver();
+
+    function initObserver() {
+      scrollPublisher.subscribe(pictureLoaderObserver);
+
+      document.addEventListener("scroll", () => {
+        scrollPublisher.handleScrollEnd();
+      });
+    }
+
+    onMounted(() => initObserver());
   },
 });
 </script>
