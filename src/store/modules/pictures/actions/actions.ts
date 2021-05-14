@@ -19,8 +19,10 @@ export const actions: ActionTree<State, RootState> & Actions = {
       .child("pictures")
       .push(payload);
   },
-  async [ActionTypes.LOAD_PICTURES](context) {
+  async [ActionTypes.LOAD_PICTURES](context, selectionBounds) {
     const { currentUser } = context.rootState.auth;
+    const { start, end } = selectionBounds;
+
     if (!currentUser) return;
 
     try {
@@ -28,6 +30,9 @@ export const actions: ActionTree<State, RootState> & Actions = {
         .database()
         .ref(currentUser.uid)
         .child("pictures")
+        .orderByChild("orderingNumber")
+        .startAt(start)
+        .endAt(end)
         .on("value", (snapshot) => {
           let pictures: Pictures = snapshot.val();
           if (pictures === null) pictures = {};

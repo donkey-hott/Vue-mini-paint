@@ -21,5 +21,8 @@ export interface Actions {
     context: AugmentedActionContext,
     payload: DbRecord | undefined
   ): Promise<void>;
-  [ActionTypes.LOAD_PICTURES](context: AugmentedActionContext): Promise<void>;
+  [ActionTypes.LOAD_PICTURES](
+    context: AugmentedActionContext,
+    selectionBounds: { start: number; end: number }
+  ): Promise<void>;
 }
