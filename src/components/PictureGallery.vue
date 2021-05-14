@@ -107,7 +107,7 @@ export default defineComponent({
 
   .new-picture {
     border: 4px dashed $emphasizing;
-    min-height: 8em;
+    min-height: 19.2em;
 
     & > a {
       height: 100%;
@@ -141,6 +141,10 @@ export default defineComponent({
 @media (min-width: 767px) {
   .gallery {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    & .new-picture {
+      min-height: 9em;
+    }
   }
 }
 </style>
