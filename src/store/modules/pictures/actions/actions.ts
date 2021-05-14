@@ -26,17 +26,19 @@ export const actions: ActionTree<State, RootState> & Actions = {
     if (!currentUser) return;
 
     try {
+      context.commit(MutationTypes.SET_LOADING_STATUS, true);
       await firebase
         .database()
         .ref(currentUser.uid)
         .child("pictures")
-        .orderByChild("date")
+        .orderByChild("orderingNumber")
         .startAt(start)
-        .limitToFirst(end)
+        .endAt(end)
         .on("value", (snapshot) => {
           let pictures: Pictures = snapshot.val();
           if (pictures === null) pictures = {};
           context.commit(MutationTypes.SET_PICTURES, pictures);
+          context.commit(MutationTypes.SET_LOADING_STATUS, false);
           console.log(
             "%cPictures have been loaded!",
             "color:#67FF3D",

@@ -375,13 +375,12 @@ export default defineComponent({
 
     async function savePicture() {
       const imgURL = canvas.value?.toDataURL();
-      // console.log(store.state.userPictures);
       const enumeratedTitle = enumerateTitle(
         Object.values(store.state.pictures.userPictures),
         pictureTitle.value
       );
-      console.log(enumeratedTitle);
-      const dbRecord = createDbRecord(imgURL, enumeratedTitle);
+      const orderingNumber = store.getters.picturesNumber + 1;
+      const dbRecord = createDbRecord(imgURL, enumeratedTitle, orderingNumber);
 
       try {
         if (!dbRecord.title.length) {

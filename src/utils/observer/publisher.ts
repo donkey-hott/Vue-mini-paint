@@ -1,3 +1,5 @@
+import store from "@/store";
+import { createDebouncer } from "../debouncer";
 import { ScrollwisePagination } from "../scrollwisePagination";
 import { Observer } from "./observers";
 
@@ -11,6 +13,7 @@ export interface IPublisher {
 
 export class ScrollPublisher implements IPublisher {
   private subscribers: Observer[];
+  private debouncer: (callback: () => void, delay: number) => void;
   public scrollwisePagination: ScrollwisePagination;
   public selectionBounds: { start: number; end: number };
 
@@ -18,6 +21,7 @@ export class ScrollPublisher implements IPublisher {
     this.subscribers = [];
     this.scrollwisePagination = new ScrollwisePagination();
     this.selectionBounds = { start: 1, end: 8 };
+    this.debouncer = createDebouncer();
   }
 
   public subscribe(observer: Observer): void | undefined {
@@ -44,12 +48,15 @@ export class ScrollPublisher implements IPublisher {
   public handleScrollEnd(): void {
     const htmlElem = document.querySelector("html");
     const isScrollEnd = this.scrollwisePagination.isScrollEnd(htmlElem);
+    const { end } = this.scrollwisePagination.getSelectionBounds();
 
-    if (isScrollEnd) {
-      this.scrollwisePagination.incrementCurrentPage();
-      this.selectionBounds = this.scrollwisePagination.getSelectionBounds();
+    if (isScrollEnd && end === store.getters.picturesNumber - 1) {
+      this.debouncer(() => {
+        this.scrollwisePagination.incrementCurrentPage();
+        this.selectionBounds = this.scrollwisePagination.getSelectionBounds();
 
-      this.notify();
+        this.notify();
+      }, 200);
     }
   }
 }

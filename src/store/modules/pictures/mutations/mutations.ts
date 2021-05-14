@@ -5,6 +5,10 @@ import { Mutations, MutationTypes } from "./mutation-types";
 
 export const mutations: MutationTree<State> & Mutations = {
   [MutationTypes.SET_PICTURES](state, payload: Pictures) {
-    state.userPictures = payload;
+    const { userPictures } = state;
+    state.userPictures = { ...userPictures, ...payload };
+  },
+  [MutationTypes.SET_LOADING_STATUS](state, payload: boolean) {
+    state.arePicturesLoading = payload;
   },
 };
