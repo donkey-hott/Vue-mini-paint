@@ -7,6 +7,8 @@ import { store } from "./store";
 import { RootActions } from "@/store/modules/root/actions/action-types";
 
 import BaseButton from "./components/UI/BaseButton.vue";
+import TheSpinner from "./components/UI/TheSpinner.vue";
+
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
@@ -18,6 +20,7 @@ store.dispatch(RootActions.INIT).then(() => {
       .use(store)
       .use(router)
       .use(Toast)
+      .component("the-spinner", TheSpinner)
       .component("base-button", BaseButton)
       .mount("#app");
   }

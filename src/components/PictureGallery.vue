@@ -19,6 +19,7 @@
       <router-link to="/new-canvas">New picture</router-link>
     </div>
   </section>
+  <the-spinner v-show="arePicturesLoading"></the-spinner>
   <div
     @click="collapsePicture"
     class="overlay"
@@ -34,6 +35,9 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const pictures = computed(() => store.state.pictures.userPictures);
+    const arePicturesLoading = computed(
+      () => store.state.pictures.arePicturesLoading
+    );
     const expandedPicture = ref<string>("");
 
     function expandPicture(pictureId: string) {
@@ -46,6 +50,7 @@ export default defineComponent({
 
     return {
       pictures,
+      arePicturesLoading,
       expandedPicture,
       expandPicture,
       collapsePicture,
