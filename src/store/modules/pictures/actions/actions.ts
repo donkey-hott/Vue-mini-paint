@@ -35,8 +35,7 @@ export const actions: ActionTree<State, RootState> & Actions = {
         .startAt(start)
         .endAt(end)
         .on("value", (snapshot) => {
-          let pictures: Pictures = snapshot.val();
-          if (pictures === null) pictures = {};
+          const pictures: Pictures = snapshot.val();
           context.commit(MutationTypes.SET_PICTURES, pictures);
           context.commit(MutationTypes.SET_LOADING_STATUS, false);
           console.log(
