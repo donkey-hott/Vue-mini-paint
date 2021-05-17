@@ -1,4 +1,3 @@
-// import store from "@/store";
 import { IObserver } from "./observers";
 
 export interface IPublisher {
@@ -36,19 +35,4 @@ export class Publisher implements IPublisher {
       subscriber.update(payload);
     });
   }
-
-  // public handleScrollEnd(): void {
-  //   const htmlElem = document.querySelector("html");
-  //   const isScrollEnd = this.scrollwisePagination.isScrollEnd(htmlElem);
-  //   const { end } = this.scrollwisePagination.getSelectionBounds();
-
-  //   if (isScrollEnd && end === store.getters.picturesNumber - 1) {
-  //     this.debouncer(() => {
-  //       this.scrollwisePagination.incrementCurrentPage();
-  //       this.selectionBounds = this.scrollwisePagination.getSelectionBounds();
-
-  //       this.notify();
-  //     }, 200);
-  //   }
-  // }
 }

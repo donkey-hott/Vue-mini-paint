@@ -36,8 +36,10 @@ import { createThrottler } from "@/utils/throttler";
 import { Publisher } from "@/utils/observer/publisher";
 import { defineComponent, computed, ref, onMounted } from "vue";
 import { useStore } from "../store";
+import { ActionTypes } from "@/store/modules/pictures/actions/action-types";
 
 export default defineComponent({
+  // TODO: ADD BUTTON "NEW PICTURE" TO THE NAVBAR
   setup() {
     const store = useStore();
     const pictures = computed(() => store.state.pictures.userPictures);
@@ -79,7 +81,12 @@ export default defineComponent({
       });
     }
 
-    onMounted(() => initializeObserver());
+    onMounted(() => {
+      if (!store.getters.picturesNumber) {
+        store.dispatch(ActionTypes.LOAD_PICTURES, { start: 1, end: 8 });
+      }
+      initializeObserver();
+    });
 
     return {
       pictures,
