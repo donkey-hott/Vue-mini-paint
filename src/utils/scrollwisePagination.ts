@@ -1,10 +1,12 @@
 export class ScrollwisePagination {
   public currentPage: number;
+  public selectionBounds: { start: number; end: number };
   private itemsPerPage: number;
   private timerId: undefined | number;
 
   constructor(itemsPerPage = 8) {
     this.currentPage = 1;
+    this.selectionBounds = { start: 1, end: itemsPerPage };
     this.itemsPerPage = itemsPerPage;
     this.timerId;
   }
@@ -13,13 +15,9 @@ export class ScrollwisePagination {
     this.currentPage += 1;
   }
 
-  public getSelectionBounds(): {
-    start: number;
-    end: number;
-  } {
-    const start = this.itemsPerPage * (this.currentPage - 1);
-    const end = this.itemsPerPage * this.currentPage;
-    return { start, end };
+  public getSelectionBounds(): void {
+    this.selectionBounds.start = this.itemsPerPage * (this.currentPage - 1);
+    this.selectionBounds.end = this.itemsPerPage * this.currentPage;
   }
 
   public isScrollEnd(elem: HTMLElement | null): boolean | undefined {
@@ -27,11 +25,5 @@ export class ScrollwisePagination {
     if (elem.scrollTop + elem.offsetHeight === elem.scrollHeight) {
       return true;
     }
-  }
-
-  public debounce(callback: () => void, delay: number): void {
-    clearTimeout(this.timerId);
-
-    this.timerId = setTimeout(callback, delay);
   }
 }

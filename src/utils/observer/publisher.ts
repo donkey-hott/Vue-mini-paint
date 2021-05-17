@@ -8,10 +8,10 @@ export interface IPublisher {
   unsubscribe(observer: Observer): void;
   notify(): void;
   /* business logic */
-  handleScrollEnd(): void;
+  // handleScrollEnd(): void;
 }
 
-export class ScrollPublisher implements IPublisher {
+export class Publisher implements IPublisher {
   private subscribers: Observer[];
   private debouncer: (callback: () => void, delay: number) => void;
   public scrollwisePagination: ScrollwisePagination;
@@ -28,6 +28,7 @@ export class ScrollPublisher implements IPublisher {
     if (this.subscribers.includes(observer)) {
       return;
     }
+
     this.subscribers.push(observer);
   }
 
@@ -39,24 +40,24 @@ export class ScrollPublisher implements IPublisher {
     this.subscribers.splice(subscriberIndex, 1);
   }
 
-  public notify(): void {
+  public notify(payload?: any): void {
     this.subscribers.forEach((subscriber) => {
-      subscriber.update(this);
+      subscriber.update(payload);
     });
   }
 
-  public handleScrollEnd(): void {
-    const htmlElem = document.querySelector("html");
-    const isScrollEnd = this.scrollwisePagination.isScrollEnd(htmlElem);
-    const { end } = this.scrollwisePagination.getSelectionBounds();
+  // public handleScrollEnd(): void {
+  //   const htmlElem = document.querySelector("html");
+  //   const isScrollEnd = this.scrollwisePagination.isScrollEnd(htmlElem);
+  //   const { end } = this.scrollwisePagination.getSelectionBounds();
 
-    if (isScrollEnd && end === store.getters.picturesNumber - 1) {
-      this.debouncer(() => {
-        this.scrollwisePagination.incrementCurrentPage();
-        this.selectionBounds = this.scrollwisePagination.getSelectionBounds();
+  //   if (isScrollEnd && end === store.getters.picturesNumber - 1) {
+  //     this.debouncer(() => {
+  //       this.scrollwisePagination.incrementCurrentPage();
+  //       this.selectionBounds = this.scrollwisePagination.getSelectionBounds();
 
-        this.notify();
-      }, 200);
-    }
-  }
+  //       this.notify();
+  //     }, 200);
+  //   }
+  // }
 }

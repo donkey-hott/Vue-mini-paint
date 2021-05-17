@@ -1,16 +1,26 @@
 import { store } from "@/store";
 import { ActionTypes } from "@/store/modules/pictures/actions/action-types";
-import { IPublisher, ScrollPublisher } from "./publisher";
+import { ScrollwisePagination } from "../scrollwisePagination";
 
 export interface Observer {
-  update(publisher?: IPublisher): void;
+  update(payload?: any): void;
 }
 
 export class PictureLoaderObserver implements Observer {
-  public update(publisherInstance: ScrollPublisher): void {
-    store.dispatch(
-      ActionTypes.LOAD_PICTURES,
-      publisherInstance.selectionBounds
-    );
+  public update(selectionBounds: { start: number; end: number }): void {
+    store.dispatch(ActionTypes.LOAD_PICTURES, selectionBounds);
+  }
+}
+
+export class PaginationObserver implements Observer {
+  public paginator: ScrollwisePagination;
+
+  constructor() {
+    this.paginator = new ScrollwisePagination();
+  }
+
+  public update(): void {
+    this.paginator.incrementCurrentPage();
+    this.paginator.getSelectionBounds();
   }
 }

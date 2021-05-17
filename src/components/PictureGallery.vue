@@ -28,7 +28,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
+import {
+  PictureLoaderObserver,
+  PaginationObserver,
+} from "@/utils/observer/observers";
+import { Publisher } from "@/utils/observer/publisher";
+import { defineComponent, computed, ref, onMounted } from "vue";
 import { useStore } from "../store";
 
 export default defineComponent({
@@ -47,6 +52,19 @@ export default defineComponent({
     function collapsePicture() {
       expandedPicture.value = "";
     }
+
+    onMounted(() => {
+      const publisher = new Publisher();
+      const paginationObserver = new PaginationObserver();
+      const pictureLoaderObserver = new PictureLoaderObserver();
+
+      publisher.subscribe(paginationObserver);
+      publisher.subscribe(pictureLoaderObserver);
+
+      document.addEventListener("scroll", () =>
+        publisher.notify(paginationObserver.paginator.selectionBounds)
+      );
+    });
 
     return {
       pictures,
