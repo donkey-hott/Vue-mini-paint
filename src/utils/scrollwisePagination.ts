@@ -2,13 +2,11 @@ export class ScrollwisePagination {
   public currentPage: number;
   public selectionBounds: { start: number; end: number };
   private itemsPerPage: number;
-  private timerId: undefined | number;
 
   constructor(itemsPerPage = 8) {
     this.currentPage = 1;
     this.selectionBounds = { start: 1, end: itemsPerPage };
     this.itemsPerPage = itemsPerPage;
-    this.timerId;
   }
 
   public incrementCurrentPage(): void {

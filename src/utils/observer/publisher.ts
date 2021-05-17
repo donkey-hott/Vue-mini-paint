@@ -1,30 +1,20 @@
-import store from "@/store";
-import { createDebouncer } from "../debouncer";
-import { ScrollwisePagination } from "../scrollwisePagination";
-import { Observer } from "./observers";
+// import store from "@/store";
+import { IObserver } from "./observers";
 
 export interface IPublisher {
-  subscribe(observer: Observer): void;
-  unsubscribe(observer: Observer): void;
+  subscribe(observer: IObserver): void;
+  unsubscribe(observer: IObserver): void;
   notify(): void;
-  /* business logic */
-  // handleScrollEnd(): void;
 }
 
 export class Publisher implements IPublisher {
-  private subscribers: Observer[];
-  private debouncer: (callback: () => void, delay: number) => void;
-  public scrollwisePagination: ScrollwisePagination;
-  public selectionBounds: { start: number; end: number };
+  private subscribers: IObserver[];
 
   constructor() {
     this.subscribers = [];
-    this.scrollwisePagination = new ScrollwisePagination();
-    this.selectionBounds = { start: 1, end: 8 };
-    this.debouncer = createDebouncer();
   }
 
-  public subscribe(observer: Observer): void | undefined {
+  public subscribe(observer: IObserver): void | undefined {
     if (this.subscribers.includes(observer)) {
       return;
     }
@@ -32,7 +22,7 @@ export class Publisher implements IPublisher {
     this.subscribers.push(observer);
   }
 
-  public unsubscribe(subscriber: Observer): void | undefined {
+  public unsubscribe(subscriber: IObserver): void | undefined {
     const subscriberIndex = this.subscribers.indexOf(subscriber);
     if (subscriberIndex === -1) {
       return;
@@ -40,6 +30,7 @@ export class Publisher implements IPublisher {
     this.subscribers.splice(subscriberIndex, 1);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public notify(payload?: any): void {
     this.subscribers.forEach((subscriber) => {
       subscriber.update(payload);

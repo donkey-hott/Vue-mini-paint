@@ -32,6 +32,7 @@ import {
   PictureLoaderObserver,
   PaginationObserver,
 } from "@/utils/observer/observers";
+import { createThrottler } from "@/utils/throttler";
 import { Publisher } from "@/utils/observer/publisher";
 import { defineComponent, computed, ref, onMounted } from "vue";
 import { useStore } from "../store";
@@ -53,18 +54,32 @@ export default defineComponent({
       expandedPicture.value = "";
     }
 
-    onMounted(() => {
+    function initializeObserver() {
       const publisher = new Publisher();
       const paginationObserver = new PaginationObserver();
       const pictureLoaderObserver = new PictureLoaderObserver();
+      const { paginator } = paginationObserver;
+      const throttle = createThrottler();
 
       publisher.subscribe(paginationObserver);
       publisher.subscribe(pictureLoaderObserver);
 
-      document.addEventListener("scroll", () =>
-        publisher.notify(paginationObserver.paginator.selectionBounds)
-      );
-    });
+      document.addEventListener("scroll", () => {
+        throttle(() => {
+          const htmlElem = document.querySelector("html");
+          const isScrollEnd = paginationObserver.paginator.isScrollEnd(
+            htmlElem
+          );
+          if (
+            isScrollEnd &&
+            paginator.selectionBounds.end === store.getters.picturesNumber
+          )
+            publisher.notify(paginator.selectionBounds);
+        }, 200);
+      });
+    }
+
+    onMounted(() => initializeObserver());
 
     return {
       pictures,
