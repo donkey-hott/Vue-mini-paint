@@ -26,23 +26,27 @@ export const actions: ActionTree<State, RootState> & Actions = {
     if (!currentUser) return;
 
     try {
-      await firebase
-        .database()
-        .ref(currentUser.uid)
-        .child("pictures")
-        .orderByChild("orderingNumber")
-        .startAt(start)
-        .endAt(end)
-        .on("value", (snapshot) => {
-          let pictures: Pictures = snapshot.val();
-          if (pictures === null) pictures = {};
-          context.commit(MutationTypes.SET_PICTURES, pictures);
-          console.log(
-            "%cPictures have been loaded!",
-            "color:#67FF3D",
-            pictures
-          );
-        });
+      return new Promise((resolve) => {
+        firebase
+          .database()
+          .ref(currentUser.uid)
+          .child("pictures")
+          .orderByChild("orderingNumber")
+          .startAt(start)
+          .endAt(end)
+          .on("value", (snapshot) => {
+            const pictures: Pictures = snapshot.val();
+            console.log(start, end)
+            context.commit(MutationTypes.SET_PICTURES, pictures);
+            resolve();
+
+            console.log(
+              "%cPictures have been loaded!",
+              "color:#67FF3D",
+              pictures
+            );
+          });
+      });
     } catch (error) {
       console.error(error);
     }

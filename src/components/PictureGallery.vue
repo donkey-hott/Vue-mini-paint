@@ -15,7 +15,10 @@
       <hr />
       <figcaption class="card__title">{{ pictureObj.title }}</figcaption>
     </figure>
-    <div class="card new-picture">
+    <div
+      v-intersection="{ handler: loadNextPage, options: intersectionOptions }"
+      class="card new-picture"
+    >
       <router-link to="/new-canvas">New picture</router-link>
     </div>
   </section>
@@ -27,14 +30,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
+import { defineComponent, computed, ref, onMounted } from "vue";
 import { useStore } from "../store";
+import { intersection } from "@/directives/intersection";
+import { ScrollwisePagination } from "@/utils/pagination";
+import { ActionTypes } from "@/store/modules/pictures/actions/action-types";
 
 export default defineComponent({
+  directives: {
+    intersection,
+  },
   setup() {
     const store = useStore();
     const pictures = computed(() => store.state.pictures.userPictures);
     const expandedPicture = ref<string>("");
+    // eslint-disable-next-line no-undef
+    const intersectionOptions = ref<IntersectionObserverInit | undefined>({
+      threshold: 0.25,
+    });
+    const paginator = new ScrollwisePagination();
 
     function expandPicture(pictureId: string) {
       expandedPicture.value = pictureId;
@@ -44,11 +58,29 @@ export default defineComponent({
       expandedPicture.value = "";
     }
 
+    function loadNextPage(entry: IntersectionObserverEntry) {
+      if (entry.isIntersecting && !paginator.isLastPage) {
+        paginator.incrementCurrentPage();
+        const selectionBounds = paginator.calcSelectionBounds();
+        store.dispatch(ActionTypes.LOAD_PICTURES, selectionBounds).then(() => {
+          if (store.getters.picturesNumber < selectionBounds.end) {
+            paginator.isLastPage = true;
+          }
+        });
+      }
+    }
+
+    onMounted(() => {
+      paginator.resetState();
+    });
+
     return {
       pictures,
+      intersectionOptions,
       expandedPicture,
       expandPicture,
       collapsePicture,
+      loadNextPage,
     };
   },
 });

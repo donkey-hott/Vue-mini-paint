@@ -12,6 +12,7 @@ import { useStore } from "../../store";
 
 import { useToast } from "vue-toastification";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
+import { MutationTypes } from "@/store/modules/pictures/mutations/mutation-types";
 
 export default defineComponent({
   setup() {
@@ -26,6 +27,7 @@ export default defineComponent({
     async function logOut() {
       try {
         store.dispatch(ActionTypes.LOG_OUT, undefined);
+        store.commit(MutationTypes.SET_PICTURES, null);
         router.push("sign-in");
       } catch (error) {
         toast.error(`Cannot log out: ${error.message}`);

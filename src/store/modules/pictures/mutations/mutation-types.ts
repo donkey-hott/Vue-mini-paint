@@ -6,5 +6,5 @@ export enum MutationTypes {
 }
 
 export type Mutations<S = State> = {
-  [MutationTypes.SET_PICTURES](state: S, payload: Pictures): void;
+  [MutationTypes.SET_PICTURES](state: S, payload: Pictures | null): void;
 };
