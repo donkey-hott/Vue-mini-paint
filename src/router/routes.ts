@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import SignUp from "../views/authentication/SignUp.vue";
 import SignIn from "../views/authentication/SignIn.vue";
 import Paint from "../views/Paint.vue";
+import Slider from "../views/Slider.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -31,5 +32,10 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/new-canvas",
     name: "paint",
     component: Paint,
+  },
+  {
+    path: "/slider",
+    name: "slider",
+    component: Slider,
   },
 ];
