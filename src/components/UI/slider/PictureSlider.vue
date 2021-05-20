@@ -3,7 +3,16 @@
     <div class="slider-root__container">
       <span class="control control-left" @click="showPreviousSlide">&lt;</span>
       <div ref="slidesElem" class="slides">
-        <slot name="slides"></slot>
+        <slider-slide
+          v-for="(pictureObj, pictureId, idx) in randomPictures"
+          :key="idx"
+        >
+          <img
+            class="slides__picture"
+            :src="pictureObj.imgURL"
+            :alt="pictureObj.title"
+          />
+        </slider-slide>
       </div>
       <span class="control control-right" @click="showNextSlide">&gt;</span>
     </div>
@@ -13,8 +22,12 @@
 <script lang="ts">
 import store from "@/store";
 import { computed, ComputedRef, defineComponent, onMounted, ref } from "vue";
+import SliderSlide from "./SliderSlide.vue";
 
 export default defineComponent({
+  components: {
+    SliderSlide,
+  },
   props: {
     itemsPerView: {
       type: Number,
@@ -64,14 +77,13 @@ export default defineComponent({
       }px)`;
     }
 
-    const slidesNumber: ComputedRef<number | undefined> = computed(() => {
+    const slidesNumber = computed(() => {
       return slidesElem.value?.childElementCount;
     });
 
-    const randomPictures: ComputedRef<number | undefined> = computed(() => {
+    const randomPictures = computed(() => {
       const randomPicturesGetters = store.getters.getRandomPictures;
-      console.log(randomPicturesGetters);
-      return randomPicturesGetters(5);
+      return Object.fromEntries(randomPicturesGetters(5));
     });
 
     onMounted(() => {
@@ -129,6 +141,11 @@ export default defineComponent({
       display: flex;
       transition: all 0.3s;
       height: inherit;
+
+      &__picture {
+        height: 100%;
+        background: white;
+      }
     }
   }
 }
