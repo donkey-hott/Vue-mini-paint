@@ -1,19 +1,20 @@
 <template>
   <section class="slider-root">
     <div class="slider-root__container">
-      <span class="control control-left" @click="showPreviousSlide">&lt;</span>
-      <div ref="slidesElem" class="slides">
+      <span class="control control-left" @click="showPrevSlide">&lt;</span>
+      <transition-group tag="div" name="appearing" class="slides">
         <slider-slide
-          v-for="(pictureObj, pictureId, idx) in randomPictures"
-          :key="idx"
+          class="slides__slide"
+          v-for="pictureSlide in visibleSlides"
+          :key="pictureSlide"
         >
           <img
             class="slides__picture"
-            :src="pictureObj.imgURL"
-            :alt="pictureObj.title"
+            :src="pictureSlide.imgURL"
+            :alt="pictureSlide.title"
           />
         </slider-slide>
-      </div>
+      </transition-group>
       <span class="control control-right" @click="showNextSlide">&gt;</span>
     </div>
   </section>
@@ -21,7 +22,8 @@
 
 <script lang="ts">
 import store from "@/store";
-import { computed, ComputedRef, defineComponent, onMounted, ref } from "vue";
+import { Pictures } from "@/store/types";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import SliderSlide from "./SliderSlide.vue";
 
 export default defineComponent({
@@ -48,58 +50,63 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const slidesElem = ref<HTMLElement | null>(null);
-    let currentSlide = ref(0);
-
-    function showNextSlide() {
-      if (!slidesNumber.value) return;
-      if (currentSlide.value === slidesNumber.value - props.itemsPerView)
-        return;
-
-      currentSlide.value += 1;
-      console.log(currentSlide.value);
-      showSlide();
-    }
-
-    function showPreviousSlide() {
-      if (!currentSlide.value) return;
-
-      currentSlide.value -= 1;
-      showSlide();
-    }
-
-    function showSlide() {
-      if (!slidesElem.value) return;
-
-      slidesElem.value.style.transform = `translateX(-${
-        slidesElem.value.offsetWidth * currentSlide.value +
-        props.gap * currentSlide.value
-      }px)`;
-    }
-
-    const slidesNumber = computed(() => {
-      return slidesElem.value?.childElementCount;
-    });
+    const visibleSlides = ref<Pictures[]>([]);
+    const currentSlide = ref(0);
 
     const randomPictures = computed(() => {
       const randomPicturesGetters = store.getters.getRandomPictures;
-      return Object.fromEntries(randomPicturesGetters(5));
+      return randomPicturesGetters(5);
+    });
+
+    function showNextSlide() {
+      if (currentSlide.value === Object.keys(randomPictures.value).length - 1)
+        return;
+
+      currentSlide.value += 1;
+      addSlide();
+    }
+
+    function showPrevSlide() {
+      if (currentSlide.value === 0) return;
+
+      currentSlide.value -= 1;
+      removeSlide();
+    }
+
+    /* TODO: возможно, вынести в отдельный класс с интерфейсом все методы, которые касаются visibleSlides */
+
+    function addSlide() {
+      const picture = Object.values(randomPictures.value)[
+        currentSlide.value
+      ] as Pictures;
+
+      visibleSlides.value.splice(0, 0, picture);
+    }
+
+    function removeSlide() {
+      visibleSlides.value.shift();
+    }
+
+    /* add a picture in array with slides when pictures are loaded*/
+    watch(randomPictures, () => {
+      if (!visibleSlides.value.length) {
+        addSlide();
+      }
     });
 
     onMounted(() => {
-      if (!slidesElem.value) return;
+      // if (!slidesElem.value) return;
       /* setup slidesPerView */
-      slidesElem.value.style.width = `${100 / props.itemsPerView}%`;
+      // slidesElem.value.style.width = `${100 / props.itemsPerView}%`;
       /* setup gap between slides (based on flex gap property) */
-      slidesElem.value.style.gap = `${props.gap}px`;
+      // slidesElem.value.style.gap = `${props.gap}px`;
     });
 
     return {
-      slidesElem,
-      /* methods */
+      visibleSlides,
+      /* functions */
       showNextSlide,
-      showPreviousSlide,
-      randomPictures,
+      showPrevSlide,
     };
   },
 });
@@ -139,14 +146,36 @@ export default defineComponent({
 
     .slides {
       display: flex;
-      transition: all 0.3s;
       height: inherit;
+
+      &__slide {
+        transition: all 0.5s;
+        height: 98%;
+      }
 
       &__picture {
         height: 100%;
         background: white;
       }
     }
+  }
+}
+
+.appearing-enter-active {
+  animation: fade-in 0.5s;
+}
+
+.appearing-leave-active {
+  animation: fade-in 0.5s reverse;
+  position: absolute;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 </style>
