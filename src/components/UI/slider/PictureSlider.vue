@@ -48,8 +48,13 @@ export default defineComponent({
       default: 0,
       required: false,
     },
+    animation: {
+      type: String,
+      default: "slide",
+      required: false,
+    },
   },
-  setup() {
+  setup(props) {
     const visibleSlides = ref<Pictures[]>([]);
     const currentIndex = ref(0);
     const transitionName = ref("");
@@ -68,12 +73,12 @@ export default defineComponent({
     });
 
     function showNextSlide() {
-      transitionName.value = "fade-next";
+      transitionName.value = `${props.animation}-next`;
       currentIndex.value += 1;
     }
 
     function showPrevSlide() {
-      transitionName.value = "fade-prev";
+      transitionName.value = `${props.animation}-prev`;
       currentIndex.value -= 1;
     }
 
@@ -140,21 +145,29 @@ export default defineComponent({
   }
 }
 
-// .next-enter-active {
-//   transform: translate(100%);
-// }
+/* ==== ANIMATIONS ==== */
 
-// .next-leave-to {
-//   transform: translate(-100%);
-// }
+/* ==== SLIDE NEXT ====*/
 
-// .prev-enter-active {
-//   transform: translate(-100%);
-// }
+.slide-next-enter-active {
+  transform: translate(100%);
+}
 
-// .prev-leave-to {
-//   transform: translate(100%);
-// }
+.slide-next-leave-to {
+  transform: translate(-100%);
+}
+
+/* ==== SLIDE PREV ==== */
+
+.slide-prev-enter-active {
+  transform: translate(-100%);
+}
+
+.slide-prev-leave-to {
+  transform: translate(100%);
+}
+
+/* ==== FADE NEXT ==== */
 
 .fade-next-enter {
   opacity: 1;
@@ -166,13 +179,13 @@ export default defineComponent({
 
 .fade-next-leave {
   opacity: 1;
-  position: absolute;
 }
 
 .fade-next-leave-to {
-  position: absolute;
   opacity: 0;
 }
+
+/* ==== FADE PREV ==== */
 
 .fade-prev-enter {
   opacity: 1;
@@ -183,17 +196,17 @@ export default defineComponent({
 }
 
 .fade-prev-leave {
-  position: absolute;
   opacity: 1;
 }
 
 .fade-prev-leave-to {
-  position: absolute;
   opacity: 0;
 }
 
-// .next-leave-to,
-// .prev-leave-to {
-//   position: absolute;
-// }
+.next-leave-to,
+.prev-leave-to,
+.fade-next-leave-to,
+.fade-prev-leave-to {
+  position: absolute;
+}
 </style>
