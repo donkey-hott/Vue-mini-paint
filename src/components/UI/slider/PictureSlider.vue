@@ -23,7 +23,7 @@
 <script lang="ts">
 import store from "@/store";
 import { Pictures } from "@/store/types";
-import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import SliderSlide from "./SliderSlide.vue";
 
 export default defineComponent({
@@ -49,7 +49,7 @@ export default defineComponent({
       required: false,
     },
   },
-  setup(props) {
+  setup() {
     const visibleSlides = ref<Pictures[]>([]);
     const currentIndex = ref(0);
     const transitionName = ref("");
@@ -68,12 +68,12 @@ export default defineComponent({
     });
 
     function showNextSlide() {
-      transitionName.value = "next";
+      transitionName.value = "fade-next";
       currentIndex.value += 1;
     }
 
     function showPrevSlide() {
-      transitionName.value = "prev";
+      transitionName.value = "fade-prev";
       currentIndex.value -= 1;
     }
 
@@ -140,24 +140,60 @@ export default defineComponent({
   }
 }
 
-.next-enter-active {
-  transform: translate(100%);
+// .next-enter-active {
+//   transform: translate(100%);
+// }
+
+// .next-leave-to {
+//   transform: translate(-100%);
+// }
+
+// .prev-enter-active {
+//   transform: translate(-100%);
+// }
+
+// .prev-leave-to {
+//   transform: translate(100%);
+// }
+
+.fade-next-enter {
+  opacity: 1;
 }
 
-.next-leave-to {
-  transform: translate(-100%);
+.fade-next-enter-active {
+  opacity: 0;
 }
 
-.prev-enter-active {
-  transform: translate(-100%);
-}
-
-.prev-leave-to {
-  transform: translate(100%);
-}
-
-.next-leave-to,
-.prev-leave-to {
+.fade-next-leave {
+  opacity: 1;
   position: absolute;
 }
+
+.fade-next-leave-to {
+  position: absolute;
+  opacity: 0;
+}
+
+.fade-prev-enter {
+  opacity: 1;
+}
+
+.fade-prev-enter-active {
+  opacity: 0;
+}
+
+.fade-prev-leave {
+  position: absolute;
+  opacity: 1;
+}
+
+.fade-prev-leave-to {
+  position: absolute;
+  opacity: 0;
+}
+
+// .next-leave-to,
+// .prev-leave-to {
+//   position: absolute;
+// }
 </style>
