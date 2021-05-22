@@ -55,7 +55,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const visibleSlides = ref<Pictures[]>([]);
     const currentIndex = ref(0);
     const transitionName = ref("");
 
@@ -83,7 +82,6 @@ export default defineComponent({
     }
 
     return {
-      visibleSlides,
       currentIndex,
       currentSlide,
       transitionName,
@@ -147,24 +145,29 @@ export default defineComponent({
 
 /* ==== ANIMATIONS ==== */
 
-/* ==== SLIDE NEXT ====*/
+/* NOTE: animation classes consist
+  of animation name + direction + Vue transition hook
+*/
+
+/* ==== SLIDE NEXT ==== */
 
 .slide-next-enter-active {
-  transform: translate(100%);
+  visibility: hidden;
+  transform: translate(-100%);
 }
 
 .slide-next-leave-to {
-  transform: translate(-100%);
+  transform: translate(100%);
 }
 
-/* ==== SLIDE PREV ==== */
+/* ==== SLIDE PREV ====*/
 
 .slide-prev-enter-active {
-  transform: translate(-100%);
+  transform: translate(100%);
 }
 
 .slide-prev-leave-to {
-  transform: translate(100%);
+  transform: translate(-100%);
 }
 
 /* ==== FADE NEXT ==== */
@@ -203,8 +206,8 @@ export default defineComponent({
   opacity: 0;
 }
 
-.next-leave-to,
-.prev-leave-to,
+.slide-next-leave-to,
+.slide-prev-leave-to,
 .fade-next-leave-to,
 .fade-prev-leave-to {
   position: absolute;
