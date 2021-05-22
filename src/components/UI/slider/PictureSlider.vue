@@ -2,16 +2,16 @@
   <section class="slider-root">
     <div class="slider-root__container">
       <span class="control control-left" @click="showPrevSlide">&lt;</span>
-      <transition-group tag="div" name="appearing" class="slides">
+      <transition-group tag="div" :name="transitionName" class="slides">
         <slider-slide
           class="slides__slide"
-          v-for="pictureSlide in visibleSlides"
-          :key="pictureSlide"
+          v-for="i in [currentIndex]"
+          :key="i"
         >
           <img
             class="slides__picture"
-            :src="pictureSlide.imgURL"
-            :alt="pictureSlide.title"
+            :src="currentSlide?.imgURL"
+            :alt="currentSlide?.title"
           />
         </slider-slide>
       </transition-group>
@@ -51,59 +51,37 @@ export default defineComponent({
   },
   setup(props) {
     const visibleSlides = ref<Pictures[]>([]);
-    const currentSlide = ref(0);
+    const currentIndex = ref(0);
+    const transitionName = ref("");
 
     const randomPictures = computed(() => {
       const randomPicturesGetters = store.getters.getRandomPictures;
-      return randomPicturesGetters(5);
+      return Object.values(randomPicturesGetters(5));
+    });
+
+    const currentSlide = computed(() => {
+      if (!randomPictures.value) return {};
+      const slide = randomPictures.value[
+        Math.abs(currentIndex.value) % randomPictures.value.length
+      ] as Pictures;
+      return slide?.[1];
     });
 
     function showNextSlide() {
-      if (currentSlide.value === Object.keys(randomPictures.value).length - 1)
-        return;
-
-      currentSlide.value += 1;
-      addSlide();
+      transitionName.value = "next";
+      currentIndex.value += 1;
     }
 
     function showPrevSlide() {
-      if (currentSlide.value === 0) return;
-
-      currentSlide.value -= 1;
-      removeSlide();
+      transitionName.value = "prev";
+      currentIndex.value -= 1;
     }
-
-    /* TODO: возможно, вынести в отдельный класс с интерфейсом все методы, которые касаются visibleSlides */
-
-    function addSlide() {
-      const picture = Object.values(randomPictures.value)[
-        currentSlide.value
-      ] as Pictures;
-
-      visibleSlides.value.splice(0, 0, picture);
-    }
-
-    function removeSlide() {
-      visibleSlides.value.shift();
-    }
-
-    /* add a picture in array with slides when pictures are loaded*/
-    watch(randomPictures, () => {
-      if (!visibleSlides.value.length) {
-        addSlide();
-      }
-    });
-
-    onMounted(() => {
-      // if (!slidesElem.value) return;
-      /* setup slidesPerView */
-      // slidesElem.value.style.width = `${100 / props.itemsPerView}%`;
-      /* setup gap between slides (based on flex gap property) */
-      // slidesElem.value.style.gap = `${props.gap}px`;
-    });
 
     return {
       visibleSlides,
+      currentIndex,
+      currentSlide,
+      transitionName,
       /* functions */
       showNextSlide,
       showPrevSlide,
@@ -146,11 +124,12 @@ export default defineComponent({
 
     .slides {
       display: flex;
-      height: inherit;
+      height: 50vh;
+      position: relative;
 
       &__slide {
         transition: all 0.5s;
-        height: 98%;
+        height: 100%;
       }
 
       &__picture {
@@ -161,21 +140,24 @@ export default defineComponent({
   }
 }
 
-.appearing-enter-active {
-  animation: fade-in 0.5s;
+.next-enter-active {
+  transform: translate(100%);
 }
 
-.appearing-leave-active {
-  animation: fade-in 0.5s reverse;
+.next-leave-to {
+  transform: translate(-100%);
+}
+
+.prev-enter-active {
+  transform: translate(-100%);
+}
+
+.prev-leave-to {
+  transform: translate(100%);
+}
+
+.next-leave-to,
+.prev-leave-to {
   position: absolute;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 </style>
