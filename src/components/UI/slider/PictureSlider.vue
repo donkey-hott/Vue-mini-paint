@@ -39,26 +39,17 @@
 <script lang="ts">
 import store from "@/store";
 import { Pictures } from "@/store/types";
-import { computed, defineComponent, watch, ref } from "vue";
+import { computed, defineComponent, watch, ref, onMounted } from "vue";
 import SliderSlide from "./SliderSlide.vue";
+
+/* TODO: reduce dependency of slider from pictures */
+/* TODO: do something with violation of OCP in navigation */
 
 export default defineComponent({
   components: {
     SliderSlide,
   },
   props: {
-    itemsPerView: {
-      type: Number,
-      default: 1,
-      required: false,
-      /* TODO: ADD PROP VALIDATION */
-      // validator: (value: number) => {
-      //   const slidesNum = document.querySelector(".slides")?.childElementCount;
-
-      //   if (!slidesNum) return false;
-      //   return value > 0 && value <= slidesNum;
-      // },
-    },
     animation: {
       type: String,
       default: "slide",
@@ -69,12 +60,18 @@ export default defineComponent({
       default: "bullets",
       required: false,
     },
+    autoplayDelay: {
+      type: Number,
+      default: 0,
+      required: false,
+    },
   },
   setup(props) {
     const currentIndex = ref(0);
     const transitionName = ref("");
     const currentBullet = ref<HTMLElement | null>(null);
     const bulletsContainer = ref<HTMLElement | null>(null);
+    const autoplayTimeout = ref<number>();
 
     const randomPictures = computed(() => {
       const randomPicturesGetters = store.getters.getRandomPictures;
@@ -116,6 +113,14 @@ export default defineComponent({
       currentBullet.value.style.left = `${infiniteIndex.value * shiftFactor}px`;
     }
 
+    function autoplay() {
+      clearInterval(autoplayTimeout.value);
+
+      if (props.autoplayDelay > 0) {
+        autoplayTimeout.value = setInterval(showNextSlide, props.autoplayDelay);
+      }
+    }
+
     /* this watcher defines animation direction basing on
       the comparison of 'currentIndex' values and executes translating
       of navigation bullets
@@ -128,6 +133,11 @@ export default defineComponent({
           : `${props.animation}-prev`;
 
       translateBullet();
+      autoplay();
+    });
+
+    onMounted(() => {
+      autoplay();
     });
 
     return {
