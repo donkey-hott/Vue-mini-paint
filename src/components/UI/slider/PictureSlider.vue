@@ -5,7 +5,7 @@
       <transition-group tag="div" :name="transitionName" class="slides">
         <slider-slide
           class="slides__slide"
-          v-for="i in [currentIndex]"
+          v-for="i in [infiniteIndex]"
           :key="i"
         >
           <img
@@ -17,14 +17,21 @@
       </transition-group>
       <span class="control control-right" @click="showNextSlide">&gt;</span>
     </div>
-    <div ref="bulletsContainer" class="bullets">
-      <span ref="currentBullet" class="bullets__current"></span>
+    <div
+      v-if="navigation === 'bullets'"
+      ref="bulletsContainer"
+      class="navigation"
+    >
+      <span ref="currentBullet" class="navigation__current-bullet"></span>
       <span
         v-for="index in randomPictures.length"
         @click="goToSlide(index - 1)"
         :key="index"
-        class="bullets__empty"
+        class="navigation__empty-bullet"
       ></span>
+    </div>
+    <div v-if="navigation === 'fraction'" class="navigation">
+      <span>{{ infiniteIndex + 1 }} / {{ randomPictures.length }}</span>
     </div>
   </section>
 </template>
@@ -34,8 +41,6 @@ import store from "@/store";
 import { Pictures } from "@/store/types";
 import { computed, defineComponent, watch, ref } from "vue";
 import SliderSlide from "./SliderSlide.vue";
-
-// TODO: ADD BULLETS BELOW SLIDER
 
 export default defineComponent({
   components: {
@@ -59,6 +64,11 @@ export default defineComponent({
       default: "slide",
       required: false,
     },
+    navigation: {
+      type: String,
+      default: "bullets",
+      required: false,
+    },
   },
   setup(props) {
     const currentIndex = ref(0);
@@ -79,7 +89,9 @@ export default defineComponent({
     });
 
     const infiniteIndex = computed(() => {
-      return Math.abs(currentIndex.value) % randomPictures.value.length;
+      return randomPictures.value.length
+        ? Math.abs(currentIndex.value) % randomPictures.value.length
+        : -1;
     });
 
     function showNextSlide() {
@@ -119,7 +131,7 @@ export default defineComponent({
     });
 
     return {
-      currentIndex,
+      infiniteIndex,
       currentSlide,
       transitionName,
       randomPictures,
@@ -194,7 +206,7 @@ export default defineComponent({
     }
   }
 
-  .bullets {
+  .navigation {
     margin: 0.3em 0;
     position: relative;
     display: flex;
@@ -202,19 +214,19 @@ export default defineComponent({
     align-items: center;
     gap: 0.2em;
 
-    &__empty,
-    &__current {
+    &__empty-bullet,
+    &__current-bullet {
       width: 7px;
       height: 7px;
       border-radius: 50%;
     }
 
-    &__empty {
+    &__empty-bullet {
       background: #e2e2e2;
       cursor: pointer;
     }
 
-    &__current {
+    &__current-bullet {
       position: absolute;
       left: 0;
       background: #08aaf5;
