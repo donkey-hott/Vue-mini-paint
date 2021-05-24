@@ -24,9 +24,9 @@ export default defineComponent({
   font-size: 100%;
 }
 html,
-body,
 #app {
   height: 100%;
+  background: $dark-background;
 }
 
 #app {
@@ -35,8 +35,10 @@ body,
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: $dark-contrast;
-  background: $dark-background;
   font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 select,
