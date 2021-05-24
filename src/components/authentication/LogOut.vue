@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ComputedRef, computed } from "vue";
+import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 
 import { useStore } from "../../store";
