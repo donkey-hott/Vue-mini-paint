@@ -1,7 +1,5 @@
 <template>
-  <base-button class="logout-btn" v-show="isUserAuthenticated" @click="logOut">
-    Log out
-  </base-button>
+  <base-button class="logout-btn" @click="logOut"> Log out </base-button>
 </template>
 
 <script lang="ts">
@@ -19,10 +17,6 @@ export default defineComponent({
     const router = useRouter();
     const toast = useToast();
 
-    const isUserAuthenticated: ComputedRef<boolean> = computed(() => {
-      return store.getters.isUserAuthenticated;
-    });
-
     async function logOut() {
       try {
         store.dispatch(ActionTypes.LOG_OUT, undefined);
@@ -34,7 +28,6 @@ export default defineComponent({
 
     return {
       logOut,
-      isUserAuthenticated,
     };
   },
 });

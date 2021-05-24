@@ -6,7 +6,7 @@
       </h1>
     </div>
     <nav class="navigation">
-      <ul class="list">
+      <ul class="list" v-show="isUserAuthenticated">
         <li>
           <log-out></log-out>
         </li>
@@ -21,13 +21,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, ComputedRef, defineComponent } from "vue";
+import { useStore } from "../../store";
 
 import LogOut from "../authentication/LogOut.vue";
 
 export default defineComponent({
   components: {
     LogOut,
+  },
+  setup() {
+    const store = useStore();
+
+    const isUserAuthenticated: ComputedRef<boolean> = computed(() => {
+      return store.getters.isUserAuthenticated;
+    });
+
+    return {
+      isUserAuthenticated,
+    };
   },
 });
 </script>
