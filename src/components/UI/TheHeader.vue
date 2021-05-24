@@ -6,9 +6,14 @@
       </h1>
     </div>
     <nav class="navigation">
-      <ul class="navigation__list">
+      <ul class="list" v-show="isUserAuthenticated">
         <li>
           <log-out></log-out>
+        </li>
+        <li>
+          <base-button class="list__slider-btn">
+            <router-link to="/slider">Slider</router-link>
+          </base-button>
         </li>
       </ul>
     </nav>
@@ -16,7 +21,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, ComputedRef, defineComponent } from "vue";
+import { useStore } from "../../store";
 
 import LogOut from "../authentication/LogOut.vue";
 
@@ -24,10 +30,23 @@ export default defineComponent({
   components: {
     LogOut,
   },
+  setup() {
+    const store = useStore();
+
+    const isUserAuthenticated: ComputedRef<boolean> = computed(() => {
+      return store.getters.isUserAuthenticated;
+    });
+
+    return {
+      isUserAuthenticated,
+    };
+  },
 });
 </script>
 
 <style lang="scss" scoped>
+@import "../../assets/colors.scss";
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -46,8 +65,26 @@ export default defineComponent({
 }
 
 .navigation {
-  &__list {
+  .list {
     list-style: none;
+    display: flex;
+
+    > li {
+      margin: 0 0.3em;
+    }
+
+    &__slider-btn {
+      background: $emphasizing;
+
+      > a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .router-link-active {
+        text-decoration: underline;
+      }
+    }
   }
 }
 </style>
