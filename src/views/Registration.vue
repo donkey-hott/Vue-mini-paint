@@ -20,6 +20,10 @@
             <option value="male">Male</option>
           </select>
         </label>
+        <label for="bio">
+          Bio
+          <textarea></textarea>
+        </label>
       </fieldset>
       <fieldset class="form__job-infos">
         <legend>Job information</legend>
@@ -27,12 +31,34 @@
           Do you have a job?
           <label for="has-job">
             Yes
-            <input name="job" type="radio" id="has-job" />
+            <input
+              v-model="hasJob"
+              :value="true"
+              name="job"
+              type="radio"
+              id="has-job"
+            />
           </label>
           <label for="no-job">
             No
-            <input name="job" type="radio" id="no-job" />
+            <input
+              v-model="hasJob"
+              :value="false"
+              name="job"
+              type="radio"
+              id="no-job"
+            />
           </label>
+          <div v-if="hasJob" class="job__details">
+            <label for="company">
+              Company
+              <input type="text" id="company" />
+            </label>
+            <label for="post">
+              Post
+              <input type="text" id="post" />
+            </label>
+          </div>
         </label>
       </fieldset>
       <fieldset class="form__contact-infos">
@@ -58,7 +84,17 @@
 </template>
 
 <script>
-export default {};
+import { defineComponent, ref } from "@vue/runtime-core";
+
+export default defineComponent({
+  setup() {
+    const hasJob = ref(false);
+
+    return {
+      hasJob,
+    };
+  },
+});
 </script>
 
 <style></style>
