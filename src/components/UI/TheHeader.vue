@@ -6,9 +6,14 @@
       </h1>
     </div>
     <nav class="navigation">
-      <ul class="navigation__list">
+      <ul class="list">
         <li>
           <log-out></log-out>
+        </li>
+        <li>
+          <base-button class="list__slider-btn">
+            <router-link to="/slider">Slider</router-link>
+          </base-button>
         </li>
       </ul>
     </nav>
@@ -28,6 +33,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "../../assets/colors.scss";
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -46,8 +53,26 @@ export default defineComponent({
 }
 
 .navigation {
-  &__list {
+  .list {
     list-style: none;
+    display: flex;
+
+    > li {
+      margin: 0 0.3em;
+    }
+
+    &__slider-btn {
+      background: $emphasizing;
+
+      > a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .router-link-active {
+        text-decoration: underline;
+      }
+    }
   }
 }
 </style>
