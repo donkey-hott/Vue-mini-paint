@@ -158,7 +158,6 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .slider-root {
-  position: relative;
   width: 100%;
   min-height: 100px;
   display: flex;

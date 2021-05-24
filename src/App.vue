@@ -1,6 +1,8 @@
 <template>
   <the-header></the-header>
-  <router-view />
+  <transition>
+    <router-view />
+  </transition>
 </template>
 
 <script lang="ts">
@@ -37,6 +39,8 @@ body,
   color: $dark-contrast;
   background: $dark-background;
   font-size: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 select,
@@ -54,6 +58,26 @@ input {
 @media (min-width: 767px) {
   #app {
     font-size: 20px;
+  }
+}
+
+.v-enter-active {
+  animation: reduce 0.3s;
+}
+
+.v-leave-active {
+  animation: reduce 0.3s reverse;
+  position: absolute;
+}
+
+@keyframes reduce {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 </style>
