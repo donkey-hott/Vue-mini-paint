@@ -1,23 +1,35 @@
 <template>
   <section class="registration">
     <h2 class="registration__title">New profile</h2>
-    <form class="form">
+    <form @submit.prevent="submit" class="form" novalidate>
       <fieldset class="form__personal-infos">
         <legend>Personal information</legend>
         <label for="fullname">
           Full name
-          <input type="text" id="fullname" />
+          <input v-model="fullname" type="text" id="fullname" />
         </label>
+        <span
+          style="color: red"
+          v-if="v$.fullname.$invalid && v$.fullname.$dirty"
+        >
+          {{ v$.fullname.$errors[0].$message }}
+        </span>
         <label for="birth">
           Birth date
-          <input type="date" id="birth" />
+          <input v-model="birthDate" type="date" id="birth" />
         </label>
+        <span
+          style="color: red"
+          v-if="v$.birthDate.$invalid && v$.birthDate.$dirty"
+        >
+          {{ v$.birthDate.$errors[0].$message }}
+        </span>
         <label for="gender">
           Gender
           <select>
+            <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
-            <option value="male">Male</option>
           </select>
         </label>
         <label for="bio">
@@ -26,7 +38,7 @@
         </label>
         <label for="avatar">
           Profile image
-          <input type="file" id="avatar" />
+          <input accept="image/png, image/jpeg" type="file" id="avatar" />
         </label>
       </fieldset>
       <fieldset class="form__job-infos">
@@ -65,20 +77,40 @@
           </label>
           <label for="linkedIn">
             LinkedIn
-            <input type="url" id="linkedIn" />
+            <input v-model="linkedInURL" type="url" id="linkedIn" />
           </label>
+          <span
+            style="color: red"
+            v-if="v$.linkedInURL.$invalid && v$.linkedInURL.$dirty"
+          >
+            {{ v$.linkedInURL.$errors[0].$message }}
+          </span>
         </template>
       </fieldset>
       <fieldset class="form__contact-infos">
         <legend>Contact information</legend>
         <label for="email">
           Email
-          <input type="email" id="email" />
+          <input type="email" v-model="email" id="email" />
         </label>
+        <span style="color: red" v-if="v$.email.$invalid && v$.email.$dirty">
+          {{ v$.email.$errors[0].$message }}
+        </span>
         <label for="phone">
           Phone
-          <input type="tel" id="phone" />
+          <input
+            placeholder="In international format"
+            v-model="phone"
+            type="tel"
+            id="phone"
+          />
         </label>
+        <span
+          style="color: red"
+          v-if="v$.phone.validPhoneNumber.$invalid && v$.phone.$dirty"
+        >
+          {{ v$.phone.$errors[0].$message }}
+        </span>
       </fieldset>
       <base-button class="registration__submit">
         <label for="submit-form">
@@ -89,18 +121,77 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
 import BaseButton from "@/components/UI/BaseButton.vue";
 import { defineComponent, ref } from "@vue/runtime-core";
+import useVuelidate from "@vuelidate/core";
+import {
+  required,
+  helpers,
+  email as emailValidator,
+} from "@vuelidate/validators";
+import { isValidLinkedInURL, isValidTel } from "../utils/customValidators";
 /* TODO: make custom "input[type='file']" */
 
 export default defineComponent({
   components: { BaseButton },
   setup() {
     const hasJob = ref(false);
+    const fullname = ref("");
+    const birthDate = ref("");
+    const email = ref("");
+    const phone = ref("");
+    const linkedInURL = ref("");
+
+    const rules = {
+      fullname: { required, $autoDirty: true },
+      birthDate: { required, $autoDirty: true },
+      linkedInURL: {
+        $autoDirty: true,
+        validLinkedInURL: helpers.withMessage(
+          "Input is not a valid LinkedIn profile link",
+          isValidLinkedInURL
+        ),
+      },
+      phone: {
+        required,
+        $autoDirty: true,
+        validPhoneNumber: helpers.withMessage(
+          "Phone number must be in international format",
+          isValidTel
+        ),
+      },
+      email: {
+        required,
+        $authDirty: true,
+        emailValidator,
+      },
+    };
+
+    const v$ = useVuelidate(rules, {
+      fullname,
+      birthDate,
+      linkedInURL,
+      phone,
+      email,
+    });
+
+    function submit() {
+      v$.value.$touch();
+      if (v$.value.$invalid) {
+        console.info("some fields are invalid");
+      }
+    }
 
     return {
       hasJob,
+      fullname,
+      birthDate,
+      linkedInURL,
+      phone,
+      email,
+      v$,
+      submit,
     };
   },
 });
