@@ -124,7 +124,7 @@
 <script lang="ts">
 import BaseButton from "@/components/UI/BaseButton.vue";
 import { defineComponent, ref } from "@vue/runtime-core";
-import useVuelidate from "@vuelidate/core";
+import useVuelidate, { ValidatorFn } from "@vuelidate/core";
 import {
   required,
   helpers,
@@ -143,32 +143,29 @@ export default defineComponent({
     const phone = ref("");
     const linkedInURL = ref("");
 
-    const rules = {
-      fullname: { required, $autoDirty: true },
-      birthDate: { required, $autoDirty: true },
+    const validationRules = {
+      fullname: { required },
+      birthDate: { required },
       linkedInURL: {
-        $autoDirty: true,
         validLinkedInURL: helpers.withMessage(
           "Input is not a valid LinkedIn profile link",
-          isValidLinkedInURL
+          isValidLinkedInURL as ValidatorFn
         ),
       },
       phone: {
         required,
-        $autoDirty: true,
         validPhoneNumber: helpers.withMessage(
           "Phone number must be in international format",
-          isValidTel
+          isValidTel as ValidatorFn
         ),
       },
       email: {
         required,
-        $authDirty: true,
         emailValidator,
       },
     };
 
-    const v$ = useVuelidate(rules, {
+    const v$ = useVuelidate(validationRules, {
       fullname,
       birthDate,
       linkedInURL,
