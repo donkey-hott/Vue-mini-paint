@@ -19,4 +19,11 @@ export const actions: ActionTree<State, RootState> & Actions = {
     commit(MutationTypes.SET_USER, null);
     await firebase.app().auth().signOut();
   },
+  [ActionTypes.CREATE_PROFILE](context, payload) {
+    const currentUser: firebase.User | null =
+      context.rootState.auth.currentUser;
+    if (!payload || !currentUser) return;
+
+    firebase.database().ref(currentUser?.uid).child("profile").set(payload);
+  },
 };

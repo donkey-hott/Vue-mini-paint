@@ -1,4 +1,4 @@
-import { UserCredentials } from "@/store/types";
+import { UserCredentials, UserProfile } from "@/store/types";
 import { ActionContext } from "vuex";
 import { Mutations } from "../mutations/mutation-types";
 import { State as RootState } from "@/store";
@@ -8,6 +8,7 @@ export enum ActionTypes {
   SIGN_UP = "SIGN_UP",
   SIGN_IN = "SIGN_IN",
   LOG_OUT = "LOG_OUT",
+  CREATE_PROFILE = "CREATE_PROFILE",
 }
 
 export interface Actions {
@@ -20,6 +21,10 @@ export interface Actions {
     payload: UserCredentials
   ): void;
   [ActionTypes.LOG_OUT](context: AugmentedActionContext): Promise<void>;
+  [ActionTypes.CREATE_PROFILE](
+    context: AugmentedActionContext,
+    payload: UserProfile
+  ): void;
 }
 
 export type AugmentedActionContext = {

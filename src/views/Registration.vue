@@ -26,7 +26,7 @@
         </span>
         <label for="gender">
           Gender
-          <select>
+          <select v-model="gender">
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
@@ -34,11 +34,16 @@
         </label>
         <label for="bio">
           Bio
-          <textarea></textarea>
+          <textarea v-model="bio"></textarea>
         </label>
         <label for="avatar">
           Profile image
-          <input accept="image/png, image/jpeg" type="file" id="avatar" />
+          <input
+            type="file"
+            accept="image/png, image/jpeg"
+            @change="setAvatar($event.target)"
+            id="avatar"
+          />
         </label>
       </fieldset>
       <fieldset class="form__job-infos">
@@ -69,11 +74,11 @@
         <template v-if="hasJob">
           <label for="company">
             Company
-            <input type="text" id="company" />
+            <input v-model="company" type="text" id="company" />
           </label>
           <label for="post">
             Post
-            <input type="text" id="post" />
+            <input v-model="post" type="text" id="post" />
           </label>
           <label for="linkedIn">
             LinkedIn
@@ -123,6 +128,7 @@
 
 <script lang="ts">
 import BaseButton from "@/components/UI/BaseButton.vue";
+import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { defineComponent, ref } from "@vue/runtime-core";
 import useVuelidate, { ValidatorFn } from "@vuelidate/core";
 import {
@@ -130,18 +136,29 @@ import {
   helpers,
   email as emailValidator,
 } from "@vuelidate/validators";
+import { useToast } from "vue-toastification";
+import { useStore } from "../store";
 import { isValidLinkedInURL, isValidTel } from "../utils/customValidators";
 /* TODO: make custom "input[type='file']" */
 
 export default defineComponent({
   components: { BaseButton },
   setup() {
+    const store = useStore();
+    const toast = useToast();
+    /* TODO: make a reactive object */
+    const gender = ref("male");
+    const bio = ref("");
+    const avatar = ref<File>();
     const hasJob = ref(false);
+    const company = ref("");
+    const post = ref("");
+    /* fields that require validation */
     const fullname = ref("");
     const birthDate = ref("");
+    const linkedInURL = ref("");
     const email = ref("");
     const phone = ref("");
-    const linkedInURL = ref("");
 
     const validationRules = {
       fullname: { required },
@@ -173,22 +190,53 @@ export default defineComponent({
       email,
     });
 
-    function submit() {
+    function setAvatar(inputEl: HTMLInputElement) {
+      if (inputEl.files === null) return;
+
+      avatar.value = inputEl.files[0];
+    }
+
+    async function submit() {
       v$.value.$touch();
       if (v$.value.$invalid) {
         console.info("some fields are invalid");
+        return;
+      }
+      const profileData = {
+        fullname: fullname.value,
+        birthDate: birthDate.value,
+        gender: gender.value,
+        bio: bio.value,
+        avatar: avatar.value,
+        company: company.value,
+        post: post.value,
+        linkedInURL: linkedInURL.value,
+        email: email.value,
+        phone: phone.value,
+      };
+      try {
+        await store.dispatch(ActionTypes.CREATE_PROFILE, profileData);
+      } catch (error) {
+        toast.error(`Cannot create profile: ${error.message}`);
       }
     }
 
     return {
+      gender,
+      bio,
+      avatar,
       hasJob,
+      company,
+      post,
       fullname,
       birthDate,
       linkedInURL,
-      phone,
       email,
+      phone,
       v$,
+      /* functions */
       submit,
+      setAvatar,
     };
   },
 });
