@@ -31,7 +31,7 @@ export default defineComponent({
     }) {
       try {
         await store.dispatch(ActionTypes.SIGN_UP, authenticationData);
-        router.push("/");
+        router.push("/create-profile");
 
         toast.success("Signed up successfully!");
         console.log("User has been signed up");

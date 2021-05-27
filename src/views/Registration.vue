@@ -1,6 +1,10 @@
 <template>
   <section class="registration">
-    <h2 class="registration__title">New profile</h2>
+    <h2 class="registration__title">
+      {{
+        currentRoute === "create-profile" ? "Create profile" : "Edit profile"
+      }}
+    </h2>
     <form @submit.prevent="submit" class="form" novalidate>
       <fieldset class="form__personal-infos">
         <legend>Personal information</legend>
@@ -146,7 +150,7 @@ import {
   email as emailValidator,
 } from "@vuelidate/validators";
 import { reactive } from "vue";
-import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useStore } from "../store";
 import { isValidLinkedInURL, isValidTel } from "../utils/customValidators";
@@ -158,7 +162,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const toast = useToast();
-    const route = useRoute();
+    const router = useRouter();
+    const currentRoute = ref(router.currentRoute.value.name);
     const hasJob = ref(false);
 
     let profile = reactive<UserProfile>({
@@ -219,7 +224,10 @@ export default defineComponent({
 
       try {
         await store.dispatch(ActionTypes.CREATE_PROFILE, profile);
-        toast.success("Profile updated");
+        if (currentRoute.value === "edit-profile") {
+          toast.success("Profile updated");
+        }
+        router.push("/");
       } catch (error) {
         console.error(error);
         toast.error(`Cannot create profile: ${error.message}`);
@@ -227,7 +235,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      if (route.name === "edit-profile") {
+      if (currentRoute.value === "edit-profile") {
         /* TODO: FIX A BUG WITH UNNECESSARY PARAMETER IN STORE  */
         /* TODO: in "LOAD_PROFILE" function replace 'return' with 'reject' */
         store.dispatch(ActionTypes.LOAD_PROFILE, undefined)?.then((value) => {
@@ -239,6 +247,7 @@ export default defineComponent({
     return {
       hasJob,
       profile,
+      currentRoute,
       v$,
       /* functions */
       submit,

@@ -34,8 +34,8 @@ export const routes: Array<RouteRecordRaw> = [
     component: Paint,
   },
   {
-    path: "/new-user",
-    name: "new-user",
+    path: "/create-profile",
+    name: "create-profile",
     component: Registration,
   },
   {
