@@ -9,6 +9,7 @@ export enum ActionTypes {
   SIGN_IN = "SIGN_IN",
   LOG_OUT = "LOG_OUT",
   CREATE_PROFILE = "CREATE_PROFILE",
+  LOAD_PROFILE = "LOAD_PROFILE",
 }
 
 export interface Actions {
@@ -25,6 +26,9 @@ export interface Actions {
     context: AugmentedActionContext,
     payload: UserProfile
   ): void;
+  [ActionTypes.LOAD_PROFILE](
+    context: AugmentedActionContext
+  ): Promise<UserProfile> | undefined;
 }
 
 export type AugmentedActionContext = {

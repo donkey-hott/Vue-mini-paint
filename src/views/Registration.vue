@@ -6,27 +6,27 @@
         <legend>Personal information</legend>
         <label for="fullname">
           Full name
-          <input v-model="fullname" type="text" id="fullname" />
+          <input v-model="profile.fullname" type="text" id="fullname" />
         </label>
         <span
           style="color: red"
-          v-if="v$.fullname.$invalid && v$.fullname.$dirty"
+          v-if="v$.profile.fullname.$invalid && v$.profile.fullname.$dirty"
         >
-          {{ v$.fullname.$errors[0].$message }}
+          {{ v$.profile.fullname.$errors[0].$message }}
         </span>
         <label for="birth">
           Birth date
-          <input v-model="birthDate" type="date" id="birth" />
+          <input v-model="profile.birthDate" type="date" id="birth" />
         </label>
         <span
           style="color: red"
-          v-if="v$.birthDate.$invalid && v$.birthDate.$dirty"
+          v-if="v$.profile.birthDate.$invalid && v$.profile.birthDate.$dirty"
         >
-          {{ v$.birthDate.$errors[0].$message }}
+          {{ v$.profile.birthDate.$errors[0].$message }}
         </span>
         <label for="gender">
           Gender
-          <select v-model="gender">
+          <select v-model="profile.gender">
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
@@ -34,7 +34,7 @@
         </label>
         <label for="bio">
           Bio
-          <textarea v-model="bio"></textarea>
+          <textarea v-model="profile.bio"></textarea>
         </label>
         <label for="avatar">
           Profile image
@@ -74,21 +74,23 @@
         <template v-if="hasJob">
           <label for="company">
             Company
-            <input v-model="company" type="text" id="company" />
+            <input v-model="profile.company" type="text" id="company" />
           </label>
           <label for="post">
             Post
-            <input v-model="post" type="text" id="post" />
+            <input v-model="profile.post" type="text" id="post" />
           </label>
           <label for="linkedIn">
             LinkedIn
-            <input v-model="linkedInURL" type="url" id="linkedIn" />
+            <input v-model="profile.linkedInURL" type="url" id="linkedIn" />
           </label>
           <span
             style="color: red"
-            v-if="v$.linkedInURL.$invalid && v$.linkedInURL.$dirty"
+            v-if="
+              v$.profile.linkedInURL.$invalid && v$.profile.linkedInURL.$dirty
+            "
           >
-            {{ v$.linkedInURL.$errors[0].$message }}
+            {{ v$.profile.linkedInURL.$errors[0].$message }}
           </span>
         </template>
       </fieldset>
@@ -96,25 +98,31 @@
         <legend>Contact information</legend>
         <label for="email">
           Email
-          <input type="email" v-model="email" id="email" />
+          <input type="email" v-model="profile.email" id="email" />
         </label>
-        <span style="color: red" v-if="v$.email.$invalid && v$.email.$dirty">
-          {{ v$.email.$errors[0].$message }}
+        <span
+          style="color: red"
+          v-if="v$.profile.email.$invalid && v$.profile.email.$dirty"
+        >
+          {{ v$.profile.email.$errors[0].$message }}
         </span>
         <label for="phone">
           Phone
           <input
             placeholder="In international format"
-            v-model="phone"
+            v-model="profile.phone"
             type="tel"
             id="phone"
           />
         </label>
         <span
           style="color: red"
-          v-if="v$.phone.validPhoneNumber.$invalid && v$.phone.$dirty"
+          v-if="
+            v$.profile.phone.validPhoneNumber.$invalid &&
+            v$.profile.phone.$dirty
+          "
         >
-          {{ v$.phone.$errors[0].$message }}
+          {{ v$.profile.phone.$errors[0].$message }}
         </span>
       </fieldset>
       <base-button class="registration__submit">
@@ -129,13 +137,16 @@
 <script lang="ts">
 import BaseButton from "@/components/UI/BaseButton.vue";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
-import { defineComponent, ref } from "@vue/runtime-core";
+import { UserProfile } from "@/store/types";
+import { defineComponent, onMounted, ref } from "@vue/runtime-core";
 import useVuelidate, { ValidatorFn } from "@vuelidate/core";
 import {
   required,
   helpers,
   email as emailValidator,
 } from "@vuelidate/validators";
+import { reactive } from "vue";
+import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useStore } from "../store";
 import { isValidLinkedInURL, isValidTel } from "../utils/customValidators";
@@ -146,54 +157,53 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const toast = useToast();
-    /* TODO: make a reactive object */
-    const gender = ref("male");
-    const bio = ref("");
-    const avatar = ref<File>();
+    const route = useRoute();
     const hasJob = ref(false);
-    const company = ref("");
-    const post = ref("");
-    /* fields that require validation */
-    const fullname = ref("");
-    const birthDate = ref("");
-    const linkedInURL = ref("");
-    const email = ref("");
-    const phone = ref("");
+
+    let profile = reactive<UserProfile>({
+      gender: "male",
+      bio: "",
+      avatar: undefined,
+      company: "",
+      post: "",
+      /* fields to be validated */
+      fullname: "",
+      birthDate: "",
+      linkedInURL: "",
+      email: "",
+      phone: "",
+    });
 
     const validationRules = {
-      fullname: { required },
-      birthDate: { required },
-      linkedInURL: {
-        validLinkedInURL: helpers.withMessage(
-          "Input is not a valid LinkedIn profile link",
-          isValidLinkedInURL as ValidatorFn
-        ),
-      },
-      phone: {
-        required,
-        validPhoneNumber: helpers.withMessage(
-          "Phone number must be in international format",
-          isValidTel as ValidatorFn
-        ),
-      },
-      email: {
-        required,
-        emailValidator,
+      profile: {
+        fullname: { required },
+        birthDate: { required },
+        linkedInURL: {
+          validLinkedInURL: helpers.withMessage(
+            "Input is not a valid LinkedIn profile link",
+            isValidLinkedInURL as ValidatorFn
+          ),
+        },
+        phone: {
+          required,
+          validPhoneNumber: helpers.withMessage(
+            "Phone number must be in international format",
+            isValidTel as ValidatorFn
+          ),
+        },
+        email: {
+          required,
+          emailValidator,
+        },
       },
     };
 
-    const v$ = useVuelidate(validationRules, {
-      fullname,
-      birthDate,
-      linkedInURL,
-      phone,
-      email,
-    });
+    const v$ = useVuelidate(validationRules, { profile });
 
     function setAvatar(inputEl: HTMLInputElement) {
       if (inputEl.files === null) return;
 
-      avatar.value = inputEl.files[0];
+      profile.avatar = inputEl.files[0];
     }
 
     async function submit() {
@@ -202,37 +212,28 @@ export default defineComponent({
         console.info("some fields are invalid");
         return;
       }
-      const profileData = {
-        fullname: fullname.value,
-        birthDate: birthDate.value,
-        gender: gender.value,
-        bio: bio.value,
-        avatar: avatar.value,
-        company: company.value,
-        post: post.value,
-        linkedInURL: linkedInURL.value,
-        email: email.value,
-        phone: phone.value,
-      };
+
       try {
-        await store.dispatch(ActionTypes.CREATE_PROFILE, profileData);
+        await store.dispatch(ActionTypes.CREATE_PROFILE, profile);
+        toast.success("Profile updated");
       } catch (error) {
         toast.error(`Cannot create profile: ${error.message}`);
       }
     }
 
+    onMounted(() => {
+      if (route.name === "edit-profile") {
+        /* TODO: FIX A BUG WITH UNNECESSARY PARAMETER IN STORE  */
+        /* TODO: in "LOAD_PROFILE" function replace 'return' with 'reject' */
+        store.dispatch(ActionTypes.LOAD_PROFILE, undefined)?.then((value) => {
+          Object.assign(profile, value);
+        });
+      }
+    });
+
     return {
-      gender,
-      bio,
-      avatar,
       hasJob,
-      company,
-      post,
-      fullname,
-      birthDate,
-      linkedInURL,
-      email,
-      phone,
+      profile,
       v$,
       /* functions */
       submit,

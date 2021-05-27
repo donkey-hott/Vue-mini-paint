@@ -7,8 +7,13 @@
     </div>
     <nav class="navigation">
       <ul class="navigation__list">
-        <li>
+        <li class="nav-item">
           <log-out></log-out>
+        </li>
+        <li class="nav-item">
+          <base-button class="nav-item__edit-profile">
+            <router-link to="/edit-profile">Edit profile</router-link>
+          </base-button>
         </li>
       </ul>
     </nav>
@@ -28,6 +33,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "../../assets/colors.scss";
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -47,7 +54,22 @@ export default defineComponent({
 
 .navigation {
   &__list {
+    display: flex;
+    justify-content: space-between;
     list-style: none;
+
+    > .nav-item {
+      margin: 0 0.5em;
+
+      > .nav-item__edit-profile {
+        background: $emphasizing;
+
+        a {
+          text-decoration: none;
+          color: #fff;
+        }
+      }
+    }
   }
 }
 </style>

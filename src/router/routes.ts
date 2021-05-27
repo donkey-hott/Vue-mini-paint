@@ -38,4 +38,9 @@ export const routes: Array<RouteRecordRaw> = [
     name: "new-user",
     component: Registration,
   },
+  {
+    path: "/edit-profile",
+    name: "edit-profile",
+    component: Registration,
+  },
 ];

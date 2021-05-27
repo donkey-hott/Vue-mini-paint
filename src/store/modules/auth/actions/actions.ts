@@ -1,4 +1,4 @@
-import { UserCredentials } from "@/store/types";
+import { UserCredentials, UserProfile } from "@/store/types";
 import firebase from "firebase";
 import { ActionTree } from "vuex";
 import { Actions, ActionTypes } from "./action-types";
@@ -20,10 +20,25 @@ export const actions: ActionTree<State, RootState> & Actions = {
     await firebase.app().auth().signOut();
   },
   [ActionTypes.CREATE_PROFILE](context, payload) {
-    const currentUser: firebase.User | null =
-      context.rootState.auth.currentUser;
+    const currentUser = context.rootState.auth.currentUser;
     if (!payload || !currentUser) return;
 
-    firebase.database().ref(currentUser?.uid).child("profile").set(payload);
+    firebase.database().ref(currentUser.uid).child("profile").set(payload);
+  },
+  [ActionTypes.LOAD_PROFILE](context) {
+    const currentUser = context.rootState.auth.currentUser;
+    if (!currentUser) return;
+    return new Promise((resolve) => {
+      firebase
+        .database()
+        .ref(currentUser.uid)
+        .child("profile")
+        .on("value", (snapshot) => {
+          const profile = snapshot.val() as UserProfile | null;
+          if (profile === null) return;
+
+          resolve(profile);
+        });
+    });
   },
 };

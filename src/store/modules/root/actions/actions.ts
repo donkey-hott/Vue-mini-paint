@@ -7,7 +7,7 @@ import { MutationTypes } from "../../auth/mutations/mutation-types";
 import { ActionTypes } from "../../pictures/actions/action-types";
 
 export const rootActions: ActionTree<RootState, RootState> & Actions = {
-  async [RootActions.INIT]({ commit, dispatch }) {
+  [RootActions.INIT]({ commit, dispatch }) {
     return new Promise((resolve) => {
       initializeFirebase();
       firebase.auth().onAuthStateChanged((user) => {

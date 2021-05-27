@@ -4,16 +4,16 @@ export type UserCredentials = {
 };
 
 export type UserProfile = {
-  fullname: string | null;
-  birthDate: string | null;
-  gender: string | null;
-  bio: string | null;
-  avatar: File | undefined | null;
-  company: string | null;
-  post: string | null;
-  linkedInURL: string | null;
-  email: string | null;
-  phone: string | null;
+  fullname?: string;
+  birthDate?: string;
+  gender?: string;
+  bio?: string;
+  avatar?: File | undefined;
+  company?: string;
+  post?: string;
+  linkedInURL?: string;
+  email: string;
+  phone?: string;
 };
 
 export type PictureRecord = {
