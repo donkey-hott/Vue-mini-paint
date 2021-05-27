@@ -50,7 +50,7 @@
           />
         </label>
       </fieldset>
-      <fieldset class="form__job-infos">
+      <fieldset class="form__job">
         <legend>Job information</legend>
         <label for="job">
           Do you have a job?
@@ -75,28 +75,30 @@
             />
           </label>
         </label>
-        <template v-if="hasJob">
-          <label for="company">
-            Company
-            <input v-model="profile.company" type="text" id="company" />
-          </label>
-          <label for="post">
-            Post
-            <input v-model="profile.post" type="text" id="post" />
-          </label>
-          <label for="linkedIn">
-            LinkedIn
-            <input v-model="profile.linkedInURL" type="url" id="linkedIn" />
-          </label>
-          <span
-            style="color: red"
-            v-if="
-              v$.profile.linkedInURL.$invalid && v$.profile.linkedInURL.$dirty
-            "
-          >
-            {{ v$.profile.linkedInURL.$errors[0].$message }}
-          </span>
-        </template>
+        <transition>
+          <div v-if="hasJob" class="job-infos">
+            <label for="company">
+              Company
+              <input v-model="profile.company" type="text" id="company" />
+            </label>
+            <label for="post">
+              Post
+              <input v-model="profile.post" type="text" id="post" />
+            </label>
+            <label for="linkedIn">
+              LinkedIn
+              <input v-model="profile.linkedInURL" type="url" id="linkedIn" />
+            </label>
+            <span
+              style="color: red"
+              v-if="
+                v$.profile.linkedInURL.$invalid && v$.profile.linkedInURL.$dirty
+              "
+            >
+              {{ v$.profile.linkedInURL.$errors[0].$message }}
+            </span>
+          </div>
+        </transition>
       </fieldset>
       <fieldset class="form__contact-infos">
         <legend>Contact information</legend>
@@ -261,7 +263,8 @@ export default defineComponent({
 @import "../assets/colors.scss";
 
 .registration {
-  fieldset {
+  fieldset,
+  .job-infos {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -297,6 +300,14 @@ export default defineComponent({
       }
     }
   }
+
+  .job-infos {
+    width: 70%;
+    label {
+      width: 100%;
+    }
+  }
+
   &__submit {
     background: $emphasizing;
     width: 50%;
@@ -304,6 +315,29 @@ export default defineComponent({
     input {
       cursor: pointer;
     }
+  }
+}
+
+.v-enter-active {
+  animation: expand 0.2s ease-in-out;
+  transform-origin: top;
+}
+
+.v-leave-active {
+  animation: expand 0.2s ease reverse;
+  transform-origin: top;
+}
+
+.v-move {
+  transition: transform 0.2s;
+}
+
+@keyframes expand {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
   }
 }
 </style>
