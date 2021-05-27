@@ -150,6 +150,7 @@ import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useStore } from "../store";
 import { isValidLinkedInURL, isValidTel } from "../utils/customValidators";
+import { toBase64 } from "../utils/toBase64";
 /* TODO: make custom "input[type='file']" */
 
 export default defineComponent({
@@ -163,7 +164,7 @@ export default defineComponent({
     let profile = reactive<UserProfile>({
       gender: "male",
       bio: "",
-      avatar: undefined,
+      avatar: null,
       company: "",
       post: "",
       /* fields to be validated */
@@ -203,7 +204,10 @@ export default defineComponent({
     function setAvatar(inputEl: HTMLInputElement) {
       if (inputEl.files === null) return;
 
-      profile.avatar = inputEl.files[0];
+      const image = inputEl.files[0];
+      toBase64(image).then((base64String) => {
+        profile.avatar = base64String;
+      });
     }
 
     async function submit() {
@@ -217,6 +221,7 @@ export default defineComponent({
         await store.dispatch(ActionTypes.CREATE_PROFILE, profile);
         toast.success("Profile updated");
       } catch (error) {
+        console.error(error);
         toast.error(`Cannot create profile: ${error.message}`);
       }
     }

@@ -8,7 +8,7 @@ export type UserProfile = {
   birthDate?: string;
   gender?: string;
   bio?: string;
-  avatar?: File | undefined;
+  avatar?: string | null;
   company?: string;
   post?: string;
   linkedInURL?: string;
