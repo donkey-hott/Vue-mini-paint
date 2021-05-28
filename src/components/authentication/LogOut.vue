@@ -19,7 +19,7 @@ export default defineComponent({
 
     async function logOut() {
       try {
-        store.dispatch(ActionTypes.LOG_OUT, undefined);
+        store.dispatch(ActionTypes.LOG_OUT);
         router.push("sign-in");
       } catch (error) {
         toast.error(`Cannot log out: ${error.message}`);

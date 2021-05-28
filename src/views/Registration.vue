@@ -235,8 +235,7 @@ export default defineComponent({
     onMounted(() => {
       if (currentRoute.value === "edit-profile") {
         /* TODO: FIX A BUG WITH UNNECESSARY PARAMETER IN STORE  */
-        /* TODO: in "LOAD_PROFILE" function replace 'return' with 'reject' */
-        store.dispatch(ActionTypes.LOAD_PROFILE, undefined)?.then((value) => {
+        store.dispatch(ActionTypes.LOAD_PROFILE).then((value) => {
           Object.assign(profile, value);
         });
       }
@@ -290,6 +289,9 @@ export default defineComponent({
       select {
         border-bottom: 2px solid $emphasizing;
         margin-left: 0.5em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       input,
@@ -299,12 +301,13 @@ export default defineComponent({
 
       .file-input {
         max-width: 60%;
+        background: $emphasizing;
       }
     }
   }
 
   .job-infos {
-    width: 70%;
+    width: 90%;
     label {
       width: 100%;
     }
