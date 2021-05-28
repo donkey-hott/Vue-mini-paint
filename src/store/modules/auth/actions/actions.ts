@@ -27,15 +27,19 @@ export const actions: ActionTree<State, RootState> & Actions = {
   },
   [ActionTypes.LOAD_PROFILE](context) {
     const currentUser = context.rootState.auth.currentUser;
-    if (!currentUser) return;
-    return new Promise((resolve) => {
+    if (!currentUser) {
+      return Promise.reject(new Error("Current user is null"));
+    }
+    return new Promise((resolve, reject) => {
       firebase
         .database()
         .ref(currentUser.uid)
         .child("profile")
         .on("value", (snapshot) => {
           const profile = snapshot.val() as UserProfile | null;
-          if (profile === null) return;
+          if (profile === null) {
+            return reject(new Error("Profile is null"));
+          }
 
           resolve(profile);
         });

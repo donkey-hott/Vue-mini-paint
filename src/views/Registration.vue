@@ -144,20 +144,18 @@ import BaseButton from "@/components/UI/BaseButton.vue";
 import FileInput from "@/components/UI/FileInput.vue";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { UserProfile } from "@/store/types";
-import { defineComponent, onMounted, ref } from "@vue/runtime-core";
+import { defineComponent, onMounted, ref, reactive } from "vue";
 import useVuelidate, { ValidatorFn } from "@vuelidate/core";
 import {
   required,
   helpers,
   email as emailValidator,
 } from "@vuelidate/validators";
-import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useStore } from "../store";
 import { isValidLinkedInURL, isValidTel } from "../utils/customValidators";
 import { toBase64 } from "../utils/toBase64";
-/* TODO: make custom "input[type='file']" */
 
 export default defineComponent({
   components: { BaseButton, FileInput },
@@ -225,12 +223,12 @@ export default defineComponent({
       try {
         await store.dispatch(ActionTypes.CREATE_PROFILE, profile);
         if (currentRoute.value === "edit-profile") {
-          toast.success("Profile updated");
+          toast.success("Profile is set up!");
         }
         router.push("/");
       } catch (error) {
         console.error(error);
-        toast.error(`Cannot create profile: ${error.message}`);
+        toast.error(`Cannot set profile up: ${error.message}`);
       }
     }
 

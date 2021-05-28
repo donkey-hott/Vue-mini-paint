@@ -28,7 +28,7 @@ export interface Actions {
   ): void;
   [ActionTypes.LOAD_PROFILE](
     context: AugmentedActionContext
-  ): Promise<UserProfile> | undefined;
+  ): Promise<UserProfile>;
 }
 
 export type AugmentedActionContext = {
