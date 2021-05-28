@@ -42,12 +42,11 @@
         </label>
         <label for="avatar">
           Profile image
-          <input
-            type="file"
+          <file-input
             accept="image/png, image/jpeg"
-            @change="setAvatar($event.target)"
-            id="avatar"
-          />
+            class="file-input"
+            @files-loaded="setAvatar"
+          ></file-input>
         </label>
       </fieldset>
       <fieldset class="form__job">
@@ -142,6 +141,7 @@
 
 <script lang="ts">
 import BaseButton from "@/components/UI/BaseButton.vue";
+import FileInput from "@/components/UI/FileInput.vue";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { UserProfile } from "@/store/types";
 import { defineComponent, onMounted, ref } from "@vue/runtime-core";
@@ -160,7 +160,7 @@ import { toBase64 } from "../utils/toBase64";
 /* TODO: make custom "input[type='file']" */
 
 export default defineComponent({
-  components: { BaseButton },
+  components: { BaseButton, FileInput },
   setup() {
     const store = useStore();
     const toast = useToast();
@@ -208,10 +208,8 @@ export default defineComponent({
 
     const v$ = useVuelidate(validationRules, { profile });
 
-    function setAvatar(inputEl: HTMLInputElement) {
-      if (inputEl.files === null) return;
-
-      const image = inputEl.files[0];
+    function setAvatar(files: FileList) {
+      const image = files[0];
       toBase64(image).then((base64String) => {
         profile.avatar = base64String;
       });
@@ -272,6 +270,7 @@ export default defineComponent({
     border: none;
     border-radius: 7px;
     margin: 0.5em 0;
+    padding: 0.5em;
 
     legend {
       text-align: left;
@@ -282,7 +281,7 @@ export default defineComponent({
     }
 
     > label {
-      width: 70%;
+      width: 90%;
       margin: 0.5em 0;
       display: flex;
       justify-content: space-between;
@@ -295,8 +294,13 @@ export default defineComponent({
         margin-left: 0.5em;
       }
 
-      input {
-        width: 65%;
+      input,
+      .file-input {
+        width: 60%;
+      }
+
+      .file-input {
+        max-width: 60%;
       }
     }
   }
