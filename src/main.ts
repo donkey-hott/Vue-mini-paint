@@ -6,7 +6,7 @@ import router from "./router";
 import { store } from "./store";
 import { RootActions } from "@/store/modules/root/actions/action-types";
 
-import BaseButton from "./components/UI/BaseButton.vue";
+import BaseButton from "./components/UI/buttons/BaseButton.vue";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 

@@ -10,7 +10,12 @@
         <legend>Personal information</legend>
         <label for="fullname">
           Full name
-          <input v-model="profile.fullname" type="text" id="fullname" />
+          <input
+            class="truncate"
+            v-model="profile.fullname"
+            type="text"
+            id="fullname"
+          />
         </label>
         <span
           style="color: red"
@@ -38,7 +43,7 @@
         </label>
         <label for="bio">
           Bio
-          <textarea v-model="profile.bio"></textarea>
+          <textarea class="truncate" v-model="profile.bio"></textarea>
         </label>
         <label for="avatar">
           Profile image
@@ -78,15 +83,30 @@
           <div v-if="hasJob" class="job-infos">
             <label for="company">
               Company
-              <input v-model="profile.company" type="text" id="company" />
+              <input
+                class="truncate"
+                v-model="profile.company"
+                type="text"
+                id="company"
+              />
             </label>
             <label for="post">
               Post
-              <input v-model="profile.post" type="text" id="post" />
+              <input
+                class="truncate"
+                v-model="profile.post"
+                type="text"
+                id="post"
+              />
             </label>
             <label for="linkedIn">
               LinkedIn
-              <input v-model="profile.linkedInURL" type="url" id="linkedIn" />
+              <input
+                class="truncate"
+                v-model="profile.linkedInURL"
+                type="url"
+                id="linkedIn"
+              />
             </label>
             <span
               style="color: red"
@@ -103,7 +123,12 @@
         <legend>Contact information</legend>
         <label for="email">
           Email
-          <input type="email" v-model="profile.email" id="email" />
+          <input
+            class="truncate"
+            type="email"
+            v-model="profile.email"
+            id="email"
+          />
         </label>
         <span
           style="color: red"
@@ -114,6 +139,7 @@
         <label for="phone">
           Phone
           <input
+            class="truncate"
             placeholder="In international format"
             v-model="profile.phone"
             type="tel"
@@ -130,17 +156,13 @@
           {{ v$.profile.phone.$errors[0].$message }}
         </span>
       </fieldset>
-      <base-button class="registration__submit">
-        <label for="submit-form">
-          <input type="submit" value="Submit" />
-        </label>
-      </base-button>
+      <base-button class="registration__submit">Submit</base-button>
     </form>
   </section>
 </template>
 
 <script lang="ts">
-import BaseButton from "@/components/UI/BaseButton.vue";
+import BaseButton from "@/components/UI/buttons/BaseButton.vue";
 import FileInput from "@/components/UI/FileInput.vue";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { UserProfile } from "@/store/types";
@@ -234,7 +256,6 @@ export default defineComponent({
 
     onMounted(() => {
       if (currentRoute.value === "edit-profile") {
-        /* TODO: FIX A BUG WITH UNNECESSARY PARAMETER IN STORE  */
         store.dispatch(ActionTypes.LOAD_PROFILE).then((value) => {
           Object.assign(profile, value);
         });
@@ -255,56 +276,57 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/colors.scss";
+fieldset,
+.job-infos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  border-radius: 7px;
+  margin: 0.5em 0;
+  padding: 0.5em;
 
-.registration {
-  fieldset,
-  .job-infos {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: $light-background;
-    border: none;
-    border-radius: 7px;
+  legend {
+    text-align: left;
+    transform: translate(5px);
+    padding: 0.3em;
+    background: var(--color-accent);
+    box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
+  }
+
+  > label {
+    width: 90%;
     margin: 0.5em 0;
-    padding: 0.5em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-    legend {
-      text-align: left;
-      transform: translate(5px);
-      padding: 0 0.3em;
-      background: $emphasizing;
-      box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
+    > input,
+    textarea,
+    select {
+      margin-left: 0.5em;
     }
 
-    > label {
-      width: 90%;
-      margin: 0.5em 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    input,
+    .file-input {
+      width: 60%;
+    }
 
-      > input,
-      textarea,
-      select {
-        border-bottom: 2px solid $emphasizing;
-        margin-left: 0.5em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+    .file-input {
+      max-width: 60%;
+      background: var(--color-accent);
+      transition: background 0.3s;
+      border-radius: 7px;
 
-      input,
-      .file-input {
-        width: 60%;
-      }
-
-      .file-input {
-        max-width: 60%;
-        background: $emphasizing;
+      &:hover {
+        background: var(--btn-active);
       }
     }
   }
+}
+
+.registration {
+  width: 50%;
 
   .job-infos {
     width: 90%;
@@ -314,11 +336,11 @@ export default defineComponent({
   }
 
   &__submit {
-    background: $emphasizing;
     width: 50%;
 
     input {
       cursor: pointer;
+      border-bottom: none;
     }
   }
 }
@@ -329,7 +351,7 @@ export default defineComponent({
 }
 
 .v-leave-active {
-  animation: expand 0.2s ease reverse;
+  animation: expand 0.2s ease-in-out reverse;
   transform-origin: top;
 }
 

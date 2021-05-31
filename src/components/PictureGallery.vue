@@ -13,7 +13,9 @@
         @click="expandPicture(pictureId)"
       />
       <hr />
-      <figcaption class="card__title">{{ pictureObj.title }}</figcaption>
+      <figcaption class="card__title truncate">
+        {{ pictureObj.title }}
+      </figcaption>
     </figure>
     <div class="card new-picture">
       <router-link to="/new-canvas">New picture</router-link>
@@ -55,8 +57,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/colors.scss";
-
 .gallery {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -74,7 +74,7 @@ export default defineComponent({
     padding: 0.3em;
     margin: 0.5em 1em;
     width: 90%;
-    background: $light-background;
+    background: var(--bg-secondary);
     box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
 
     &__picture {
@@ -97,16 +97,14 @@ export default defineComponent({
         background: #fff;
       }
     }
+
     figcaption {
       margin-top: 0.3em;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
     }
   }
 
   .new-picture {
-    border: 4px dashed $emphasizing;
+    border: 4px dashed var(--color-accent);
     min-height: 8em;
 
     & > a {
@@ -115,7 +113,6 @@ export default defineComponent({
       justify-content: center;
       align-items: center;
       text-decoration: none;
-      color: #fff;
     }
   }
 }

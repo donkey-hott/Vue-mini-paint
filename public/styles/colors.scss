@@ -1,0 +1,80 @@
+:root {
+  /* primary colors */
+  --color-primary: #161b27;
+  --color-primary-light: #332a51;
+  --color-accent: #7a5ed2;
+  --color-accent-light: #bd9bff;
+
+  /* feedback colors */
+  --color-danger: #aa1d13;
+  --color-danger-light: #e9453a;
+  --color-success: #00886b;
+  --color-success-light: #41b999;
+
+  /* shades of gray */
+  --black: #1d1d21;
+  --gray-10: #2e2e31;
+  --gray-6: #7b7a7d;
+  --gray-4: #a5a5a6;
+  --gray-3: #bbbbbc;
+  --gray-2: #d1d0d2;
+  --gray-1: #e8e7e8;
+  --white: white;
+  --transparent: transparent;
+
+  /* body */
+  --bg-primary: var(--color-primary);
+  --bg-secondary: var(--color-primary-light);
+
+  /* font colors */
+  --text: var(--white);
+  --text-secondary: var(--gray-1);
+  --link: var(--white);
+  --link-active: var(--color-accent-light);
+
+  /* buttons */
+  --btn: var(--color-accent);
+  --btn-active: var(--color-accent-light);
+  --btn-caption: var(--white);
+
+  /* inputs */
+  --input: var(--transparent);
+  --input-active: var(--color-accent);
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text);
+
+  input {
+    background: var(--input);
+    border-bottom: 2px solid var(--color-accent);
+    color: var(--text);
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  a {
+    color: var(--white);
+
+    // &:visited,
+    // :hover {
+    //   color: var(--link-active);
+    // }
+  }
+
+  button {
+    background: var(--btn);
+    color: var(--btn-caption);
+
+    &:hover {
+      background: var(--btn-active);
+    }
+  }
+
+  fieldset {
+    background: var(--bg-secondary);
+  }
+}

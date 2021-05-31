@@ -9,8 +9,9 @@ button {
   border: none;
   padding: 0.5em;
   cursor: pointer;
-  color: #fff;
   font-size: inherit;
   font-family: inherit;
+  border-radius: 7px;
+  transition: background 0.2s;
 }
 </style>

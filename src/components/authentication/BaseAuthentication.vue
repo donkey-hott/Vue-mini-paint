@@ -1,5 +1,5 @@
 <template>
-  <section class="card">
+  <form class="card" autocomplete="off" @submit.prevent="submitInputs">
     <h2 class="card__title">{{ cardCaption }}</h2>
     <div class="grid-inputs">
       <div class="grid-inputs__group">
@@ -21,7 +21,7 @@
         <input v-model="isPasswordShown" type="checkbox" id="show-password" />
       </div>
       <div class="grid-inputs__submit">
-        <base-button @click="submitInputs">{{ cardCaption }}</base-button>
+        <base-button>{{ cardCaption }}</base-button>
       </div>
     </div>
     <p class="card__action-changer">
@@ -30,7 +30,7 @@
         oppositeAuthAction.name
       }}</router-link>
     </p>
-  </section>
+  </form>
 </template>
 
 <script lang="ts">
@@ -102,8 +102,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/colors.scss";
-
 .card {
   width: max-content;
   padding: 1.5em;
@@ -115,20 +113,12 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: $light-background;
+  background: var(--bg-secondary);
 
   &__action-changer {
     display: flex;
     flex-direction: column;
     margin-top: 0.5em;
-
-    span {
-      font-size: 1.3em;
-    }
-
-    a {
-      color: inherit;
-    }
   }
 
   .grid-inputs {
@@ -141,22 +131,12 @@ export default defineComponent({
       flex-direction: column;
       align-items: flex-start;
 
-      & > label {
-        margin-bottom: 0.5em;
-      }
-
       & > input[type="email"],
       input[type="password"],
       input[type="text"] {
         height: 2em;
         padding: 0.5em;
-        border: 0;
-        text-overflow: ellipsis;
-
-        &:focus {
-          border-bottom: 2px solid $emphasizing;
-          outline: none;
-        }
+        margin-top: 0.5em;
       }
     }
 
@@ -164,11 +144,11 @@ export default defineComponent({
     &__group:nth-child(3) {
       flex-direction: row;
       justify-content: space-between;
+      align-items: center;
     }
 
     &__submit > button {
       width: 100%;
-      background: $emphasizing;
     }
   }
 }

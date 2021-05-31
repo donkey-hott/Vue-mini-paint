@@ -1,0 +1,85 @@
+@font-face {
+  font-family: "Montserrat";
+  font-display: auto;
+  font-style: normal;
+  src: local("Work Sans"),
+    url("../src/assets/fonts/montserrat/Montserrat-Regular.ttf")
+      format("truetype");
+}
+
+@font-face {
+  font-family: "Comfortaa";
+  font-display: auto;
+  font-style: normal;
+  src: local("Work Sans"),
+    url("../src/assets/fonts/comfortaa/Comfortaa-Regular.ttf")
+      format("truetype");
+}
+
+:root {
+  /* typefaces */
+  --font-primary: "Montserrat", sans-serif;
+  --font-secondary: "Comfortaa", sans-serif;
+
+  /* base */
+  --font-base-size: 1em;
+  --font-scale-ratio: 1.2;
+
+  /* font size scale */
+  --text-xs: calc(1em / var(--font-scale-ratio) * var(--font-scale-ratio));
+  --text-sm: calc(1em / var(--font-scale-ratio));
+  --text-md: calc(1em * var(--font-scale-ratio));
+  --text-lg: calc(1em * var(--font-scale-ratio) * var(--font-scale-ratio));
+  --text-xl: calc(
+    1em * var(--font-scale-ratio) * var(--font-scale-ratio) *
+      var(--font-scale-ratio)
+  );
+  --text-xxl: calc(
+    1em * var(--font-scale-ratio) * var(--font-scale-ratio) *
+      var(--font-scale-ratio) * var(--font-scale-ratio)
+  );
+
+  /* line height */
+  --line-height: 1.1;
+}
+@media (min-width: 767px) {
+  :root {
+    --font-base-size: 1.2em;
+    --font-scale-ratio: 1.2;
+  }
+}
+
+body {
+  font-size: var(--font-base-size);
+  font-family: var(--font-primary);
+}
+
+h1 {
+  font-size: var(--text-xxl);
+}
+
+h2 {
+  font-size: var(--text-xl);
+}
+
+h3 {
+  font-size: var(--text-lg);
+}
+
+h4 {
+  font-size: var(--text-md);
+}
+
+input,
+select,
+option,
+textarea {
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

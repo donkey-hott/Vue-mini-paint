@@ -34,9 +34,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/colors.scss";
-
 .logout-btn {
-  background: #e72c44;
+  background: var(--color-danger);
+
+  &:hover {
+    background: var(--color-danger-light);
+  }
 }
 </style>

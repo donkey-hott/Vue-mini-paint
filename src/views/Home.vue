@@ -15,11 +15,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import "../assets/colors.scss";
-
-.home {
-  background: $dark-background;
-}
-</style>

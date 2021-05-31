@@ -1,6 +1,6 @@
 <template>
   <label tabindex="0" for="file-input">
-    <span>{{ caption }}</span>
+    <span class="truncate">{{ caption }}</span>
     <input
       @input="handleInput($event.target)"
       type="file"
@@ -70,9 +70,8 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #41b883;
   padding: 0.3em;
-  color: #fff;
+  color: var(--text);
   cursor: pointer;
 
   i {
@@ -85,9 +84,6 @@ label {
 
   span {
     user-select: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <header class="header">
-    <div class="title">
-      <h1 class="title__homepage-link">
+    <div class="logo">
+      <h1 class="logo__homepage-link">
         <router-link to="/">Paint</router-link>
       </h1>
     </div>
@@ -11,9 +11,9 @@
           <log-out></log-out>
         </li>
         <li class="nav-item">
-          <base-button class="nav-item__edit-profile">
-            <router-link to="/edit-profile">Edit profile</router-link>
-          </base-button>
+          <router-link class="nav-item__edit-profile" to="/edit-profile"
+            >Edit profile</router-link
+          >
         </li>
       </ul>
     </nav>
@@ -43,8 +43,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/colors.scss";
-
 .header {
   display: flex;
   justify-content: space-between;
@@ -54,11 +52,13 @@ export default defineComponent({
   padding: 0.5em 0;
 }
 
-.title {
-  &__homepage-link > a {
-    font-size: 2em;
+.logo {
+  background: var(--color-accent);
+  padding: 0.3em;
+  border-radius: 13px;
+
+  &__homepage-link a {
     text-decoration: none;
-    color: #fff;
   }
 }
 
@@ -68,16 +68,13 @@ export default defineComponent({
     justify-content: space-between;
     list-style: none;
 
-    > .nav-item {
+    .nav-item {
       margin: 0 0.5em;
+      display: flex;
+      align-items: center;
 
-      > .nav-item__edit-profile {
-        background: $emphasizing;
-
-        a {
-          text-decoration: none;
-          color: #fff;
-        }
+      a {
+        text-decoration: none;
       }
     }
   }

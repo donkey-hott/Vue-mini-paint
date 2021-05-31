@@ -250,8 +250,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/colors.scss";
-
 .buttons {
   display: grid;
   grid-template-columns: auto auto;
@@ -268,15 +266,11 @@ export default defineComponent({
       width: 50px;
       height: 50px;
       padding: 0;
-      background: $light-background;
+      background: var(--bg-secondary);
 
       &--active {
-        background: $emphasizing;
+        background: var(--btn-active);
       }
-    }
-
-    & input[type="number"] {
-      border-bottom: 2px solid $emphasizing;
     }
 
     & > .polygons {
@@ -286,8 +280,9 @@ export default defineComponent({
       width: max-content;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+
       & > button {
-        background: $light-background;
+        background: var(--bg-secondary);
       }
     }
   }
