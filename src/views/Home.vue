@@ -1,7 +1,7 @@
 <template>
-  <div class="home">
+  <main class="home">
     <picture-gallery></picture-gallery>
-  </div>
+  </main>
 </template>
 
 <script lang="ts">

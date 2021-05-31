@@ -1,36 +1,43 @@
 <template>
-  <form class="card" autocomplete="off" @submit.prevent="submitInputs">
-    <h2 class="card__title">{{ cardCaption }}</h2>
-    <div class="grid-inputs">
-      <div class="grid-inputs__group">
-        <label for="email">Email</label>
-        <input placeholder="Email..." v-model="email" type="email" id="email" />
+  <main>
+    <form class="card" autocomplete="off" @submit.prevent="submitInputs">
+      <h2 class="card__title">{{ cardCaption }}</h2>
+      <div class="grid-inputs">
+        <div class="grid-inputs__group">
+          <label for="email">Email</label>
+          <input
+            placeholder="Email..."
+            v-model="email"
+            type="email"
+            id="email"
+          />
+        </div>
+        <div class="grid-inputs__group">
+          <label for="password">Password</label>
+          <input
+            placeholder="Password..."
+            v-model="password"
+            type="password"
+            id="password"
+            ref="passField"
+          />
+        </div>
+        <div class="grid-inputs__group">
+          <label for="show-password">Show password</label>
+          <input v-model="isPasswordShown" type="checkbox" id="show-password" />
+        </div>
+        <div class="grid-inputs__submit">
+          <base-button>{{ cardCaption }}</base-button>
+        </div>
       </div>
-      <div class="grid-inputs__group">
-        <label for="password">Password</label>
-        <input
-          placeholder="Password..."
-          v-model="password"
-          type="password"
-          id="password"
-          ref="passField"
-        />
-      </div>
-      <div class="grid-inputs__group">
-        <label for="show-password">Show password</label>
-        <input v-model="isPasswordShown" type="checkbox" id="show-password" />
-      </div>
-      <div class="grid-inputs__submit">
-        <base-button>{{ cardCaption }}</base-button>
-      </div>
-    </div>
-    <p class="card__action-changer">
-      <span>or</span>
-      <router-link :to="oppositeAuthAction.link">{{
-        oppositeAuthAction.name
-      }}</router-link>
-    </p>
-  </form>
+      <p class="card__action-changer">
+        <span>or</span>
+        <router-link :to="oppositeAuthAction.link">{{
+          oppositeAuthAction.name
+        }}</router-link>
+      </p>
+    </form>
+  </main>
 </template>
 
 <script lang="ts">

@@ -1,5 +1,5 @@
 <template>
-  <section class="registration">
+  <main class="registration">
     <h2 class="registration__title">
       {{
         currentRoute === "create-profile" ? "Create profile" : "Edit profile"
@@ -158,7 +158,7 @@
       </fieldset>
       <base-button class="registration__submit">Submit</base-button>
     </form>
-  </section>
+  </main>
 </template>
 
 <script lang="ts">
