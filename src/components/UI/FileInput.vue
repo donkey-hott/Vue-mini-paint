@@ -71,7 +71,6 @@ label {
   align-items: center;
   justify-content: center;
   padding: 0.3em;
-  color: var(--text);
   cursor: pointer;
 
   i {

@@ -27,7 +27,9 @@
           <input v-model="isPasswordShown" type="checkbox" id="show-password" />
         </div>
         <div class="grid-inputs__submit">
-          <base-button>{{ cardCaption }}</base-button>
+          <button class="btn btn-primary btn-full-width">
+            {{ cardCaption }}
+          </button>
         </div>
       </div>
       <p class="card__action-changer">
@@ -152,10 +154,6 @@ export default defineComponent({
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-    }
-
-    &__submit > button {
-      width: 100%;
     }
   }
 }

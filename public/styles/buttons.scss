@@ -1,0 +1,76 @@
+:root {
+  --btn-font-size: 1em;
+  --btn-border-radius: 0.43em;
+  --btn-padding: 0.5em;
+}
+
+.btn {
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  font-size: inherit;
+  font-family: inherit;
+  display: inline-flex;
+  transition: background 0.3s;
+  border: 0;
+  padding: var(--btn-padding);
+  border-radius: var(--btn-border-radius);
+}
+
+/* colors of buttons */
+
+.btn-primary {
+  background: var(--btn-color);
+  color: var(--btn-color-caption);
+
+  &:hover {
+    background: var(--btn-color-active);
+  }
+}
+
+.btn-secondary {
+  background: var(--transparent);
+  color: var(--btn-color-caption);
+
+  &:hover {
+    border: 1px solid var(--btn-color-active);
+    background: var(--transparent);
+  }
+}
+
+.btn-accent {
+  background: var(--color-danger);
+  color: var(--btn-color-caption);
+
+  &:hover {
+    background: var(--color-danger-light);
+  }
+}
+
+/* sizing of buttons */
+
+.btn-sm {
+  font-size: calc(var(--btn-font-size) - 0.2em);
+}
+
+.btn-md {
+  font-size: calc(var(--btn-font-size) + 0.2em);
+}
+
+.btn-lg {
+  font-size: calc(var(--btn-font-size) + 0.4em);
+}
+
+.btn-half-width,
+.btn-full-width {
+  display: inline-flex;
+  justify-content: center;
+}
+
+.btn-half-width {
+  width: 50%;
+}
+
+.btn-full-width {
+  width: 100%;
+}

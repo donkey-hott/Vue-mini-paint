@@ -2,7 +2,7 @@ import { UserCredentials, UserProfile } from "@/store/types";
 import firebase from "firebase";
 import { ActionTree } from "vuex";
 import { Actions, ActionTypes } from "./action-types";
-import store, { State as RootState } from "@/store";
+import { State as RootState } from "@/store";
 import { State } from "../state";
 import { MutationTypes } from "../mutations/mutation-types";
 

@@ -156,13 +156,12 @@
           {{ v$.profile.phone.$errors[0].$message }}
         </span>
       </fieldset>
-      <base-button class="registration__submit">Submit</base-button>
+      <button class="btn btn-primary btn-half-width">Submit</button>
     </form>
   </main>
 </template>
 
 <script lang="ts">
-import BaseButton from "@/components/UI/buttons/BaseButton.vue";
 import FileInput from "@/components/UI/FileInput.vue";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { UserProfile } from "@/store/types";
@@ -187,7 +186,7 @@ import { isValidLinkedInURL, isValidTel } from "../utils/customValidators";
 import { toBase64 } from "../utils/toBase64";
 
 export default defineComponent({
-  components: { BaseButton, FileInput },
+  components: { FileInput },
   setup() {
     const store = useStore();
     const toast = useToast();
@@ -336,7 +335,7 @@ fieldset,
       border-radius: 7px;
 
       &:hover {
-        background: var(--btn-active);
+        background: var(--btn-color-active);
       }
     }
   }
@@ -353,7 +352,7 @@ fieldset,
   }
 
   &__submit {
-    width: 50%;
+    // width: 50%;
 
     input {
       cursor: pointer;

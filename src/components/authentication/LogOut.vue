@@ -1,5 +1,5 @@
 <template>
-  <base-button class="logout-btn" @click="logOut"> Log out </base-button>
+  <button class="btn btn-secondary" @click="logOut">Log out</button>
 </template>
 
 <script lang="ts">
@@ -34,13 +34,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.logout-btn {
-  background: var(--transparent);
+button {
   color: var(--color-danger);
-  padding: 0;
+  transition: all 0.3s;
 
   &:hover {
-    color: var(--color-danger-light);
+    border-color: var(--color-danger);
   }
 }
 </style>

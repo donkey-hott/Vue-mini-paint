@@ -27,29 +27,30 @@
   --bg-secondary: var(--color-primary-light);
 
   /* font colors */
-  --text: var(--white);
-  --text-secondary: var(--gray-1);
+  --text-color: var(--white);
+  --text-color-secondary: var(--gray-1);
   --link: var(--white);
   --link-active: var(--color-accent-light);
 
   /* buttons */
-  --btn: var(--color-accent);
-  --btn-active: var(--color-accent-light);
-  --btn-caption: var(--white);
+  --btn-color: var(--color-accent);
+  --btn-color-active: var(--color-accent-light);
+  --btn-color-caption: var(--white);
+  --btn-color-caption-active: var(--gray-2);
 
   /* inputs */
-  --input: var(--transparent);
-  --input-active: var(--color-accent);
+  --input-color: var(--transparent);
+  --input-color-active: var(--color-accent);
 }
 
 body {
   background: var(--bg-primary);
-  color: var(--text);
+  color: var(--text-color);
 
   input {
-    background: var(--input);
+    background: var(--input-color);
     border-bottom: 2px solid var(--color-accent);
-    color: var(--text);
+    color: var(--text-color);
 
     &:focus {
       outline: none;
@@ -66,11 +67,11 @@ body {
   }
 
   button {
-    background: var(--btn);
-    color: var(--btn-caption);
+    background: var(--btn-color);
+    color: var(--btn-color-caption);
 
     &:hover {
-      background: var(--btn-active);
+      background: var(--btn-color-active);
     }
   }
 

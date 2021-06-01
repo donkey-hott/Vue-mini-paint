@@ -17,6 +17,7 @@ export default defineComponent({
 <style lang="scss">
 @import "../public/styles/typography.scss";
 @import "../public/styles/colors.scss";
+@import "../public/styles/buttons.scss";
 
 * {
   box-sizing: border-box;
@@ -30,8 +31,6 @@ html,
 }
 
 #app {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
   display: flex;
   flex-direction: column;
