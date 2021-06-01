@@ -38,12 +38,6 @@ html,
   align-items: center;
 }
 
-// select,
-// input {
-//   font-size: inherit;
-//   font-family: inherit;
-// }
-
 input {
   border: 0;
 }

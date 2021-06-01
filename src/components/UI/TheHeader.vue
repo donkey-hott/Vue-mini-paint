@@ -53,7 +53,6 @@ export default defineComponent({
     });
 
     function toggleMenu(state?: boolean) {
-      console.log(state);
       isMenuShown.value = state || !isMenuShown.value;
     }
 
