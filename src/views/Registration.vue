@@ -246,9 +246,17 @@ export default defineComponent({
 
     const v$ = useVuelidate(validationRules, { profile });
 
+    function readFile(file: File) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      return reader;
+    }
+
     function setAvatar(files: FileList) {
       const image = files[0];
-      toBase64(image).then((base64String) => {
+      const imageAsURL = readFile(image);
+
+      toBase64(imageAsURL).then((base64String) => {
         profile.avatar = base64String;
       });
     }
