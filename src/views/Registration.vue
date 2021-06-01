@@ -29,7 +29,9 @@
         </label>
         <span
           style="color: red"
-          v-if="v$.profile.birthDate.$invalid && v$.profile.birthDate.$dirty"
+          v-if="
+            v$.profile.birthDate.isAdult.$invalid && v$.profile.birthDate.$dirty
+          "
         >
           {{ v$.profile.birthDate.$errors[0].$message }}
         </span>
@@ -182,7 +184,11 @@ import {
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useStore } from "../store";
-import { isValidLinkedInURL, isValidTel } from "../utils/customValidators";
+import {
+  isAdult,
+  isValidLinkedInURL,
+  isValidTel,
+} from "../utils/customValidators";
 import { toBase64 } from "../utils/toBase64";
 
 export default defineComponent({
@@ -211,7 +217,13 @@ export default defineComponent({
     const validationRules = {
       profile: {
         fullname: { required },
-        birthDate: { required },
+        birthDate: {
+          required,
+          isAdult: helpers.withMessage(
+            "Age must be over 18",
+            isAdult as ValidatorFn
+          ),
+        },
         linkedInURL: {
           validLinkedInURL: helpers.withMessage(
             "Input is not a valid LinkedIn profile link",
