@@ -253,11 +253,21 @@ export default defineComponent({
       });
     }
 
+    function removeJobProperties() {
+      /* make a new object without 'company', 'post' and 'linkedInURL' fields */
+      const { company, post, linkedInURL, ...unemployedUserProfile } = profile;
+      profile = Object.assign({}, unemployedUserProfile);
+    }
+
     async function submit() {
       v$.value.$touch();
       if (v$.value.$invalid) {
         console.info("some fields are invalid");
         return;
+      }
+
+      if (!hasJob.value) {
+        removeJobProperties();
       }
 
       try {
@@ -358,14 +368,13 @@ fieldset,
 
   .job-infos {
     width: 90%;
+
     label {
       width: 100%;
     }
   }
 
   &__submit {
-    // width: 50%;
-
     input {
       cursor: pointer;
       border-bottom: none;
