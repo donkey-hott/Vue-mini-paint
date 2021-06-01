@@ -35,10 +35,12 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .logout-btn {
-  background: var(--color-danger);
+  background: var(--transparent);
+  color: var(--color-danger);
+  padding: 0;
 
   &:hover {
-    background: var(--color-danger-light);
+    color: var(--color-danger-light);
   }
 }
 </style>

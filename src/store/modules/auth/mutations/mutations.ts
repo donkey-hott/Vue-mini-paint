@@ -9,4 +9,10 @@ export const mutations: MutationTree<State> & Mutations = {
   [MutationTypes.SET_USER](state, payload) {
     state.currentUser = payload;
   },
+  [MutationTypes.SET_PROFILE](state, payload) {
+    return new Promise((resolve) => {
+      state.userProfile = payload;
+      resolve();
+    });
+  },
 };

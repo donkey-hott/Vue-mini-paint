@@ -260,6 +260,8 @@ export default defineComponent({
           Object.assign(profile, value);
         });
       }
+      // console.log(store.state.auth.userProfile);
+      // Object.assign(profile, store.state.auth.userProfile);
     });
 
     return {

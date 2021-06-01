@@ -2,7 +2,7 @@ import { UserCredentials, UserProfile } from "@/store/types";
 import firebase from "firebase";
 import { ActionTree } from "vuex";
 import { Actions, ActionTypes } from "./action-types";
-import { State as RootState } from "@/store";
+import store, { State as RootState } from "@/store";
 import { State } from "../state";
 import { MutationTypes } from "../mutations/mutation-types";
 
@@ -41,6 +41,7 @@ export const actions: ActionTree<State, RootState> & Actions = {
             return reject(new Error("Profile is null"));
           }
 
+          context.commit(MutationTypes.SET_PROFILE, profile);
           resolve(profile);
         });
     });
