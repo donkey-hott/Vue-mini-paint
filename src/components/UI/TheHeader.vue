@@ -12,7 +12,13 @@
         </li>
         <li>
           <div @click="toggleMenu()" class="image-wrapper">
-            <img :src="userProfile?.avatar" alt="Picture of current user" />
+            <img
+              :src="
+                userProfile?.avatar ||
+                'https://img.icons8.com/fluent-systems-regular/96/ffffff/user.png'
+              "
+              alt="Picture of current user"
+            />
           </div>
           <transition v-show="isMenuShown">
             <ul @click="toggleMenu(false)" class="menu">
@@ -131,6 +137,7 @@ export default defineComponent({
           width: 100%;
           height: 100%;
           object-fit: cover;
+          border: 1px solid var(--color-accent);
           border-radius: 50%;
           user-select: none;
         }
