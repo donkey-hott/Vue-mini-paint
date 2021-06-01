@@ -166,7 +166,14 @@ import BaseButton from "@/components/UI/buttons/BaseButton.vue";
 import FileInput from "@/components/UI/FileInput.vue";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { UserProfile } from "@/store/types";
-import { defineComponent, onMounted, ref, reactive } from "vue";
+import {
+  defineComponent,
+  onMounted,
+  ref,
+  reactive,
+  watch,
+  computed,
+} from "vue";
 import useVuelidate, { ValidatorFn } from "@vuelidate/core";
 import {
   required,
@@ -254,14 +261,22 @@ export default defineComponent({
       }
     }
 
+    const userProfileData = computed(() => {
+      return store.getters.userProfile;
+    });
+
+    /* Rewrites profile data if page was reloaded */
+
+    watch(userProfileData, (value) => {
+      Object.assign(profile, value);
+    });
+
+    /* Rewrites profile data if page was entered from other local route */
+
     onMounted(() => {
       if (currentRoute.value === "edit-profile") {
-        store.dispatch(ActionTypes.LOAD_PROFILE).then((value) => {
-          Object.assign(profile, value);
-        });
+        Object.assign(profile, userProfileData.value);
       }
-      // console.log(store.state.auth.userProfile);
-      // Object.assign(profile, store.state.auth.userProfile);
     });
 
     return {
