@@ -9,5 +9,8 @@ export enum MutationTypes {
 
 export type Mutations<S = State> = {
   [MutationTypes.SET_USER](state: S, payload: firebase.User | null): void;
-  [MutationTypes.SET_PROFILE](state: S, payload: UserProfile): Promise<void>;
+  [MutationTypes.SET_PROFILE](
+    state: S,
+    payload: UserProfile | null
+  ): Promise<void>;
 };

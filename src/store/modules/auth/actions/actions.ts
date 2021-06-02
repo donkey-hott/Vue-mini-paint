@@ -7,9 +7,12 @@ import { State } from "../state";
 import { MutationTypes } from "../mutations/mutation-types";
 
 export const actions: ActionTree<State, RootState> & Actions = {
-  async [ActionTypes.SIGN_UP](context, payload: UserCredentials) {
+  [ActionTypes.SIGN_UP](context, payload: UserCredentials) {
     const { email, password } = payload;
-    await firebase.app().auth().createUserWithEmailAndPassword(email, password);
+    return firebase
+      .app()
+      .auth()
+      .createUserWithEmailAndPassword(email, password);
   },
   async [ActionTypes.SIGN_IN](context, payload: UserCredentials) {
     const { email, password } = payload;
@@ -17,6 +20,7 @@ export const actions: ActionTree<State, RootState> & Actions = {
   },
   async [ActionTypes.LOG_OUT]({ commit }) {
     commit(MutationTypes.SET_USER, null);
+    commit(MutationTypes.SET_PROFILE, null);
     await firebase.app().auth().signOut();
   },
   [ActionTypes.CREATE_PROFILE](context, payload) {
@@ -27,23 +31,17 @@ export const actions: ActionTree<State, RootState> & Actions = {
   },
   [ActionTypes.LOAD_PROFILE](context) {
     const currentUser = context.rootState.auth.currentUser;
-    if (!currentUser) {
-      return Promise.reject(new Error("Current user is null"));
-    }
-    return new Promise((resolve, reject) => {
-      firebase
-        .database()
-        .ref(currentUser.uid)
-        .child("profile")
-        .on("value", (snapshot) => {
-          const profile = snapshot.val() as UserProfile | null;
-          if (profile === null) {
-            return reject(new Error("Profile is null"));
-          }
+    if (!currentUser) return;
 
-          context.commit(MutationTypes.SET_PROFILE, profile);
-          resolve(profile);
-        });
-    });
+    firebase
+      .database()
+      .ref(currentUser.uid)
+      .child("profile")
+      .on("value", (snapshot) => {
+        const profile = snapshot.val() as UserProfile | null;
+        if (profile === null) return;
+
+        context.commit(MutationTypes.SET_PROFILE, profile);
+      });
   },
 };

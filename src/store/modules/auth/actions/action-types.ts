@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import { UserCredentials, UserProfile } from "@/store/types";
 import { ActionContext } from "vuex";
 import { Mutations } from "../mutations/mutation-types";
@@ -16,7 +17,7 @@ export interface Actions {
   [ActionTypes.SIGN_UP](
     { commit }: AugmentedActionContext,
     payload: UserCredentials
-  ): void;
+  ): Promise<firebase.auth.UserCredential>;
   [ActionTypes.SIGN_IN](
     { commit }: AugmentedActionContext,
     payload: UserCredentials
@@ -26,9 +27,7 @@ export interface Actions {
     context: AugmentedActionContext,
     payload: UserProfile
   ): void;
-  [ActionTypes.LOAD_PROFILE](
-    context: AugmentedActionContext
-  ): Promise<UserProfile>;
+  [ActionTypes.LOAD_PROFILE](context: AugmentedActionContext): void;
 }
 
 export type AugmentedActionContext = {

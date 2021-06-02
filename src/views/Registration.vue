@@ -1,10 +1,6 @@
 <template>
   <main class="registration">
-    <h2 class="registration__title">
-      {{
-        currentRoute === "create-profile" ? "Create profile" : "Edit profile"
-      }}
-    </h2>
+    <h2 class="registration__title">Edit profile</h2>
     <form @submit.prevent="submit" class="form" novalidate>
       <fieldset class="form__personal-infos">
         <legend>Personal information</legend>
@@ -197,7 +193,6 @@ export default defineComponent({
     const store = useStore();
     const toast = useToast();
     const router = useRouter();
-    const currentRoute = ref(router.currentRoute.value.name);
     const hasJob = ref(false);
 
     let profile = reactive<UserProfile>({
@@ -270,7 +265,6 @@ export default defineComponent({
     async function submit() {
       v$.value.$touch();
       if (v$.value.$invalid) {
-        console.info("some fields are invalid");
         return;
       }
 
@@ -280,13 +274,11 @@ export default defineComponent({
 
       try {
         await store.dispatch(ActionTypes.CREATE_PROFILE, profile);
-        if (currentRoute.value === "edit-profile") {
-          toast.success("Profile is set up!");
-        }
+        toast.success("Profile updated!");
         router.push("/");
       } catch (error) {
         console.error(error);
-        toast.error(`Cannot set profile up: ${error.message}`);
+        toast.error(`Cannot update profile: ${error.message}`);
       }
     }
 
@@ -300,18 +292,15 @@ export default defineComponent({
       Object.assign(profile, value);
     });
 
-    /* Rewrites profile data if page was entered from other local route */
+    /* Rewrites profile data if page was entered from other local routes */
 
     onMounted(() => {
-      if (currentRoute.value === "edit-profile") {
-        Object.assign(profile, userProfileData.value);
-      }
+      Object.assign(profile, userProfileData.value);
     });
 
     return {
       hasJob,
       profile,
-      currentRoute,
       v$,
       /* functions */
       submit,
