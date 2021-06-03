@@ -10,9 +10,16 @@
 </template>
 
 <script>
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent, onMounted } from "@vue/runtime-core";
+import { onboardingConfig } from "./config";
 
-export default defineComponent({});
+export default defineComponent({
+  setup() {
+    onMounted(() => {
+      console.log(onboardingConfig);
+    });
+  },
+});
 </script>
 
 <style lang="scss" scoped>

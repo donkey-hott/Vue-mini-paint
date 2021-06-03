@@ -15,7 +15,7 @@
       <hr />
       <figcaption class="card__title">{{ pictureObj.title }}</figcaption>
     </figure>
-    <div class="card new-picture">
+    <div class="card new-picture" id="new-picture">
       <router-link to="/new-canvas">New picture</router-link>
     </div>
   </section>

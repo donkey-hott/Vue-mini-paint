@@ -1,5 +1,5 @@
 <template>
-  <aside class="controls">
+  <aside class="controls" id="tools">
     <ul class="buttons">
       <li
         v-for="(mainInstrument, idx) in mainInstruments"

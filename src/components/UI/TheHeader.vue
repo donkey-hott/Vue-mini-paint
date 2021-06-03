@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="title">
-      <h1 class="title__homepage-link">
+      <h1 class="title__homepage-link" id="logo">
         <router-link to="/">Paint</router-link>
       </h1>
     </div>
