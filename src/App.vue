@@ -1,15 +1,18 @@
 <template>
   <the-header></the-header>
   <router-view />
+  <onboarding></onboarding>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import TheHeader from "./components/UI/TheHeader.vue";
+import Onboarding from "./components/onboarding/Onboarding.vue";
 
 export default defineComponent({
   components: {
     TheHeader,
+    Onboarding,
   },
 });
 </script>
