@@ -27,7 +27,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
+import { MutationTypes } from "@/store/modules/onboarding/mutations/mutation-types";
+import { defineComponent, computed, ref, nextTick, onMounted } from "vue";
 import { useStore } from "../store";
 
 export default defineComponent({
@@ -43,6 +44,22 @@ export default defineComponent({
     function collapsePicture() {
       expandedPicture.value = "";
     }
+
+    onMounted(() => {
+      const onboardingConfig = [
+        {
+          textContent: "Welcome aboard!",
+          element: document.querySelector("#logo"),
+          nextRoute: "/",
+        },
+        {
+          textContent: "Create new picture",
+          element: document.querySelector("#new-picture"),
+          nextRoute: "/new-canvas",
+        },
+      ];
+      store.commit(MutationTypes.ADD_ELEMENTS, onboardingConfig);
+    });
 
     return {
       pictures,
