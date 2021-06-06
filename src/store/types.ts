@@ -12,3 +12,9 @@ export type PictureRecord = {
 export interface Pictures {
   [key: string]: PictureRecord;
 }
+
+export type OnboardingStep = {
+  textContent: string;
+  elementId: string;
+  nextRoute: string | null;
+};
