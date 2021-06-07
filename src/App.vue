@@ -54,6 +54,11 @@ input {
   color: #fff;
 }
 
+.highlighted-element {
+  position: relative;
+  z-index: 20;
+}
+
 @media (min-width: 767px) {
   #app {
     font-size: 20px;

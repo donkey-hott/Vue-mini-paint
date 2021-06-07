@@ -7,6 +7,9 @@
       <button @click="incrementStep">Next</button>
     </div>
   </div>
+  <teleport to="body">
+    <overlay :show="true"></overlay>
+  </teleport>
 </template>
 
 <script lang="ts">
@@ -14,21 +17,32 @@ import { useStore } from "@/store";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-/* написать компьютед для позиционирования тултипа так, чтобы он не зависел от
+/* TODO: написать компьютед для позиционирования тултипа так, чтобы он не зависел от
 других вычисляемых свойств */
+/* TODO: rewrite "fadeElement" call so that it doesn't violate SRP */
+
 export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
     const tooltipElement = ref<HTMLElement | null>(null);
     const stepIndex = ref(0);
+
     const steps = computed(() => {
       return store.state.onboarding.config;
     });
+
+    const showOnboarding = computed(() => {
+      return store.state.onboarding.showOnboarding;
+    });
+
+    const currentElement = computed(() => {
+      return document.getElementById(currentStep.value?.elementId);
+    });
+
     function positionTooltip() {
-      const element = document.getElementById(currentStep.value?.elementId);
-      if (!element || !tooltipElement.value) return;
-      const clientRect = element.getBoundingClientRect();
+      if (!currentElement.value || !tooltipElement.value) return;
+      const clientRect = currentElement.value.getBoundingClientRect();
 
       tooltipElement.value.style.left = `${
         clientRect.right + document.documentElement.scrollLeft + 10
@@ -37,8 +51,18 @@ export default defineComponent({
         clientRect.top + document.documentElement.scrollTop
       }px`;
 
-      console.log(element);
+      highlightElement();
       scrollToElement(clientRect.top + document.documentElement.scrollTop);
+    }
+
+    function highlightElement() {
+      if (!tooltipElement.value || !currentElement.value) return;
+      currentElement.value.classList.add("highlighted-element");
+    }
+
+    function fadeElement() {
+      if (!tooltipElement.value || !currentElement.value) return;
+      currentElement.value.classList.remove("highlighted-element");
     }
 
     const currentStep = computed(() => {
@@ -54,22 +78,13 @@ export default defineComponent({
       });
     }
 
-    // function showNextPage() {
-    //   const route = currentStep.value.nextRoute;
-    //   if (!route) return;
-    //   console.log(currentStep.value);
-    //   router.push(route).then(() => {
-    //     incrementStep();
-    //   });
-    // }
-
     function incrementStep() {
       if (steps.value.length - 1 === stepIndex.value) return;
+      fadeElement();
       stepIndex.value += 1;
     }
 
     watch(currentStep, () => {
-      console.log(currentStep.value);
       const route = currentStep.value.nextRoute;
       if (!route) return;
       router.push(route).then(() => {
@@ -92,6 +107,7 @@ export default defineComponent({
     return {
       tooltipElement,
       currentStep,
+      showOnboarding,
       incrementStep,
       endOnboarding,
     };
@@ -109,6 +125,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   transition: all 0.3s;
+  z-index: 20;
 
   &__text {
     margin-bottom: 0.5em;

@@ -1,6 +1,6 @@
 <template>
   <transition>
-    <div v-show="show" class="overlay"></div>
+    <div v-if="show" class="overlay"></div>
   </transition>
 </template>
 
