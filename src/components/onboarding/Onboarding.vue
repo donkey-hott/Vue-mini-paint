@@ -7,7 +7,7 @@
     <span class="tooltip__text">{{ currentStep?.textContent }}</span>
     <div class="tooltip__buttons">
       <button @click="decrementStep">Previous</button>
-      <button>End preview</button>
+      <button @click="endOnboarding">End preview</button>
       <button @click="showNextPage">Next</button>
     </div>
   </div>
@@ -15,6 +15,7 @@
 
 <script lang="ts">
 import { useStore } from "@/store";
+import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -32,13 +33,15 @@ export default defineComponent({
         left: 0,
         top: 0,
       };
-      const element = currentStep.value?.element;
+      const element = document.getElementById(currentStep.value?.elementId);
       if (!element || !tooltipElement.value) return position;
-      const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = element;
+      const clientRect = element.getBoundingClientRect();
 
-      position.left = offsetLeft + offsetWidth + 10;
-      position.top = offsetTop + offsetHeight / 3;
+      position.left =
+        clientRect.right + document.documentElement.scrollLeft + 10;
+      position.top = clientRect.top + document.documentElement.scrollTop;
 
+      console.log(element);
       scrollToElement(position.top);
       return position;
     });
@@ -70,11 +73,20 @@ export default defineComponent({
       stepIndex.value += 1;
     }
 
+    function endOnboarding() {
+      const onboardingInfoJSON = {
+        seen: true,
+        version: JSON.stringify(store.state.onboarding.config),
+      };
+      store.dispatch(ActionTypes.SET_ONBOARDING_INFO, onboardingInfoJSON);
+    }
+
     return {
       tooltipElement,
       tooltipPosition,
-      showNextPage,
       currentStep,
+      showNextPage,
+      endOnboarding,
     };
   },
 });
