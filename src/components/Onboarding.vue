@@ -1,14 +1,10 @@
 <template>
-  <div
-    :style="`left: ${tooltipPosition.left}px; top: ${tooltipPosition.top}px;`"
-    ref="tooltipElement"
-    class="tooltip"
-  >
+  <div ref="tooltipElement" class="tooltip">
     <span class="tooltip__text">{{ currentStep?.textContent }}</span>
     <div class="tooltip__buttons">
       <button @click="decrementStep">Previous</button>
       <button @click="endOnboarding">End preview</button>
-      <button @click="showNextPage">Next</button>
+      <button @click="incrementStep">Next</button>
     </div>
   </div>
 </template>
@@ -16,9 +12,10 @@
 <script lang="ts">
 import { useStore } from "@/store";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-
+/* написать компьютед для позиционирования тултипа так, чтобы он не зависел от
+других вычисляемых свойств */
 export default defineComponent({
   setup() {
     const store = useStore();
@@ -28,23 +25,21 @@ export default defineComponent({
     const steps = computed(() => {
       return store.state.onboarding.config;
     });
-    const tooltipPosition = computed(() => {
-      const position = {
-        left: 0,
-        top: 0,
-      };
+    function positionTooltip() {
       const element = document.getElementById(currentStep.value?.elementId);
-      if (!element || !tooltipElement.value) return position;
+      if (!element || !tooltipElement.value) return;
       const clientRect = element.getBoundingClientRect();
 
-      position.left =
-        clientRect.right + document.documentElement.scrollLeft + 10;
-      position.top = clientRect.top + document.documentElement.scrollTop;
+      tooltipElement.value.style.left = `${
+        clientRect.right + document.documentElement.scrollLeft + 10
+      }px`;
+      tooltipElement.value.style.top = `${
+        clientRect.top + document.documentElement.scrollTop
+      }px`;
 
       console.log(element);
-      scrollToElement(position.top);
-      return position;
-    });
+      scrollToElement(clientRect.top + document.documentElement.scrollTop);
+    }
 
     const currentStep = computed(() => {
       return steps.value[stepIndex.value];
@@ -59,19 +54,28 @@ export default defineComponent({
       });
     }
 
-    function showNextPage() {
-      const route = currentStep.value.nextRoute;
-      if (!route) return;
-
-      router.push(route).then(() => {
-        incrementStep();
-      });
-    }
+    // function showNextPage() {
+    //   const route = currentStep.value.nextRoute;
+    //   if (!route) return;
+    //   console.log(currentStep.value);
+    //   router.push(route).then(() => {
+    //     incrementStep();
+    //   });
+    // }
 
     function incrementStep() {
       if (steps.value.length - 1 === stepIndex.value) return;
       stepIndex.value += 1;
     }
+
+    watch(currentStep, () => {
+      console.log(currentStep.value);
+      const route = currentStep.value.nextRoute;
+      if (!route) return;
+      router.push(route).then(() => {
+        positionTooltip();
+      });
+    });
 
     function endOnboarding() {
       const onboardingInfoJSON = {
@@ -81,11 +85,14 @@ export default defineComponent({
       store.dispatch(ActionTypes.SET_ONBOARDING_INFO, onboardingInfoJSON);
     }
 
+    onMounted(() => {
+      positionTooltip();
+    });
+
     return {
       tooltipElement,
-      tooltipPosition,
       currentStep,
-      showNextPage,
+      incrementStep,
       endOnboarding,
     };
   },

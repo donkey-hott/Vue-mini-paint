@@ -27,6 +27,7 @@
         <base-button
           title="More shapes"
           class="item__button"
+          id="moreShapes"
           @click="toggleAdditionalShapesBlock"
         >
           ...
@@ -103,16 +104,7 @@
 </template>
 
 <script lang="ts">
-import { useStore } from "@/store";
-import { MutationTypes } from "@/store/modules/onboarding/mutations/mutation-types";
-import {
-  defineComponent,
-  nextTick,
-  onMounted,
-  reactive,
-  ref,
-  watch,
-} from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
 
 export default defineComponent({
@@ -179,7 +171,6 @@ export default defineComponent({
           "https://img.icons8.com/windows/50/ffffff/triangle-stroked.png",
       },
     ];
-    const store = useStore();
 
     const additionalInstruments = [
       {
@@ -242,18 +233,6 @@ export default defineComponent({
 
     watch(styleOptions, (newVal, oldVal) => {
       emit("setStyleOptions", oldVal);
-    });
-
-    onMounted(() => {
-      const onboardingConfig = [
-        {
-          textContent: "Tools panel",
-          element: document.querySelector("#tools"),
-          nextRoute: null,
-        },
-      ];
-      store.commit(MutationTypes.ADD_ELEMENTS, onboardingConfig);
-      console.log(store.state.onboarding.config);
     });
 
     return {

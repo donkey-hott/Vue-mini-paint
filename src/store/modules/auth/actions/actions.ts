@@ -19,4 +19,10 @@ export const actions: ActionTree<State, RootState> & Actions = {
     commit(MutationTypes.SET_USER, null);
     await firebase.app().auth().signOut();
   },
+  [ActionTypes.SET_ONBOARDING_INFO](context, payload) {
+    const { currentUser } = context.state;
+    if (!currentUser) return;
+
+    firebase.database().ref(currentUser.uid).child("onboarding").set(payload);
+  },
 };

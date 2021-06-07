@@ -4,8 +4,8 @@ import {
   Module,
   Store as VuexStore,
 } from "vuex";
-// import { Actions } from "./actions/action-types";
-// import { actions } from "./actions/actions";
+import { Actions } from "./actions/action-types";
+import { actions } from "./actions/actions";
 import { Mutations } from "@/store/modules/onboarding/mutations/mutation-types";
 import { mutations } from "@/store/modules/onboarding/mutations/mutations";
 import { State, state } from "./state";
@@ -25,15 +25,15 @@ export type Store<S = State> = Omit<
   //   [K in keyof Getters]: ReturnType<Getters[K]>;
   // };
 } & {
-  // dispatch<K extends keyof Actions>(
-  //   key: K,
-  //   payload: Parameters<Actions[K]>[1],
-  //   options?: DispatchOptions
-  // ): ReturnType<Actions[K]>;
+  dispatch<K extends keyof Actions>(
+    key: K,
+    payload: Parameters<Actions[K]>[1],
+    options?: DispatchOptions
+  ): ReturnType<Actions[K]>;
 };
 
 export const onboarding: Module<State, RootState> = {
   state,
   mutations,
-  // actions,
+  actions,
 };

@@ -7,7 +7,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import TheHeader from "./components/UI/TheHeader.vue";
-import Onboarding from "./components/onboarding/Onboarding.vue";
+import Onboarding from "./components/Onboarding.vue";
 
 export default defineComponent({
   components: {
