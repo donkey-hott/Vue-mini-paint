@@ -19,11 +19,9 @@
       <router-link to="/new-canvas">New picture</router-link>
     </div>
   </section>
-  <div
-    @click="collapsePicture"
-    class="overlay"
-    :class="{ 'overlay--shown': expandedPicture }"
-  ></div>
+  <teleport to="body">
+    <overlay :show="showOverlay" @click="collapsePicture"></overlay>
+  </teleport>
 </template>
 
 <script lang="ts">
@@ -35,18 +33,22 @@ export default defineComponent({
     const store = useStore();
     const pictures = computed(() => store.state.pictures.userPictures);
     const expandedPicture = ref<string>("");
+    const showOverlay = ref(false);
 
     function expandPicture(pictureId: string) {
       expandedPicture.value = pictureId;
+      showOverlay.value = true;
     }
 
     function collapsePicture() {
       expandedPicture.value = "";
+      showOverlay.value = false;
     }
 
     return {
       pictures,
       expandedPicture,
+      showOverlay,
       expandPicture,
       collapsePicture,
     };
@@ -117,24 +119,6 @@ export default defineComponent({
       text-decoration: none;
       color: #fff;
     }
-  }
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transform: scale(0);
-  background: rgba(0, 0, 0, 0.8);
-  pointer-events: none;
-  z-index: 10;
-
-  &--shown {
-    pointer-events: all;
-    transform: scale(1);
-    cursor: default;
   }
 }
 

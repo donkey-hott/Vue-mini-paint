@@ -7,6 +7,7 @@ import { store } from "./store";
 import { RootActions } from "@/store/modules/root/actions/action-types";
 
 import BaseButton from "./components/UI/BaseButton.vue";
+import Overlay from "./components/UI/Overlay.vue";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
@@ -19,6 +20,7 @@ store.dispatch(RootActions.INIT).then(() => {
       .use(router)
       .use(Toast)
       .component("base-button", BaseButton)
+      .component("overlay", Overlay)
       .mount("#app");
   }
 });
