@@ -1,24 +1,22 @@
 <template>
-  <div
-    :style="`left: ${tooltipPosition.left}px; top: ${tooltipPosition.top}px;`"
-    ref="tooltipElement"
-    class="tooltip"
-  >
+  <div v-if="showOnboarding" ref="tooltipElement" class="tooltip">
     <span class="tooltip__text">{{ currentStep?.textContent }}</span>
     <div class="tooltip__buttons">
-      <button @click="endOnboarding">End preview</button>
-      <button v-show="!isLastStep" @click="incrementStep">Next</button>
+      <button @click="finishOnboarding">End preview</button>
+      <button @click="publisher.showNextStep" v-show="!isLastElement">
+        Next
+      </button>
     </div>
   </div>
   <teleport to="body">
-    <overlay :show="false"></overlay>
+    <overlay :show="true"></overlay>
   </teleport>
 </template>
 
 <script lang="ts">
 import { useStore } from "@/store";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
@@ -27,6 +25,7 @@ export default defineComponent({
     const router = useRouter();
     const tooltipElement = ref<HTMLElement | null>(null);
     const stepIndex = ref(0);
+    const publisher = ref<Publisher | null>(null);
 
     const steps = computed(() => {
       return store.state.onboarding.config;
@@ -36,83 +35,15 @@ export default defineComponent({
       return store.state.onboarding.showOnboarding;
     });
 
-    const currentElement = ref<HTMLElement | null>(
-      document.getElementById(steps?.value[0].elementId)
-    );
-
-    const isLastStep = computed(() => {
-      return steps.value.length - 1 === stepIndex.value;
-    });
-
     const currentStep = computed(() => {
       return steps.value[stepIndex.value];
     });
 
-    /* fires after "incrementStep" function */
-    watch(currentStep, () => {
-      const route = currentStep.value.nextRoute;
-      if (!route) return;
-
-      router.push(route).then(() => {
-        setElement();
-      });
+    const isLastElement = computed(() => {
+      return steps.value.length - 1 === stepIndex.value;
     });
 
-    function setElement() {
-      currentElement.value = document.getElementById(
-        currentStep.value?.elementId
-      );
-    }
-
-    const tooltipPosition = computed(() => {
-      const position = {
-        left: 0,
-        top: 0,
-      };
-
-      if (!currentElement.value || !tooltipElement.value) return position;
-      const clientRect = currentElement.value.getBoundingClientRect();
-      const INDENT_FROM_TOOLTIP = 10;
-
-      position.left =
-        clientRect.right +
-        document.documentElement.scrollLeft +
-        INDENT_FROM_TOOLTIP;
-      position.top = clientRect.top + document.documentElement.scrollTop;
-
-      return position;
-    });
-
-    watch(tooltipPosition, (position) => {
-      highlightElement();
-      scrollToElement(position.top);
-    });
-
-    function highlightElement() {
-      if (!tooltipElement.value || !currentElement.value) return;
-      currentElement.value.classList.add("highlighted-element");
-    }
-
-    function fadeElement() {
-      if (!tooltipElement.value || !currentElement.value) return;
-      currentElement.value.classList.remove("highlighted-element");
-    }
-
-    function scrollToElement(position: number) {
-      if (!tooltipElement.value) return;
-
-      window.scroll({
-        top: position,
-        behavior: "smooth",
-      });
-    }
-
-    function incrementStep() {
-      fadeElement();
-      stepIndex.value += 1;
-    }
-
-    function endOnboarding() {
+    function finishOnboarding() {
       const onboardingInfoJSON = {
         seen: true,
         version: JSON.stringify(store.state.onboarding.config),
@@ -120,14 +51,124 @@ export default defineComponent({
       store.dispatch(ActionTypes.SET_ONBOARDING_INFO, onboardingInfoJSON);
     }
 
+    function getElement(passedIndex?: number) {
+      return document.getElementById(
+        steps?.value[passedIndex || stepIndex.value].elementId
+      );
+    }
+
+    /* PUBLISHER-SUBSCRIBER LOGIC */
+
+    interface Subscriber {
+      update(publisher?: IPublisher): void;
+    }
+
+    interface IPublisher {
+      notify(): void;
+      subscribe(subscriber: Subscriber): void;
+      unsubscribe(subscriber: Subscriber): void;
+    }
+
+    /* concrete classes */
+
+    class Publisher implements IPublisher {
+      private subscribers: Array<Subscriber>;
+
+      constructor() {
+        this.subscribers = [];
+      }
+
+      notify() {
+        this.subscribers.forEach((subscriber) => {
+          subscriber.update();
+        });
+      }
+
+      subscribe(subscriber: Subscriber) {
+        if (this.subscribers.includes(subscriber)) return;
+
+        this.subscribers.push(subscriber);
+      }
+
+      unsubscribe(subscriber: Subscriber) {
+        const subscriberIdx = this.subscribers.indexOf(subscriber);
+        if (subscriberIdx === -1) return;
+
+        this.subscribers = this.subscribers.splice(subscriberIdx, 1);
+      }
+
+      showNextStep() {
+        stepIndex.value += 1;
+        const route = currentStep.value.nextRoute;
+
+        router.push(route).then(() => {
+          this.notify();
+        });
+      }
+    }
+
+    class TooltipPositionObserver implements Subscriber {
+      update() {
+        const currentElement = getElement();
+
+        if (!currentElement || !tooltipElement.value) return;
+        const clientRect = currentElement.getBoundingClientRect();
+        const INDENT_FROM_TOOLTIP = 10;
+
+        /* removes "transform" property that centers tooltip window initially */
+        tooltipElement.value.classList.add("tooltip--no-transform");
+
+        tooltipElement.value.style.left = `${
+          clientRect.right +
+          document.documentElement.scrollLeft +
+          INDENT_FROM_TOOLTIP
+        }px`;
+        tooltipElement.value.style.top = `${
+          clientRect.top + document.documentElement.scrollTop
+        }px`;
+        /* TODO: */
+        this.scrollToElement(
+          clientRect.top + document.documentElement.scrollTop
+        );
+      }
+
+      private scrollToElement(position: number) {
+        if (!tooltipElement.value) return;
+
+        window.scroll({
+          top: position,
+          behavior: "smooth",
+        });
+      }
+    }
+
+    class ElementsHighlightingObserver implements Subscriber {
+      update() {
+        const prevElement = getElement(stepIndex.value - 1);
+        const currentElement = getElement();
+
+        prevElement?.classList.remove("highlighted-element");
+        currentElement?.classList.add("highlighted-element");
+      }
+    }
+
+    onMounted(() => {
+      publisher.value = new Publisher();
+
+      const elementsHighlightingObserver = new ElementsHighlightingObserver();
+      publisher.value.subscribe(elementsHighlightingObserver);
+
+      const tooltipPositionObserver = new TooltipPositionObserver();
+      publisher.value.subscribe(tooltipPositionObserver);
+    });
+
     return {
-      tooltipPosition,
       tooltipElement,
       currentStep,
+      isLastElement,
+      publisher,
       showOnboarding,
-      isLastStep,
-      incrementStep,
-      endOnboarding,
+      finishOnboarding,
     };
   },
 });
@@ -137,10 +178,13 @@ export default defineComponent({
 @import "../assets/colors.scss";
 
 .tooltip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   padding: 0.3em;
   min-width: 40%;
   border-radius: 7px;
-  position: absolute;
   background: #2c343a;
   color: #fff;
   display: inline-flex;
@@ -148,6 +192,10 @@ export default defineComponent({
   align-items: center;
   transition: all 0.3s;
   z-index: 20;
+
+  &--no-transform {
+    transform: none;
+  }
 
   &__text {
     margin-bottom: 0.5em;
