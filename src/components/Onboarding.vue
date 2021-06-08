@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { useStore } from "@/store";
-import { ActionTypes } from "@/store/modules/auth/actions/action-types";
+import { ActionTypes } from "@/store/modules/onboarding/actions/action-types";
 import { computed, defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -44,11 +44,8 @@ export default defineComponent({
     });
 
     function finishOnboarding() {
-      const onboardingInfoJSON = {
-        seen: true,
-        version: JSON.stringify(store.state.onboarding.config),
-      };
-      store.dispatch(ActionTypes.SET_ONBOARDING_INFO, onboardingInfoJSON);
+      const onboardingInfoJSON = JSON.stringify(store.state.onboarding.config);
+      store.dispatch(ActionTypes.SEND_ONBOARDING_INFO, onboardingInfoJSON);
     }
 
     function getElement(passedIndex?: number) {

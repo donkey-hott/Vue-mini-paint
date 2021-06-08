@@ -16,5 +16,5 @@ export interface Pictures {
 export type OnboardingStep = {
   textContent: string;
   elementId: string;
-  nextRoute: string | null;
+  nextRoute: string;
 };

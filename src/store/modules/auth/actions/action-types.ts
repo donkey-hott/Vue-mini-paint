@@ -8,7 +8,6 @@ export enum ActionTypes {
   SIGN_UP = "SIGN_UP",
   SIGN_IN = "SIGN_IN",
   LOG_OUT = "LOG_OUT",
-  SET_ONBOARDING_INFO = "SET_ONBOARDING_INFO",
 }
 
 export interface Actions {
@@ -21,10 +20,6 @@ export interface Actions {
     payload: UserCredentials
   ): void;
   [ActionTypes.LOG_OUT](context: AugmentedActionContext): Promise<void>;
-  [ActionTypes.SET_ONBOARDING_INFO](
-    context: AugmentedActionContext,
-    payload: { seen: boolean; version: string }
-  ): void;
 }
 
 export type AugmentedActionContext = {

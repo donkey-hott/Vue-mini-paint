@@ -6,7 +6,7 @@ import firebase from "firebase";
 import { MutationTypes } from "../mutations/mutation-types";
 import { getDiffOfObjArrays } from "@/utils/getDiffOfObjArrays";
 import { OnboardingStep } from "@/store/types";
-
+/* TODO: rename "handle onboarding" */
 export const actions: ActionTree<State, RootState> & Actions = {
   [ActionTypes.HANDLE_ONBOARDING](context, payload) {
     firebase
@@ -23,7 +23,7 @@ export const actions: ActionTree<State, RootState> & Actions = {
         }
 
         const userOnboardingVersion = JSON.parse(
-          snapshotValue?.version
+          snapshotValue
         ) as Array<OnboardingStep>;
         const currentOnboardingVersion = context.state.config;
         const diffBetweenOnboardingVersions = getDiffOfObjArrays(
@@ -31,19 +31,21 @@ export const actions: ActionTree<State, RootState> & Actions = {
           currentOnboardingVersion,
           "elementId"
         );
-        // console.log(userOnboardingVersion, currentOnboardingVersion);
 
         /* if version that has user seen differs from current one, replace
           current version with difference between them */
         if (diffBetweenOnboardingVersions.length !== 0) {
-          console.log("difference is:", diffBetweenOnboardingVersions);
           return context.commit(
             MutationTypes.REPLACE_CONFIG,
             diffBetweenOnboardingVersions as Array<OnboardingStep>
           );
         }
-        /* if user has seen latest onboarding version, don't show him anything */
-        console.log("difference is equal to 0");
       });
+  },
+  [ActionTypes.SEND_ONBOARDING_INFO](context, payload) {
+    const { currentUser } = context.rootState.auth;
+    if (!currentUser) return;
+
+    firebase.database().ref(currentUser.uid).child("onboarding").set(payload);
   },
 };

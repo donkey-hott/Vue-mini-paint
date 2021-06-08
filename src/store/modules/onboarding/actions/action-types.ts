@@ -1,4 +1,5 @@
 export enum ActionTypes {
+  SEND_ONBOARDING_INFO = "SEND_ONBOARDING_INFO",
   HANDLE_ONBOARDING = "HANDLE_ONBOARDING",
 }
 
@@ -19,5 +20,9 @@ export interface Actions {
   [ActionTypes.HANDLE_ONBOARDING](
     context: AugmentedActionContext,
     payload: firebase.User | null
+  ): void;
+  [ActionTypes.SEND_ONBOARDING_INFO](
+    context: AugmentedActionContext,
+    payload: string
   ): void;
 }
