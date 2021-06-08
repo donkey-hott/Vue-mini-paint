@@ -9,13 +9,14 @@
     </div>
   </div>
   <teleport to="body">
-    <overlay :show="true"></overlay>
+    <overlay :show="showOnboarding"></overlay>
   </teleport>
 </template>
 
 <script lang="ts">
 import { useStore } from "@/store";
 import { ActionTypes } from "@/store/modules/onboarding/actions/action-types";
+import { MutationTypes } from "@/store/modules/onboarding/mutations/mutation-types";
 import { computed, defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -45,6 +46,8 @@ export default defineComponent({
 
     function finishOnboarding() {
       const onboardingInfoJSON = JSON.stringify(store.state.onboarding.config);
+
+      store.commit(MutationTypes.SHOW_ONBOARDING, false);
       store.dispatch(ActionTypes.SEND_ONBOARDING_INFO, onboardingInfoJSON);
     }
 
