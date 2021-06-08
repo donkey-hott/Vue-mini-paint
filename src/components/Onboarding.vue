@@ -1,26 +1,25 @@
 <template>
-  <div ref="tooltipElement" class="tooltip">
+  <div
+    :style="`left: ${tooltipPosition.left}px; top: ${tooltipPosition.top}px;`"
+    ref="tooltipElement"
+    class="tooltip"
+  >
     <span class="tooltip__text">{{ currentStep?.textContent }}</span>
     <div class="tooltip__buttons">
-      <button @click="decrementStep">Previous</button>
       <button @click="endOnboarding">End preview</button>
       <button v-show="!isLastStep" @click="incrementStep">Next</button>
     </div>
   </div>
   <teleport to="body">
-    <overlay :show="true"></overlay>
+    <overlay :show="false"></overlay>
   </teleport>
 </template>
 
 <script lang="ts">
 import { useStore } from "@/store";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
-import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-/* TODO: написать компьютед для позиционирования тултипа так, чтобы он не зависел от
-других вычисляемых свойств */
-/* TODO: rewrite "fadeElement" call so that it doesn't violate SRP */
-/* TODO: change caption of the "next" button in last card to "done" or just hide it */
 
 export default defineComponent({
   setup() {
@@ -37,28 +36,57 @@ export default defineComponent({
       return store.state.onboarding.showOnboarding;
     });
 
-    const currentElement = computed(() => {
-      return document.getElementById(currentStep.value?.elementId);
-    });
+    const currentElement = ref<HTMLElement | null>(
+      document.getElementById(steps?.value[0].elementId)
+    );
 
     const isLastStep = computed(() => {
       return steps.value.length - 1 === stepIndex.value;
     });
 
-    function positionTooltip() {
-      if (!currentElement.value || !tooltipElement.value) return;
-      const clientRect = currentElement.value.getBoundingClientRect();
+    const currentStep = computed(() => {
+      return steps.value[stepIndex.value];
+    });
 
-      tooltipElement.value.style.left = `${
-        clientRect.right + document.documentElement.scrollLeft + 10
-      }px`;
-      tooltipElement.value.style.top = `${
-        clientRect.top + document.documentElement.scrollTop
-      }px`;
+    /* fires after "incrementStep" function */
+    watch(currentStep, () => {
+      const route = currentStep.value.nextRoute;
+      if (!route) return;
 
-      highlightElement();
-      scrollToElement(clientRect.top + document.documentElement.scrollTop);
+      router.push(route).then(() => {
+        setElement();
+      });
+    });
+
+    function setElement() {
+      currentElement.value = document.getElementById(
+        currentStep.value?.elementId
+      );
     }
+
+    const tooltipPosition = computed(() => {
+      const position = {
+        left: 0,
+        top: 0,
+      };
+
+      if (!currentElement.value || !tooltipElement.value) return position;
+      const clientRect = currentElement.value.getBoundingClientRect();
+      const INDENT_FROM_TOOLTIP = 10;
+
+      position.left =
+        clientRect.right +
+        document.documentElement.scrollLeft +
+        INDENT_FROM_TOOLTIP;
+      position.top = clientRect.top + document.documentElement.scrollTop;
+
+      return position;
+    });
+
+    watch(tooltipPosition, (position) => {
+      highlightElement();
+      scrollToElement(position.top);
+    });
 
     function highlightElement() {
       if (!tooltipElement.value || !currentElement.value) return;
@@ -69,10 +97,6 @@ export default defineComponent({
       if (!tooltipElement.value || !currentElement.value) return;
       currentElement.value.classList.remove("highlighted-element");
     }
-
-    const currentStep = computed(() => {
-      return steps.value[stepIndex.value];
-    });
 
     function scrollToElement(position: number) {
       if (!tooltipElement.value) return;
@@ -88,14 +112,6 @@ export default defineComponent({
       stepIndex.value += 1;
     }
 
-    watch(currentStep, () => {
-      const route = currentStep.value.nextRoute;
-      if (!route) return;
-      router.push(route).then(() => {
-        positionTooltip();
-      });
-    });
-
     function endOnboarding() {
       const onboardingInfoJSON = {
         seen: true,
@@ -104,11 +120,8 @@ export default defineComponent({
       store.dispatch(ActionTypes.SET_ONBOARDING_INFO, onboardingInfoJSON);
     }
 
-    onMounted(() => {
-      positionTooltip();
-    });
-
     return {
+      tooltipPosition,
       tooltipElement,
       currentStep,
       showOnboarding,
@@ -125,7 +138,7 @@ export default defineComponent({
 
 .tooltip {
   padding: 0.3em;
-  max-width: 40%;
+  min-width: 40%;
   border-radius: 7px;
   position: absolute;
   background: #2c343a;
