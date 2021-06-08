@@ -4,7 +4,7 @@
     <div class="tooltip__buttons">
       <button @click="decrementStep">Previous</button>
       <button @click="endOnboarding">End preview</button>
-      <button @click="incrementStep">Next</button>
+      <button v-show="!isLastStep" @click="incrementStep">Next</button>
     </div>
   </div>
   <teleport to="body">
@@ -20,6 +20,7 @@ import { useRouter } from "vue-router";
 /* TODO: написать компьютед для позиционирования тултипа так, чтобы он не зависел от
 других вычисляемых свойств */
 /* TODO: rewrite "fadeElement" call so that it doesn't violate SRP */
+/* TODO: change caption of the "next" button in last card to "done" or just hide it */
 
 export default defineComponent({
   setup() {
@@ -38,6 +39,10 @@ export default defineComponent({
 
     const currentElement = computed(() => {
       return document.getElementById(currentStep.value?.elementId);
+    });
+
+    const isLastStep = computed(() => {
+      return steps.value.length - 1 === stepIndex.value;
     });
 
     function positionTooltip() {
@@ -79,7 +84,6 @@ export default defineComponent({
     }
 
     function incrementStep() {
-      if (steps.value.length - 1 === stepIndex.value) return;
       fadeElement();
       stepIndex.value += 1;
     }
@@ -108,6 +112,7 @@ export default defineComponent({
       tooltipElement,
       currentStep,
       showOnboarding,
+      isLastStep,
       incrementStep,
       endOnboarding,
     };
@@ -116,8 +121,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "../assets/colors.scss";
+
 .tooltip {
   padding: 0.3em;
+  max-width: 40%;
+  border-radius: 7px;
   position: absolute;
   background: #2c343a;
   color: #fff;
@@ -135,6 +144,20 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     gap: 0.5em;
+
+    button {
+      background: $emphasizing;
+      padding: 0.3em;
+      font-family: inherit;
+      color: #fff;
+      border: 0;
+      cursor: pointer;
+      border-radius: 7px;
+
+      &:nth-child(2) {
+        background: $red-alert;
+      }
+    }
   }
 
   &::after {

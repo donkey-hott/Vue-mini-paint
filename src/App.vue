@@ -54,9 +54,11 @@ input {
   color: #fff;
 }
 
+/* class that highlights elements during the onboarding guide */
 .highlighted-element {
   position: relative;
   z-index: 20;
+  pointer-events: none;
 }
 
 @media (min-width: 767px) {
