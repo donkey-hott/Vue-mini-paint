@@ -2,10 +2,8 @@
   <div v-if="showOnboarding" ref="tooltipElement" class="tooltip">
     <span class="tooltip__text">{{ currentStep?.textContent }}</span>
     <div class="tooltip__buttons">
-      <button @click="finishOnboarding">End preview</button>
-      <button @click="publisher.showNextStep" v-show="!isLastElement">
-        Next
-      </button>
+      <button @click="publisher.finishOnboarding">End preview</button>
+      <button @click="incrementStepIndex">Next</button>
     </div>
   </div>
   <teleport to="body">
@@ -17,7 +15,7 @@
 import { useStore } from "@/store";
 import { ActionTypes } from "@/store/modules/onboarding/actions/action-types";
 import { MutationTypes } from "@/store/modules/onboarding/mutations/mutation-types";
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, watch, ref } from "vue";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
@@ -29,7 +27,7 @@ export default defineComponent({
     const publisher = ref<Publisher | null>(null);
 
     const steps = computed(() => {
-      return store.state.onboarding.config;
+      return store.state.onboarding.steps;
     });
 
     const showOnboarding = computed(() => {
@@ -40,21 +38,28 @@ export default defineComponent({
       return steps.value[stepIndex.value];
     });
 
-    const isLastElement = computed(() => {
+    watch(steps, () => {
+      /* triggers when user passes authentication */
+      if (showOnboarding.value) {
+        publisher.value?.showStep();
+      }
+    });
+
+    const isLastStep = computed(() => {
       return steps.value.length - 1 === stepIndex.value;
     });
 
-    function finishOnboarding() {
-      const onboardingInfoJSON = JSON.stringify(store.state.onboarding.config);
-
-      store.commit(MutationTypes.SHOW_ONBOARDING, false);
-      store.dispatch(ActionTypes.SEND_ONBOARDING_INFO, onboardingInfoJSON);
-    }
-
     function getElement(passedIndex?: number) {
+      if (passedIndex === -1) passedIndex = stepIndex.value;
       return document.getElementById(
         steps?.value[passedIndex || stepIndex.value].elementId
       );
+    }
+
+    function incrementStepIndex() {
+      if (isLastStep.value) return;
+      stepIndex.value += 1;
+      publisher.value?.showStep();
     }
 
     /* PUBLISHER-SUBSCRIBER LOGIC */
@@ -97,13 +102,19 @@ export default defineComponent({
         this.subscribers = this.subscribers.splice(subscriberIdx, 1);
       }
 
-      showNextStep() {
-        stepIndex.value += 1;
+      showStep() {
         const route = currentStep.value.nextRoute;
-
         router.push(route).then(() => {
           this.notify();
         });
+      }
+
+      finishOnboarding() {
+        const onboardingInfoJSON = JSON.stringify(store.state.onboarding.steps);
+
+        store.commit(MutationTypes.SHOW_ONBOARDING, false);
+        store.dispatch(ActionTypes.SEND_ONBOARDING_INFO, onboardingInfoJSON);
+        this.notify();
       }
     }
 
@@ -114,22 +125,15 @@ export default defineComponent({
         if (!currentElement || !tooltipElement.value) return;
         const clientRect = currentElement.getBoundingClientRect();
         const INDENT_FROM_TOOLTIP = 10;
-
-        /* removes "transform" property that centers tooltip window initially */
-        tooltipElement.value.classList.add("tooltip--no-transform");
-
-        tooltipElement.value.style.left = `${
+        const positionX =
           clientRect.right +
           document.documentElement.scrollLeft +
-          INDENT_FROM_TOOLTIP
-        }px`;
-        tooltipElement.value.style.top = `${
-          clientRect.top + document.documentElement.scrollTop
-        }px`;
-        /* TODO: */
-        this.scrollToElement(
-          clientRect.top + document.documentElement.scrollTop
-        );
+          INDENT_FROM_TOOLTIP;
+        const positionY = clientRect.top + document.documentElement.scrollTop;
+
+        tooltipElement.value.style.left = `${positionX}px`;
+        tooltipElement.value.style.top = `${positionY}px`;
+        this.scrollToElement(positionY);
       }
 
       private scrollToElement(position: number) {
@@ -147,28 +151,29 @@ export default defineComponent({
         const prevElement = getElement(stepIndex.value - 1);
         const currentElement = getElement();
 
-        prevElement?.classList.remove("highlighted-element");
-        currentElement?.classList.add("highlighted-element");
+        // prevElement?.classList.remove("highlighted-element");
+        // currentElement?.classList.add("highlighted-element");
       }
     }
 
     onMounted(() => {
       publisher.value = new Publisher();
-
       const elementsHighlightingObserver = new ElementsHighlightingObserver();
       publisher.value.subscribe(elementsHighlightingObserver);
 
       const tooltipPositionObserver = new TooltipPositionObserver();
       publisher.value.subscribe(tooltipPositionObserver);
+
+      publisher.value.showStep();
     });
 
     return {
       tooltipElement,
       currentStep,
-      isLastElement,
+      isLastStep,
       publisher,
+      incrementStepIndex,
       showOnboarding,
-      finishOnboarding,
     };
   },
 });
@@ -179,9 +184,6 @@ export default defineComponent({
 
 .tooltip {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   padding: 0.3em;
   min-width: 40%;
   border-radius: 7px;

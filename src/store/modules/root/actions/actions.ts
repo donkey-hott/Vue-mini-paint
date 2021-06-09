@@ -8,14 +8,15 @@ import { ActionTypes } from "../../pictures/actions/action-types";
 import { ActionTypes as OnboardingActionTypes } from "@/store/modules/onboarding/actions/action-types";
 
 export const rootActions: ActionTree<RootState, RootState> & Actions = {
-  async [RootActions.INIT]({ commit, dispatch }) {
+  [RootActions.INIT]({ commit, dispatch }) {
     return new Promise((resolve) => {
       initializeFirebase();
       firebase.auth().onAuthStateChanged((user) => {
         commit(MutationTypes.SET_USER, user);
         dispatch(ActionTypes.LOAD_PICTURES);
-        dispatch(OnboardingActionTypes.HANDLE_ONBOARDING, user);
-        resolve();
+        dispatch(OnboardingActionTypes.HANDLE_ONBOARDING_INFO, user).then(() =>
+          resolve()
+        );
       });
     });
   },

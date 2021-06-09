@@ -2,12 +2,12 @@ import { OnboardingStep } from "@/store/types";
 
 export type State = {
   showOnboarding: boolean;
-  config: OnboardingStep[];
+  steps: OnboardingStep[];
 };
 
 export const state: State = {
   showOnboarding: false,
-  config: [
+  steps: [
     {
       textContent: "Welcome! Let me show you what you can do with me",
       elementId: "logo",
@@ -23,10 +23,10 @@ export const state: State = {
       elementId: "tools",
       nextRoute: "/new-canvas",
     },
-    // {
-    //   textContent: "More shapes",
-    //   elementId: "moreShapes",
-    //   nextRoute: "/new-canvas",
-    // },
+    {
+      textContent: "More shapes",
+      elementId: "moreShapes",
+      nextRoute: "/new-canvas",
+    },
   ],
 };

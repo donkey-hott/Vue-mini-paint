@@ -10,6 +10,6 @@ export const mutations: MutationTree<State> & Mutations = {
     state.showOnboarding = payload;
   },
   [MutationTypes.REPLACE_CONFIG](state, payload) {
-    state.config = payload;
+    state.steps = payload;
   },
 };

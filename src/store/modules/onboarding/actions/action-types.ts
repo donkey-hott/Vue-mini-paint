@@ -1,6 +1,6 @@
 export enum ActionTypes {
   SEND_ONBOARDING_INFO = "SEND_ONBOARDING_INFO",
-  HANDLE_ONBOARDING = "HANDLE_ONBOARDING",
+  HANDLE_ONBOARDING_INFO = "HANDLE_ONBOARDING_INFO",
 }
 
 import firebase from "firebase";
@@ -17,10 +17,10 @@ export type AugmentedActionContext = {
 } & Omit<ActionContext<State, RootState>, "commit">;
 
 export interface Actions {
-  [ActionTypes.HANDLE_ONBOARDING](
+  [ActionTypes.HANDLE_ONBOARDING_INFO](
     context: AugmentedActionContext,
     payload: firebase.User | null
-  ): void;
+  ): Promise<void>;
   [ActionTypes.SEND_ONBOARDING_INFO](
     context: AugmentedActionContext,
     payload: string
