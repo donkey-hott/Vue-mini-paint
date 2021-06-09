@@ -1,18 +1,30 @@
 <template>
   <the-header></the-header>
   <router-view />
-  <onboarding></onboarding>
+  <onboarding v-if="showOnboarding"></onboarding>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import TheHeader from "./components/UI/TheHeader.vue";
 import Onboarding from "./components/Onboarding.vue";
+import { useStore } from "@/store";
 
 export default defineComponent({
   components: {
     TheHeader,
     Onboarding,
+  },
+
+  setup() {
+    const store = useStore();
+    const showOnboarding = computed(
+      () => store.state.onboarding.showOnboarding
+    );
+
+    return {
+      showOnboarding,
+    };
   },
 });
 </script>

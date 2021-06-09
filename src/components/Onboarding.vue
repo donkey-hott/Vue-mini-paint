@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showOnboarding" ref="tooltipElement" class="tooltip">
+  <div ref="tooltipElement" class="tooltip">
     <span class="tooltip__text">{{ currentStep?.textContent }}</span>
     <div class="tooltip__buttons">
       <button @click="publisher.finishOnboarding">End preview</button>
@@ -7,7 +7,7 @@
     </div>
   </div>
   <teleport to="body">
-    <overlay :show="false"></overlay>
+    <overlay :show="showOnboarding"></overlay>
   </teleport>
 </template>
 
