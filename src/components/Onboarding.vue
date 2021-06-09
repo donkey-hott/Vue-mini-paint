@@ -3,7 +3,7 @@
     <span class="tooltip__text">{{ currentStep?.textContent }}</span>
     <div class="tooltip__buttons">
       <button @click="publisher.finishOnboarding">End preview</button>
-      <button @click="incrementStepIndex">Next</button>
+      <button @click="incrementStepIndex" v-show="!isLastStep">Next</button>
     </div>
   </div>
   <teleport to="body">
@@ -50,10 +50,11 @@ export default defineComponent({
     });
 
     function getElement(passedIndex?: number) {
-      if (passedIndex === -1) passedIndex = stepIndex.value;
-      return document.getElementById(
-        steps?.value[passedIndex || stepIndex.value].elementId
-      );
+      let index = passedIndex;
+      if (passedIndex === undefined || passedIndex < 0) {
+        index = stepIndex.value;
+      }
+      return document.getElementById(steps?.value[index as number].elementId);
     }
 
     function incrementStepIndex() {
@@ -151,8 +152,8 @@ export default defineComponent({
         const prevElement = getElement(stepIndex.value - 1);
         const currentElement = getElement();
 
-        // prevElement?.classList.remove("highlighted-element");
-        // currentElement?.classList.add("highlighted-element");
+        prevElement?.classList.remove("highlighted-element");
+        currentElement?.classList.add("highlighted-element");
       }
     }
 
@@ -194,10 +195,6 @@ export default defineComponent({
   align-items: center;
   transition: all 0.3s;
   z-index: 20;
-
-  &--no-transform {
-    transform: none;
-  }
 
   &__text {
     margin-bottom: 0.5em;
