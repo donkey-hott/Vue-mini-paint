@@ -7,7 +7,7 @@
     </div>
   </div>
   <teleport to="body">
-    <overlay :show="showOnboarding"></overlay>
+    <overlay :show="false"></overlay>
   </teleport>
 </template>
 
@@ -27,7 +27,10 @@ export default defineComponent({
     const publisher = ref<Publisher | null>(null);
 
     const steps = computed(() => {
-      return store.state.onboarding.steps;
+      return (
+        store.state.onboarding.displayedVersion?.steps ||
+        store.state.onboarding.versions.slice(-1)[0].steps
+      );
     });
 
     const showOnboarding = computed(() => {
@@ -111,10 +114,16 @@ export default defineComponent({
       }
 
       finishOnboarding() {
-        const onboardingInfoJSON = JSON.stringify(store.state.onboarding.steps);
+        const lastOnboardingVersionId = store.state.onboarding.versions.slice(
+          -1
+        )[0].versionId;
+        console.log(lastOnboardingVersionId);
 
         store.commit(MutationTypes.SHOW_ONBOARDING, false);
-        store.dispatch(ActionTypes.SEND_ONBOARDING_INFO, onboardingInfoJSON);
+        store.dispatch(
+          ActionTypes.SEND_ONBOARDING_INFO,
+          lastOnboardingVersionId
+        );
         this.notify();
       }
     }

@@ -9,7 +9,7 @@ export const mutations: MutationTree<State> & Mutations = {
   [MutationTypes.SHOW_ONBOARDING](state, payload) {
     state.showOnboarding = payload;
   },
-  [MutationTypes.REPLACE_CONFIG](state, payload) {
-    state.steps = payload;
+  [MutationTypes.SET_DISPLAYED_VERSION](state, payload) {
+    state.displayedVersion = payload;
   },
 };

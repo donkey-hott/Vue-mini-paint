@@ -5,7 +5,7 @@ import { Actions, ActionTypes } from "./action-types";
 import firebase from "firebase";
 import { MutationTypes } from "../mutations/mutation-types";
 import { getDiffOfObjArrays } from "@/utils/getDiffOfObjArrays";
-import { OnboardingStep } from "@/store/types";
+import { OnboardingStep, OnboardingVersion } from "@/store/types";
 
 export const actions: ActionTree<State, RootState> & Actions = {
   [ActionTypes.HANDLE_ONBOARDING_INFO](context, payload) {
@@ -13,33 +13,35 @@ export const actions: ActionTree<State, RootState> & Actions = {
       firebase
         .database()
         .ref(payload?.uid)
-        .child("onboarding")
+        .child("onboardingVersion")
         .on("value", (snapshot) => {
           if (!payload) return resolve();
-          const snapshotValue = snapshot.val();
+          const userOnboardingVersionId = snapshot.val() as string | null;
 
           /* if user hasn't seen onboarding at all */
-          if (!snapshotValue) {
+          if (!userOnboardingVersionId) {
             context.commit(MutationTypes.SHOW_ONBOARDING, true);
             return resolve();
           }
 
-          const userOnboardingVersion = JSON.parse(
-            snapshotValue
-          ) as Array<OnboardingStep>;
-          const currentOnboardingVersion = context.state.steps;
-          const diffBetweenOnboardingVersions = getDiffOfObjArrays(
-            userOnboardingVersion,
-            currentOnboardingVersion,
-            "elementId"
-          );
           /* if version that has user seen differs from current one, replace
           current version with difference between them */
-          if (diffBetweenOnboardingVersions.length !== 0) {
-            context.commit(
-              MutationTypes.REPLACE_CONFIG,
-              diffBetweenOnboardingVersions as Array<OnboardingStep>
+          const currentOnboardingVersion = context.state.versions.slice(-1)[0];
+          if (currentOnboardingVersion.versionId !== userOnboardingVersionId) {
+            const userOnboardingVersion = context.getters.getVersionById(
+              userOnboardingVersionId
             );
+            const diffBetweenOnboardingVersions = getDiffOfObjArrays(
+              userOnboardingVersion.steps,
+              currentOnboardingVersion.steps,
+              "elementId"
+            );
+            const newVersion: OnboardingVersion = {
+              versionId: currentOnboardingVersion.versionId,
+              steps: diffBetweenOnboardingVersions as Array<OnboardingStep>,
+            };
+
+            context.commit(MutationTypes.SET_DISPLAYED_VERSION, newVersion);
             context.commit(MutationTypes.SHOW_ONBOARDING, true);
           }
           resolve();
@@ -50,6 +52,10 @@ export const actions: ActionTree<State, RootState> & Actions = {
     const { currentUser } = context.rootState.auth;
     if (!currentUser) return;
 
-    firebase.database().ref(currentUser.uid).child("onboarding").set(payload);
+    firebase
+      .database()
+      .ref(currentUser.uid)
+      .child("onboardingVersion")
+      .set(payload);
   },
 };

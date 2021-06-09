@@ -8,6 +8,8 @@ import { Actions } from "./actions/action-types";
 import { actions } from "./actions/actions";
 import { Mutations } from "@/store/modules/onboarding/mutations/mutation-types";
 import { mutations } from "@/store/modules/onboarding/mutations/mutations";
+import { Getters } from "@/store/modules/onboarding/getters/getter-types";
+import { getters } from "@/store/modules/onboarding/getters/getters";
 import { State, state } from "./state";
 import { State as RootState } from "@/store";
 
@@ -21,9 +23,9 @@ export type Store<S = State> = Omit<
     options?: CommitOptions
   ): ReturnType<Mutations[K]>;
 } & {
-  // getters: {
-  //   [K in keyof Getters]: ReturnType<Getters[K]>;
-  // };
+  getters: {
+    [K in keyof Getters]: ReturnType<Getters[K]>;
+  };
 } & {
   dispatch<K extends keyof Actions>(
     key: K,
@@ -36,4 +38,5 @@ export const onboarding: Module<State, RootState> = {
   state,
   mutations,
   actions,
+  getters,
 };

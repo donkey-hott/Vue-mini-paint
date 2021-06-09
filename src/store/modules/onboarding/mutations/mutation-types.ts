@@ -1,15 +1,15 @@
-import { OnboardingStep } from "@/store/types";
+import { OnboardingVersion } from "@/store/types";
 import { State } from "../state";
 
 export enum MutationTypes {
   SHOW_ONBOARDING = "SHOW_ONBOARDING",
-  REPLACE_CONFIG = "REPLACE_CONFIG",
+  SET_DISPLAYED_VERSION = "SET_DISPLAYED_VERSION",
 }
 
 export type Mutations<S = State> = {
   [MutationTypes.SHOW_ONBOARDING](state: S, payload: boolean): void;
-  [MutationTypes.REPLACE_CONFIG](
+  [MutationTypes.SET_DISPLAYED_VERSION](
     state: S,
-    payload: Array<OnboardingStep>
+    payload: OnboardingVersion
   ): void;
 };

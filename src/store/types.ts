@@ -18,3 +18,8 @@ export type OnboardingStep = {
   elementId: string;
   nextRoute: string;
 };
+
+export type OnboardingVersion = {
+  versionId: string;
+  steps: Array<OnboardingStep>;
+};

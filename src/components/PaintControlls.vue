@@ -11,6 +11,7 @@
           :class="{
             'item__button--active': mainInstrument.title === currentInstrument,
           }"
+          :id="mainInstrument.title.toLowerCase()"
           :title="mainInstrument.title"
           @click="
             setDrawFunction(
