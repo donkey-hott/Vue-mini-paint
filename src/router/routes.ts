@@ -5,6 +5,7 @@ import SignUp from "../views/authentication/SignUp.vue";
 import SignIn from "../views/authentication/SignIn.vue";
 import Paint from "../views/Paint.vue";
 import Registration from "../views/Registration.vue";
+import Swiper from "../views/Swiper.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -42,5 +43,10 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/edit-profile",
     name: "edit-profile",
     component: Registration,
+  },
+  {
+    path: "/swiper",
+    name: "swiper",
+    component: Swiper,
   },
 ];
