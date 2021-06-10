@@ -6,10 +6,10 @@
         :key="idx"
         class="item"
       >
-        <base-button
-          class="item__button"
+        <button
+          class="btn"
           :class="{
-            'item__button--active': mainInstrument.title === currentInstrument,
+            'btn--active': mainInstrument.title === currentInstrument,
           }"
           :title="mainInstrument.title"
           @click="
@@ -21,25 +21,24 @@
           "
         >
           <img :alt="mainInstrument.title" :src="mainInstrument.iconLink" />
-        </base-button>
+        </button>
       </li>
       <li class="item">
-        <base-button
+        <button
           title="More shapes"
-          class="item__button"
+          class="btn"
           @click="toggleAdditionalShapesBlock"
         >
           ...
-        </base-button>
+        </button>
         <div class="polygons" v-show="arePolygonsShown">
-          <base-button
+          <button
             v-for="(additInstrument, idx) in additionalInstruments"
             :key="idx"
             :title="additInstrument.title"
-            class="item__button"
+            class="btn"
             :class="{
-              'item__button--active':
-                currentInstrument === additInstrument.title,
+              '.btn--active': currentInstrument === additInstrument.title,
             }"
             @click="
               setDrawFunction(
@@ -50,21 +49,21 @@
             "
           >
             <img :alt="additInstrument.title" :src="additInstrument.iconLink" />
-          </base-button>
+          </button>
         </div>
       </li>
       <li class="item">
-        <base-button class="item__button" @click="emitClearCanvasEvent"
-          >Clear</base-button
-        >
+        <button class="btn btn-accent" @click="emitClearCanvasEvent">
+          Clear
+        </button>
       </li>
       <li class="item">
-        <base-button title="Save" class="item__button" @click="savePicture">
+        <button title="Save" class="btn" @click="savePicture">
           <img
             alt="Save"
             src="https://img.icons8.com/windows/50/ffffff/save--v1.png"
           />
-        </base-button>
+        </button>
       </li>
       <li class="item">
         <label for="lineWidth">Line width:</label>
@@ -250,8 +249,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/colors.scss";
-
 .buttons {
   display: grid;
   grid-template-columns: auto auto;
@@ -264,19 +261,15 @@ export default defineComponent({
     flex-direction: column;
     align-items: center;
 
-    &__button {
+    .btn {
       width: 50px;
       height: 50px;
       padding: 0;
-      background: $light-background;
-
+      align-items: center;
+      justify-content: center;
       &--active {
-        background: $emphasizing;
+        background: var(--btn-color-active);
       }
-    }
-
-    & input[type="number"] {
-      border-bottom: 2px solid $emphasizing;
     }
 
     & > .polygons {
@@ -286,8 +279,14 @@ export default defineComponent({
       width: max-content;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+
       & > button {
-        background: $light-background;
+        background: var(--bg-secondary);
+        border-radius: 0px;
+
+        &:hover {
+          background: var(--btn-color-active);
+        }
       }
     }
   }

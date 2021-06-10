@@ -4,15 +4,17 @@ import { Actions, RootActions } from "./action-types";
 import firebase from "firebase";
 import { initializeFirebase } from "@/firebase/firebaseInitialization";
 import { MutationTypes } from "../../auth/mutations/mutation-types";
-import { ActionTypes } from "../../pictures/actions/action-types";
+import { ActionTypes as PictureActionTypes } from "../../pictures/actions/action-types";
+import { ActionTypes as AuthActionTypes } from "../../auth/actions/action-types";
 
 export const rootActions: ActionTree<RootState, RootState> & Actions = {
-  async [RootActions.INIT]({ commit, dispatch }) {
+  [RootActions.INIT]({ commit, dispatch }) {
     return new Promise((resolve) => {
       initializeFirebase();
       firebase.auth().onAuthStateChanged((user) => {
         commit(MutationTypes.SET_USER, user);
-        dispatch(ActionTypes.LOAD_PICTURES);
+        dispatch(AuthActionTypes.LOAD_PROFILE);
+        dispatch(PictureActionTypes.LOAD_PICTURES);
         resolve();
       });
     });

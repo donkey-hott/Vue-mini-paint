@@ -12,7 +12,6 @@ import { ActionTypes } from "@/store/modules/auth/actions/action-types";
 import { useStore } from "../../store";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-
 import BaseAuthentication from "../../components/authentication/BaseAuthentication.vue";
 
 export default defineComponent({
@@ -30,11 +29,16 @@ export default defineComponent({
       password: string;
     }) {
       try {
-        await store.dispatch(ActionTypes.SIGN_UP, authenticationData);
-        router.push("/");
+        const userCredentials = await store.dispatch(
+          ActionTypes.SIGN_UP,
+          authenticationData
+        );
+        const email = userCredentials.user?.email;
+        if (!email) return;
 
+        store.dispatch(ActionTypes.CREATE_PROFILE, { email });
         toast.success("Signed up successfully!");
-        console.log("User has been signed up");
+        router.push("/");
       } catch (error) {
         toast.error(`Cannot sign up: ${error.message}`);
       }

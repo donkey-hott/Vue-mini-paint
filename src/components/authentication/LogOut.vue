@@ -1,11 +1,9 @@
 <template>
-  <base-button class="logout-btn" v-show="isUserAuthenticated" @click="logOut">
-    Log out
-  </base-button>
+  <button class="btn btn-secondary" @click="logOut">Log out</button>
 </template>
 
 <script lang="ts">
-import { defineComponent, ComputedRef, computed } from "vue";
+import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 
 import { useStore } from "../../store";
@@ -19,13 +17,9 @@ export default defineComponent({
     const router = useRouter();
     const toast = useToast();
 
-    const isUserAuthenticated: ComputedRef<boolean> = computed(() => {
-      return store.getters.isUserAuthenticated;
-    });
-
     async function logOut() {
       try {
-        store.dispatch(ActionTypes.LOG_OUT, undefined);
+        store.dispatch(ActionTypes.LOG_OUT);
         router.push("sign-in");
       } catch (error) {
         toast.error(`Cannot log out: ${error.message}`);
@@ -34,16 +28,18 @@ export default defineComponent({
 
     return {
       logOut,
-      isUserAuthenticated,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/colors.scss";
+button {
+  color: var(--color-danger);
+  transition: all 0.3s;
 
-.logout-btn {
-  background: #e72c44;
+  &:hover {
+    border-color: var(--color-danger);
+  }
 }
 </style>

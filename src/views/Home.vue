@@ -1,7 +1,7 @@
 <template>
-  <div class="home">
+  <main class="home">
     <picture-gallery></picture-gallery>
-  </div>
+  </main>
 </template>
 
 <script lang="ts">
@@ -15,11 +15,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import "../assets/colors.scss";
-
-.home {
-  background: $dark-background;
-}
-</style>

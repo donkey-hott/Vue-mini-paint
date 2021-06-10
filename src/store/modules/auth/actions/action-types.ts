@@ -1,4 +1,5 @@
-import { UserCredentials } from "@/store/types";
+import firebase from "firebase";
+import { UserCredentials, UserProfile } from "@/store/types";
 import { ActionContext } from "vuex";
 import { Mutations } from "../mutations/mutation-types";
 import { State as RootState } from "@/store";
@@ -8,18 +9,25 @@ export enum ActionTypes {
   SIGN_UP = "SIGN_UP",
   SIGN_IN = "SIGN_IN",
   LOG_OUT = "LOG_OUT",
+  CREATE_PROFILE = "CREATE_PROFILE",
+  LOAD_PROFILE = "LOAD_PROFILE",
 }
 
 export interface Actions {
   [ActionTypes.SIGN_UP](
     { commit }: AugmentedActionContext,
     payload: UserCredentials
-  ): void;
+  ): Promise<firebase.auth.UserCredential>;
   [ActionTypes.SIGN_IN](
     { commit }: AugmentedActionContext,
     payload: UserCredentials
   ): void;
   [ActionTypes.LOG_OUT](context: AugmentedActionContext): Promise<void>;
+  [ActionTypes.CREATE_PROFILE](
+    context: AugmentedActionContext,
+    payload: UserProfile
+  ): void;
+  [ActionTypes.LOAD_PROFILE](context: AugmentedActionContext): void;
 }
 
 export type AugmentedActionContext = {

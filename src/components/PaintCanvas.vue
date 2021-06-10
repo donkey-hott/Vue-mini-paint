@@ -1,5 +1,5 @@
 <template>
-  <section class="workspace">
+  <main class="workspace">
     <input
       type="text"
       placeholder="Enter title..."
@@ -29,7 +29,7 @@
       <span>x: {{ currentCursorPosition?.x }}</span>
       <span>y: {{ currentCursorPosition?.y }}</span>
     </div>
-  </section>
+  </main>
 </template>
 
 <script lang="ts">
@@ -433,8 +433,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/colors.scss";
-
 .workspace {
   display: grid;
   grid-template-areas:
@@ -448,7 +446,6 @@ export default defineComponent({
 
   &__title {
     grid-area: title;
-    border-bottom: 2px solid $emphasizing;
     margin-bottom: 0.5em;
   }
 

@@ -7,4 +7,7 @@ export const getters: GetterTree<State, RootState> & Getters = {
   isUserAuthenticated: (state) => {
     return state.currentUser !== null;
   },
+  userProfile: (state) => {
+    return state.userProfile;
+  },
 };

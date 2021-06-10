@@ -15,45 +15,29 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "./assets/colors.scss";
+@import "../public/styles/typography.scss";
+@import "../public/styles/colors.scss";
+@import "../public/styles/buttons.scss";
 
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  font-size: 100%;
 }
+
 html,
-body,
 #app {
   height: 100%;
 }
 
 #app {
-  font-family: "Nunito Sans", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: $dark-contrast;
-  background: $dark-background;
-  font-size: 16px;
-}
-
-select,
-input {
-  font-size: inherit;
-  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 input {
-  background: transparent;
   border: 0;
-  color: #fff;
-}
-
-@media (min-width: 767px) {
-  #app {
-    font-size: 20px;
-  }
 }
 </style>
