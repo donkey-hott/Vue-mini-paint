@@ -12,6 +12,7 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/",
     name: "Home",
     component: Home,
+    meta: { roles: ["user", "admin"] },
   },
   {
     path: "/sign-up",
@@ -33,20 +34,30 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/new-canvas",
     name: "paint",
     component: Paint,
+    meta: { roles: ["user", "admin"] },
   },
   {
     path: "/create-profile",
     name: "create-profile",
     component: Registration,
+    meta: {
+      roles: ["user", "admin"],
+    },
   },
   {
     path: "/edit-profile",
     name: "edit-profile",
     component: Registration,
+    meta: {
+      roles: ["user", "admin"],
+    },
   },
   {
     path: "/swiper",
     name: "swiper",
     component: Swiper,
+    meta: {
+      roles: ["user", "admin", "visitor"],
+    },
   },
 ];
