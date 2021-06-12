@@ -6,13 +6,13 @@ import SignIn from "../views/authentication/SignIn.vue";
 import Paint from "../views/Paint.vue";
 import Registration from "../views/Registration.vue";
 import Swiper from "../views/Swiper.vue";
+import Page403 from "../views/Page403.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
     component: Home,
-    meta: { roles: ["user", "admin"] },
   },
   {
     path: "/sign-up",
@@ -34,30 +34,28 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/new-canvas",
     name: "paint",
     component: Paint,
-    meta: { roles: ["user", "admin"] },
   },
   {
     path: "/create-profile",
     name: "create-profile",
     component: Registration,
-    meta: {
-      roles: ["user", "admin"],
-    },
   },
   {
     path: "/edit-profile",
     name: "edit-profile",
     component: Registration,
-    meta: {
-      roles: ["user", "admin"],
-    },
   },
   {
     path: "/swiper",
     name: "swiper",
     component: Swiper,
     meta: {
-      roles: ["user", "admin", "visitor"],
+      isPublic: true,
     },
+  },
+  {
+    path: "/forbidden",
+    name: "403-forbidden",
+    component: Page403,
   },
 ];
