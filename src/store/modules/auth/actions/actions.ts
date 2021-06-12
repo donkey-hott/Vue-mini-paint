@@ -30,18 +30,21 @@ export const actions: ActionTree<State, RootState> & Actions = {
     firebase.database().ref(currentUser.uid).child("profile").set(payload);
   },
   [ActionTypes.LOAD_PROFILE](context) {
-    const currentUser = context.rootState.auth.currentUser;
-    if (!currentUser) return;
+    return new Promise((resolve) => {
+      const currentUser = context.rootState.auth.currentUser;
+      if (!currentUser) return resolve();
 
-    firebase
-      .database()
-      .ref(currentUser.uid)
-      .child("profile")
-      .on("value", (snapshot) => {
-        const profile = snapshot.val() as UserProfile | null;
-        if (profile === null) return;
+      firebase
+        .database()
+        .ref(currentUser.uid)
+        .child("profile")
+        .on("value", (snapshot) => {
+          const profile = snapshot.val() as UserProfile | null;
+          if (profile === null) return;
 
-        context.commit(MutationTypes.SET_PROFILE, profile);
-      });
+          context.commit(MutationTypes.SET_PROFILE, profile);
+          resolve();
+        });
+    });
   },
 };

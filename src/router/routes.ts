@@ -6,6 +6,7 @@ import SignIn from "../views/authentication/SignIn.vue";
 import Paint from "../views/Paint.vue";
 import Registration from "../views/Registration.vue";
 import Swiper from "../views/Swiper.vue";
+import EditPictures from "../views/EditPictures.vue";
 import Page403 from "../views/Page403.vue";
 
 export const routes: Array<RouteRecordRaw> = [
@@ -19,7 +20,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "sign-up",
     component: SignUp,
     meta: {
-      isPublic: true,
+      forbiddenForAuthenticated: true,
     },
   },
   {
@@ -27,7 +28,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "sign-in",
     component: SignIn,
     meta: {
-      isPublic: true,
+      forbiddenForAuthenticated: true,
     },
   },
   {
@@ -51,6 +52,14 @@ export const routes: Array<RouteRecordRaw> = [
     component: Swiper,
     meta: {
       isPublic: true,
+    },
+  },
+  {
+    path: "/edit-pictures",
+    name: "edit-pictures",
+    component: EditPictures,
+    meta: {
+      adminOnly: true,
     },
   },
   {

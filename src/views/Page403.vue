@@ -16,9 +16,11 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
+
     onMounted(() => {
-      // console.log("router", router.options.history);
-      // console.log("route", route);
+      if (!route.redirectedFrom) {
+        router.push("/");
+      }
     });
   },
 });

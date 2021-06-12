@@ -27,7 +27,7 @@ export interface Actions {
     context: AugmentedActionContext,
     payload: UserProfile
   ): void;
-  [ActionTypes.LOAD_PROFILE](context: AugmentedActionContext): void;
+  [ActionTypes.LOAD_PROFILE](context: AugmentedActionContext): Promise<void>;
 }
 
 export type AugmentedActionContext = {
