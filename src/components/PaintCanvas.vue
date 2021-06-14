@@ -6,13 +6,13 @@
       class="workspace__title"
       v-model="pictureTitle"
     />
-    <paint-controlls
-      class="workspace__controlls"
+    <paint-controls
+      class="workspace__controls"
       @changeDrawFunction="setDrawFunction"
       @clearCanvas="clearCanvas"
       @setStyleOptions="setStyleOptions"
       @savePicture="savePicture"
-    ></paint-controlls>
+    ></paint-controls>
     <canvas
       width="600"
       height="500"
@@ -38,10 +38,9 @@ import { defineComponent, ref, reactive, onMounted } from "vue";
 /* store */
 import { useStore } from "../store";
 import { ActionTypes } from "@/store/modules/pictures/actions/action-types";
-// import { ActionTypes } from "@/store/actions/action-types";
 
 /* components */
-import PaintControlls from "./PaintControlls.vue";
+import PaintControls from "./PaintControls.vue";
 
 /* types */
 import {
@@ -67,7 +66,7 @@ import { useToast } from "vue-toastification";
 
 export default defineComponent({
   components: {
-    PaintControlls,
+    PaintControls,
   },
 
   setup() {
@@ -375,7 +374,6 @@ export default defineComponent({
 
     async function savePicture() {
       const imgURL = canvas.value?.toDataURL();
-      // console.log(store.state.userPictures);
       const enumeratedTitle = enumerateTitle(
         Object.values(store.state.pictures.userPictures),
         pictureTitle.value
@@ -437,8 +435,8 @@ export default defineComponent({
   display: grid;
   grid-template-areas:
     "title ."
-    "controlls canvas"
-    "controlls coordinates";
+    "controls canvas"
+    "controls coordinates";
   grid-template-rows: auto 1fr auto;
   grid-template-columns: 30% auto;
   justify-items: center;
@@ -449,8 +447,8 @@ export default defineComponent({
     margin-bottom: 0.5em;
   }
 
-  &__controlls {
-    grid-area: controlls;
+  &__controls {
+    grid-area: controls;
 
     &__buttons {
       display: flex;

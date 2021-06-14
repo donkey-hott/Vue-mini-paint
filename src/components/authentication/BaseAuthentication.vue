@@ -149,7 +149,8 @@ export default defineComponent({
       }
     }
 
-    // for "show-password" input group
+    /* for "show-password" input group */
+
     &__group:nth-child(3) {
       flex-direction: row;
       justify-content: space-between;

@@ -1,4 +1,3 @@
-// import { State as RootState } from "@/store";
 import { UserProfile } from "@/store/types";
 import firebase from "firebase";
 
