@@ -207,6 +207,7 @@ export default defineComponent({
       linkedInURL: "",
       email: "",
       phone: "",
+      role: "",
     });
 
     const validationRules = {

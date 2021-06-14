@@ -21,6 +21,16 @@ export const routes: Array<RouteRecordRaw> = [
     component: SignUp,
     meta: {
       forbiddenForAuthenticated: true,
+      for: "user",
+    },
+  },
+  {
+    path: "/admin-signup",
+    name: "admin-signup",
+    component: SignUp,
+    meta: {
+      forbiddenForAuthenticated: true,
+      for: "admin",
     },
   },
   {

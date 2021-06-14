@@ -34,9 +34,10 @@ export default defineComponent({
           authenticationData
         );
         const email = userCredentials.user?.email;
+        const role = router.currentRoute.value.meta.for as string;
         if (!email) return;
 
-        store.dispatch(ActionTypes.CREATE_PROFILE, { email });
+        store.dispatch(ActionTypes.CREATE_PROFILE, { email, role });
         toast.success("Signed up successfully!");
         router.push("/");
       } catch (error) {
