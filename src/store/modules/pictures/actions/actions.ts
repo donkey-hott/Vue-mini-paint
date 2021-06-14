@@ -42,4 +42,23 @@ export const actions: ActionTree<State, RootState> & Actions = {
       console.error(error);
     }
   },
+  [ActionTypes.GET_PUBLIC_PICTURES](context) {
+    firebase
+      .database()
+      .ref("PublicPictures")
+      .on("value", (snapshot) => {
+        const publicPictures = snapshot.val() as { [key: string]: string };
+        context.commit(MutationTypes.SET_PUBLIC_PICTURES, publicPictures);
+      });
+  },
+  [ActionTypes.ADD_PUBLIC_PICTURE](context, payload) {
+    if (!payload) return;
+
+    firebase.database().ref("PublicPictures").push(payload);
+  },
+  [ActionTypes.UPDATE_PUBLIC_PICTURES](context) {
+    const pictures = context.state.publicPictures;
+
+    firebase.database().ref("PublicPictures").set(pictures);
+  },
 };

@@ -6,7 +6,7 @@ import SignIn from "../views/authentication/SignIn.vue";
 import Paint from "../views/Paint.vue";
 import Registration from "../views/Registration.vue";
 import Swiper from "../views/Swiper.vue";
-import EditPictures from "../views/EditPictures.vue";
+import ManagePictures from "../views/ManagePictures.vue";
 import Page403 from "../views/Page403.vue";
 
 export const routes: Array<RouteRecordRaw> = [
@@ -55,9 +55,9 @@ export const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/edit-pictures",
-    name: "edit-pictures",
-    component: EditPictures,
+    path: "/manage-pictures",
+    name: "manage-pictures",
+    component: ManagePictures,
     meta: {
       adminOnly: true,
     },
