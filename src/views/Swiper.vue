@@ -19,6 +19,7 @@
       To see more, please <router-link to="/sign-in">sign in</router-link> or
       <router-link to="/sign-up">sign up</router-link>
     </p>
+    <spinner v-if="isLoading" />
   </main>
 </template>
 
@@ -53,6 +54,7 @@ export default defineComponent({
     const publicPictures = computed(() => {
       return store.state.pictures.publicPictures;
     });
+    const isLoading = computed(() => store.state.pictures.isLoading);
 
     const swiperOptions = {
       loop: true,
@@ -66,6 +68,7 @@ export default defineComponent({
       swiperComponentRef,
       currentUser,
       swiperOptions,
+      isLoading,
       publicPictures,
     };
   },

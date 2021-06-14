@@ -26,6 +26,7 @@
     class="overlay"
     :class="{ 'overlay--shown': expandedPicture }"
   ></div>
+  <spinner v-if="isLoading" />
 </template>
 
 <script lang="ts">
@@ -36,6 +37,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const pictures = computed(() => store.state.pictures.userPictures);
+    const isLoading = computed(() => store.state.pictures.isLoading);
     const expandedPicture = ref<string>("");
 
     function expandPicture(pictureId: string) {
@@ -48,6 +50,7 @@ export default defineComponent({
 
     return {
       pictures,
+      isLoading,
       expandedPicture,
       expandPicture,
       collapsePicture,

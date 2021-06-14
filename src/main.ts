@@ -7,12 +7,18 @@ import { store } from "./store";
 import { RootActions } from "@/store/modules/root/actions/action-types";
 
 import Toast from "vue-toastification";
+import Spinner from "./components/UI/Spinner.vue";
 import "vue-toastification/dist/index.css";
 
 let app: ComponentPublicInstance;
 
 store.dispatch(RootActions.INIT).then(() => {
   if (!app) {
-    app = createApp(App).use(store).use(router).use(Toast).mount("#app");
+    app = createApp(App)
+      .use(store)
+      .use(router)
+      .use(Toast)
+      .component("spinner", Spinner)
+      .mount("#app");
   }
 });

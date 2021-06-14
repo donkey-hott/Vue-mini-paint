@@ -17,4 +17,7 @@ export const mutations: MutationTree<State> & Mutations = {
     const { [payload]: removedValue, ...updatedObject } = state.publicPictures;
     state.publicPictures = updatedObject;
   },
+  [MutationTypes.SET_LOADING](state, payload) {
+    state.isLoading = payload;
+  },
 };
