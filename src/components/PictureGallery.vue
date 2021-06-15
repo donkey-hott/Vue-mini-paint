@@ -30,7 +30,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
+import { ActionTypes } from "@/store/modules/pictures/actions/action-types";
+import { defineComponent, computed, ref, onMounted } from "vue";
 import { useStore } from "../store";
 
 export default defineComponent({
@@ -47,6 +48,8 @@ export default defineComponent({
     function collapsePicture() {
       expandedPicture.value = "";
     }
+
+    onMounted(() => store.dispatch(ActionTypes.LOAD_PICTURES));
 
     return {
       pictures,
