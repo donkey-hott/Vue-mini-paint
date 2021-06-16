@@ -22,6 +22,7 @@ export const actions: ActionTree<State, RootState> & Actions = {
   async [ActionTypes.LOAD_PICTURES](context) {
     const { currentUser } = context.rootState.auth;
     if (!currentUser) return;
+    context.commit(MutationTypes.SET_LOADING, true);
 
     try {
       await firebase
@@ -32,14 +33,31 @@ export const actions: ActionTree<State, RootState> & Actions = {
           let pictures: Pictures = snapshot.val();
           if (pictures === null) pictures = {};
           context.commit(MutationTypes.SET_PICTURES, pictures);
-          console.log(
-            "%cPictures have been loaded!",
-            "color:#67FF3D",
-            pictures
-          );
+          context.commit(MutationTypes.SET_LOADING, false);
         });
     } catch (error) {
       console.error(error);
     }
+  },
+  [ActionTypes.GET_PUBLIC_PICTURES](context) {
+    context.commit(MutationTypes.SET_LOADING, true);
+    firebase
+      .database()
+      .ref("PublicPictures")
+      .on("value", (snapshot) => {
+        const publicPictures = snapshot.val() as { [key: string]: string };
+        context.commit(MutationTypes.SET_PUBLIC_PICTURES, publicPictures);
+        context.commit(MutationTypes.SET_LOADING, false);
+      });
+  },
+  [ActionTypes.ADD_PUBLIC_PICTURE](context, payload) {
+    if (!payload) return;
+
+    firebase.database().ref("PublicPictures").push(payload);
+  },
+  [ActionTypes.UPDATE_PUBLIC_PICTURES](context) {
+    const pictures = context.state.publicPictures;
+
+    firebase.database().ref("PublicPictures").set(pictures);
   },
 };

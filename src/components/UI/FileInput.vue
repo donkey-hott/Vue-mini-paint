@@ -55,8 +55,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-//   hide input[type="file"]
-//  and leave only clickable label
+/*   hide input[type="file"]
+ and leave only clickable label */
 #file-input {
   opacity: 0;
   position: absolute;

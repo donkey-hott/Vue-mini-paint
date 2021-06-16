@@ -26,6 +26,16 @@
                 <router-link to="/edit-profile">Edit profile</router-link>
               </li>
               <li>
+                <router-link to="/swiper">Swiper</router-link>
+              </li>
+              <li>
+                <router-link
+                  v-if="userProfile?.role === 'admin'"
+                  to="/manage-pictures"
+                  >Manage pictures</router-link
+                >
+              </li>
+              <li>
                 <log-out></log-out>
               </li>
             </ul>

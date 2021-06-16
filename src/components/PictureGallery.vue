@@ -26,16 +26,19 @@
     class="overlay"
     :class="{ 'overlay--shown': expandedPicture }"
   ></div>
+  <spinner v-if="isLoading" />
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
+import { ActionTypes } from "@/store/modules/pictures/actions/action-types";
+import { defineComponent, computed, ref, onMounted } from "vue";
 import { useStore } from "../store";
 
 export default defineComponent({
   setup() {
     const store = useStore();
     const pictures = computed(() => store.state.pictures.userPictures);
+    const isLoading = computed(() => store.state.pictures.isLoading);
     const expandedPicture = ref<string>("");
 
     function expandPicture(pictureId: string) {
@@ -46,8 +49,11 @@ export default defineComponent({
       expandedPicture.value = "";
     }
 
+    onMounted(() => store.dispatch(ActionTypes.LOAD_PICTURES));
+
     return {
       pictures,
+      isLoading,
       expandedPicture,
       expandPicture,
       collapsePicture,

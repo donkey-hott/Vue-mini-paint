@@ -13,9 +13,9 @@ export const rootActions: ActionTree<RootState, RootState> & Actions = {
       initializeFirebase();
       firebase.auth().onAuthStateChanged((user) => {
         commit(MutationTypes.SET_USER, user);
-        dispatch(AuthActionTypes.LOAD_PROFILE);
-        dispatch(PictureActionTypes.LOAD_PICTURES);
-        resolve();
+        dispatch(AuthActionTypes.LOAD_PROFILE).then(() => {
+          resolve();
+        });
       });
     });
   },

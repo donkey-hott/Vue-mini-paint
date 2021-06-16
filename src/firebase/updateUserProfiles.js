@@ -11,26 +11,18 @@ const app = admin.initializeApp({
 const database = admin.database(app);
 const auth = admin.auth(app);
 
-auth
-  .listUsers(100)
-  .then((listUserResult) => {
-    console.info("Checking user profiles...");
+auth.listUsers(100).then((listUserResult) => {
+  listUserResult.users.forEach((user) => {
+    const userRef = database.ref(user.uid);
 
-    listUserResult.users.forEach((user) => {
-      const userRef = database.ref(user.uid);
-
-      userRef.once("value").then((snapshot) => {
-        const hasProfile = snapshot.hasChild("profile");
-        if (!hasProfile) {
-          createProfile(user);
-        }
-      });
+    userRef.once("value").then((snapshot) => {
+      const hasProfile = snapshot.hasChild("profile");
+      if (!hasProfile) {
+        createProfile(user);
+      }
     });
-  })
-  .then(() => {
-    console.info("Done!");
-    process.exit();
   });
+});
 
 function createProfile(user) {
   const { email, uid } = user;

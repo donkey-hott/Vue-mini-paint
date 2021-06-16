@@ -9,7 +9,7 @@ export enum RootActions {
 export type AugmentedActionContext = {
   commit<K extends keyof RootMutations>(
     key: K,
-    payload: Parameters<RootMutations[K]>[1]
+    payload?: Parameters<RootMutations[K]>[1]
   ): ReturnType<RootMutations[K]>;
 } & Omit<ActionContext<RootState, RootState>, "commit">;
 
