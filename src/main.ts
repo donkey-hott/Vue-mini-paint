@@ -9,6 +9,7 @@ import { RootActions } from "@/store/modules/root/actions/action-types";
 import Toast from "vue-toastification";
 import Spinner from "./components/UI/Spinner.vue";
 import "vue-toastification/dist/index.css";
+import Tracker from "./plugins/tracker";
 
 let app: ComponentPublicInstance;
 
@@ -18,6 +19,7 @@ store.dispatch(RootActions.INIT).then(() => {
       .use(store)
       .use(router)
       .use(Toast)
+      .use(Tracker)
       .component("spinner", Spinner)
       .mount("#app");
   }

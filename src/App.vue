@@ -4,10 +4,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted } from "vue";
 import TheHeader from "./components/UI/TheHeader.vue";
+import { useTracker } from "./plugins/tracker";
 
 export default defineComponent({
+  setup() {
+    const tracker = useTracker();
+
+    onMounted(() => {
+      tracker.log();
+    });
+  },
   components: {
     TheHeader,
   },
