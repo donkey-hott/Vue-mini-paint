@@ -102,6 +102,7 @@
 </template>
 
 <script lang="ts">
+import { useTracker } from "@/plugins/tracker";
 import { defineComponent, reactive, ref, watch } from "vue";
 import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
 
@@ -114,6 +115,7 @@ export default defineComponent({
   ],
 
   setup(props, { emit }) {
+    const tracker = useTracker();
     const styleOptions = reactive({
       lineWidth: 1,
       strokeColor: "#000000",
@@ -219,6 +221,11 @@ export default defineComponent({
       };
       emit("changeDrawFunction", drawFunction);
       arePolygonsShown.value = false;
+      tracker.track("toolChosen", {
+        toolName: mainInstruments.find(
+          (tool) => tool.funcName === drawFunction.funcName
+        )?.title,
+      });
     }
 
     function emitClearCanvasEvent() {

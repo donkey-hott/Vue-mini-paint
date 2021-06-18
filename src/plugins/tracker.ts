@@ -42,12 +42,21 @@ export default {
             .child("routeChanges")
             .push(eventInfo);
         },
+
+        customEvent: (eventName, data: any) => {
+          const uid = config.user?.uid;
+          const info = { ...data, uid };
+
+          firebase.database().ref("analytics").child(eventName).push(info);
+        },
       },
 
       track(eventName, data) {
         if (Object.prototype.hasOwnProperty.call(this.events, eventName)) {
           return this.events[eventName](data);
         }
+
+        this.events.customEvent(eventName, data);
       },
     };
 
