@@ -3,9 +3,6 @@ import { createTrackerModule, ITrackConfig, ITracker } from "./trackerModule";
 
 const TRACKER_SYMBOL = Symbol("tracker");
 
-/* functions that provides access to the plugin functionality
-  outside the "*.vue" files */
-
 export default {
   install: (app: App, config: ITrackConfig) => {
     const trackerModule = createTrackerModule(config);
