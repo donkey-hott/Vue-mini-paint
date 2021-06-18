@@ -5,19 +5,22 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import TheHeader from "./components/UI/TheHeader.vue";
 import { useTracker } from "./plugins/tracker";
 
 export default defineComponent({
   setup() {
-    const route = useRoute();
+    const router = useRouter();
     const tracker = useTracker();
 
-    watch(route, () => {
+    router.beforeEach((to, from, next) => {
       tracker.track("routeChange", {
-        route: route.fullPath,
+        route: to.fullPath,
+        enteredFrom: from.fullPath,
+        exceptions: ["/forbidden"],
       });
+      next();
     });
   },
   components: {

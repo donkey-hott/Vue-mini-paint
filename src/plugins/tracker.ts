@@ -9,7 +9,7 @@ export interface ITracker {
   events: {
     [key: string]: (route: any, options?: unknown) => void;
   };
-  track(eventName: string, options?: any): void;
+  track(eventName: string, data?: any): void;
 }
 
 const TRACKER_SYMBOL = Symbol("tracker");
@@ -22,21 +22,31 @@ export default {
     const trackerModule: ITracker = {
       events: {
         /* TODO: limit 'any' type of 'options' */
-        routeChange: (options: any) => {
-          const { route } = options;
-          if (!route) return;
-          const data = {
+        routeChange: (data: any) => {
+          const { route, enteredFrom, exceptions } = data;
+          if (
+            !route ||
+            exceptions.includes(route) ||
+            exceptions.includes(enteredFrom)
+          )
+            return;
+          const eventInfo = {
             route,
+            enteredFrom,
             enteredBy: config.user?.uid,
             timestamp: new Date().toISOString(),
           };
-          firebase.database().ref("analytics").child("pages").push(data);
+          firebase
+            .database()
+            .ref("analytics")
+            .child("routeChanges")
+            .push(eventInfo);
         },
       },
 
-      track(eventName, options) {
+      track(eventName, data) {
         if (Object.prototype.hasOwnProperty.call(this.events, eventName)) {
-          return this.events[eventName](options);
+          return this.events[eventName](data);
         }
       },
     };
