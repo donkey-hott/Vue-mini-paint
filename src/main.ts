@@ -13,13 +13,15 @@ import Tracker from "./plugins/tracker";
 
 let app: ComponentPublicInstance;
 
-store.dispatch(RootActions.INIT).then(() => {
+store.dispatch(RootActions.INIT).then((user) => {
   if (!app) {
     app = createApp(App)
       .use(store)
       .use(router)
       .use(Toast)
-      .use(Tracker)
+      .use(Tracker, {
+        user,
+      })
       .component("spinner", Spinner)
       .mount("#app");
   }

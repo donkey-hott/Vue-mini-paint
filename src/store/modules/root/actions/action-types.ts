@@ -1,6 +1,7 @@
 import { RootMutations } from "../mutations/mutation-types";
 import { State as RootState } from "@/store";
 import { ActionContext } from "vuex";
+import firebase from "firebase";
 
 export enum RootActions {
   INIT = "INIT",
@@ -14,5 +15,6 @@ export type AugmentedActionContext = {
 } & Omit<ActionContext<RootState, RootState>, "commit">;
 
 export interface Actions {
-  [RootActions.INIT](context: AugmentedActionContext): Promise<void>;
+  [RootActions.INIT](context: AugmentedActionContext): Promise<firebase.User | null
+  >;
 }

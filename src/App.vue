@@ -4,16 +4,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
 import TheHeader from "./components/UI/TheHeader.vue";
 import { useTracker } from "./plugins/tracker";
 
 export default defineComponent({
   setup() {
+    const route = useRoute();
     const tracker = useTracker();
 
-    onMounted(() => {
-      tracker.log();
+    watch(route, () => {
+      tracker.track("routeChange", {
+        route: route.fullPath,
+      });
     });
   },
   components: {
