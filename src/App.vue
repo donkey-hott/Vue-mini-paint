@@ -16,6 +16,7 @@ export default defineComponent({
 
     router.beforeEach((to, from, next) => {
       tracker.track("ROUTE_CHANGE", {
+        eventName: "routeChange",
         route: to.fullPath,
         enteredFrom: from.fullPath,
         exceptions: ["/forbidden"],

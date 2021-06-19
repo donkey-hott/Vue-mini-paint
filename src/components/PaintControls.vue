@@ -221,7 +221,8 @@ export default defineComponent({
       };
       emit("changeDrawFunction", drawFunction);
       arePolygonsShown.value = false;
-      tracker.track("toolChosen", {
+      tracker.track("CUSTOM_EVENT", {
+        eventName: "toolChosen",
         toolName: mainInstruments.find(
           (tool) => tool.funcName === drawFunction.funcName
         )?.title,

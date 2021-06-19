@@ -6,15 +6,20 @@ export interface ITracker {
   events: {
     [key: string]: IStrategy;
   };
-  track(eventName?: string, data?: any): void;
+  track(eventName: string, data: EventConfig): void;
 }
 
 export interface ITrackConfig {
   user: firebase.User | null;
 }
 
+export interface EventConfig {
+  eventName: string;
+  [key: string]: any;
+}
+
 interface IStrategy {
-  execute(eventName?: string, data?: any): void;
+  execute(data: EventConfig): void;
 }
 
 enum Strategies {
@@ -22,12 +27,12 @@ enum Strategies {
   CUSTOM_EVENT = "CUSTOM_EVENT",
 }
 
-export function createTrackerModule(config: any): ITracker {
+export function createTrackerModule(config: ITrackConfig): ITracker {
   return {
     strategy: null,
     events: {
       [Strategies.ROUTE_CHANGE]: {
-        execute(eventName, data) {
+        execute(data) {
           const { route, enteredFrom, exceptions } = data;
           if (
             !route ||
@@ -41,21 +46,24 @@ export function createTrackerModule(config: any): ITracker {
             enteredBy: config.user?.uid,
             timestamp: new Date().toISOString(),
           };
-          firebase
-            .database()
-            .ref("analytics")
-            .child("routeChanges")
-            .push(eventInfo);
+          // firebase
+          //   .database()
+          //   .ref("analytics")
+          //   .child("routeChanges")
+          //   .push(eventInfo);
         },
       },
 
       [Strategies.CUSTOM_EVENT]: {
-        execute(eventName, data) {
-          if (!eventName) return;
+        execute(data) {
+          const { eventName, ...info } = data;
+          console.log("info:", info);
           const uid = config.user?.uid;
-          const info = { ...data, uid };
+          const infoWithUid = { ...info, uid };
+          console.log("info with Uid:", infoWithUid);
+          if (!data.eventName) return;
 
-          firebase.database().ref("analytics").child(eventName).push(info);
+          // firebase.database().ref("analytics").child(eventName).push(info);
         },
       },
     },
@@ -64,13 +72,14 @@ export function createTrackerModule(config: any): ITracker {
       this.strategy = strategy;
     },
 
-    track(eventName, data) {
-      if (!eventName) {
+    track(eventType, data) {
+      /* TODO: FIX CUSTOM STRATEGY */
+      if (!eventType) {
         throw new Error("Wrong or missing event name");
       }
 
-      this.setStrategy(this.events[eventName]);
-      this.strategy?.execute(eventName, data);
+      this.setStrategy(this.events[eventType]);
+      this.strategy?.execute(data);
     },
   };
 }
