@@ -4,7 +4,7 @@ import { createTrackerModule, ITrackConfig, ITracker } from "./trackerModule";
 const TRACKER_SYMBOL = Symbol("tracker");
 
 export default {
-  install: (app: App, config: ITrackConfig) => {
+  install: (app: App, config: ITrackConfig): void => {
     const trackerModule = createTrackerModule(config);
 
     app.provide(TRACKER_SYMBOL, trackerModule);
@@ -12,7 +12,7 @@ export default {
   },
 };
 
-export function useTracker() {
+export function useTracker(): ITracker {
   const tracker: ITracker | undefined = inject(TRACKER_SYMBOL);
   if (!tracker) {
     throw new Error("'Tracker' plugin not provided");

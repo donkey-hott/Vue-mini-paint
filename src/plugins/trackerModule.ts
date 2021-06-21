@@ -1,85 +1,109 @@
 import firebase from "firebase";
-
+/* TODO: do something with user ids */
 export interface ITracker {
-  strategy: IStrategy | null;
-  setStrategy(strategy: IStrategy): void;
+  currentEvent: IEvent | null;
+  addUserInfo(dataObj: IEventData): void;
+  setEvent(strategy: IEvent): void;
   events: {
-    [key: string]: IStrategy;
+    [key in EventTypes]: IEvent;
   };
-  track(eventName: string, data: EventConfig): void;
+  track(eventType: string, data: IEventData): void;
 }
 
 export interface ITrackConfig {
-  user: firebase.User | null;
+  userInfo: {
+    name?: string;
+    email: string;
+    uid: string;
+  };
 }
 
-export interface EventConfig {
+export type ButtonClickData = {
+  [key in string | number]: any;
+} & {
   eventName: string;
-  [key: string]: any;
+};
+
+export type RouteChangeData = {
+  route: string;
+  enteredFrom: string;
+  exceptions?: Array<string>;
+};
+
+export type IEventData = ButtonClickData | RouteChangeData;
+
+interface IEvent {
+  handle(data: IEventData): void;
 }
 
-interface IStrategy {
-  execute(data: EventConfig): void;
-}
-
-enum Strategies {
+enum EventTypes {
   ROUTE_CHANGE = "ROUTE_CHANGE",
-  CUSTOM_EVENT = "CUSTOM_EVENT",
+  BUTTON_CLICK = "BUTTON_CLICK",
 }
 
 export function createTrackerModule(config: ITrackConfig): ITracker {
   return {
-    strategy: null,
+    currentEvent: null,
     events: {
-      [Strategies.ROUTE_CHANGE]: {
-        execute(data) {
-          const { route, enteredFrom, exceptions } = data;
+      [EventTypes.ROUTE_CHANGE]: {
+        handle(data: RouteChangeData) {
+          const { route, enteredFrom, exceptions, ...userData } = data;
+
+          if (!route) return;
           if (
-            !route ||
-            exceptions.includes(route) ||
-            exceptions.includes(enteredFrom)
-          )
+            exceptions &&
+            (exceptions.includes(route) || exceptions.includes(enteredFrom))
+          ) {
             return;
+          }
+
           const eventInfo = {
+            ...userData,
             route,
             enteredFrom,
-            enteredBy: config.user?.uid,
+            enteredBy: config.userInfo.uid,
             timestamp: new Date().toISOString(),
           };
-          // firebase
-          //   .database()
-          //   .ref("analytics")
-          //   .child("routeChanges")
-          //   .push(eventInfo);
+
+          firebase
+            .database()
+            .ref("analytics")
+            .child("ROUTE_CHANGE")
+            .push(eventInfo);
         },
       },
 
-      [Strategies.CUSTOM_EVENT]: {
-        execute(data) {
+      [EventTypes.BUTTON_CLICK]: {
+        handle(data: ButtonClickData) {
           const { eventName, ...info } = data;
-          console.log("info:", info);
-          const uid = config.user?.uid;
-          const infoWithUid = { ...info, uid };
-          console.log("info with Uid:", infoWithUid);
-          if (!data.eventName) return;
+          if (!eventName) {
+            throw new Error("'eventName' property is required");
+          }
 
-          // firebase.database().ref("analytics").child(eventName).push(info);
+          firebase.database().ref("analytics").child("BUTTON_CLICK").push(info);
         },
       },
     },
 
-    setStrategy(strategy) {
-      this.strategy = strategy;
+    setEvent(event) {
+      this.currentEvent = event;
+    },
+
+    addUserInfo(dataObj: IEventData) {
+      Object.assign(dataObj, config.userInfo);
     },
 
     track(eventType, data) {
-      /* TODO: FIX CUSTOM STRATEGY */
-      if (!eventType) {
+      if (
+        !eventType ||
+        !Object.prototype.hasOwnProperty.call(EventTypes, eventType)
+      ) {
         throw new Error("Wrong or missing event name");
       }
 
-      this.setStrategy(this.events[eventType]);
-      this.strategy?.execute(data);
+      this.setEvent(this.events[eventType as keyof typeof EventTypes]);
+      this.addUserInfo(data);
+      this.currentEvent?.handle(data);
     },
   };
 }

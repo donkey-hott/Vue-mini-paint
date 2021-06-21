@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watch } from "vue";
+import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import TheHeader from "./components/UI/TheHeader.vue";
 import { useTracker } from "./plugins/tracker";
@@ -16,7 +16,6 @@ export default defineComponent({
 
     router.beforeEach((to, from, next) => {
       tracker.track("ROUTE_CHANGE", {
-        eventName: "routeChange",
         route: to.fullPath,
         enteredFrom: from.fullPath,
         exceptions: ["/forbidden"],

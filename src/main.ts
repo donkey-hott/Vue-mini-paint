@@ -1,28 +1,38 @@
 import { createApp, ComponentPublicInstance } from "vue";
-import App from "./App.vue";
-
 import router from "./router";
+import firebase from "firebase";
+import "vue-toastification/dist/index.css";
+import Toast from "vue-toastification";
 
+import App from "./App.vue";
 import { store } from "./store";
 import { RootActions } from "@/store/modules/root/actions/action-types";
 
-import Toast from "vue-toastification";
 import Spinner from "./components/UI/Spinner.vue";
-import "vue-toastification/dist/index.css";
 import Tracker from "./plugins/tracker";
 
-let app: ComponentPublicInstance;
+let app: any;
 
-store.dispatch(RootActions.INIT).then((user) => {
+store.dispatch(RootActions.INIT).then((user: firebase.User | null) => {
   if (!app) {
+    const userName = store.state.auth.userProfile?.fullname;
+    const email = user?.email;
+    const uid = user?.uid;
+
     app = createApp(App)
       .use(store)
       .use(router)
       .use(Toast)
-      .use(Tracker, {
-        user,
-      })
-      .component("spinner", Spinner)
-      .mount("#app");
+      .component("spinner", Spinner);
+    if (user) {
+      app.use(Tracker, {
+        userInfo: {
+          userName,
+          uid,
+          email,
+        },
+      });
+    }
+    app.mount("#app");
   }
 });
