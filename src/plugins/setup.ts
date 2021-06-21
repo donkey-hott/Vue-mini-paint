@@ -1,5 +1,6 @@
 import { App, inject } from "vue";
-import { createTrackerModule, ITrackConfig, ITracker } from "./trackerModule";
+import { createTrackerModule } from "./trackerModule";
+import { ITrackConfig, ITracker } from "./trackerTypes";
 
 const TRACKER_SYMBOL = Symbol("tracker");
 
