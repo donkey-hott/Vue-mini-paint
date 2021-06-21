@@ -15,6 +15,7 @@ export type AugmentedActionContext = {
 } & Omit<ActionContext<RootState, RootState>, "commit">;
 
 export interface Actions {
-  [RootActions.INIT](context: AugmentedActionContext): Promise<firebase.User | null
-  >;
+  [RootActions.INIT](
+    context: AugmentedActionContext
+  ): Promise<firebase.User | null>;
 }

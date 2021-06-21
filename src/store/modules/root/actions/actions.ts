@@ -4,7 +4,6 @@ import { Actions, RootActions } from "./action-types";
 import firebase from "firebase";
 import { initializeFirebase } from "@/firebase/firebaseInitialization";
 import { MutationTypes } from "../../auth/mutations/mutation-types";
-import { ActionTypes as PictureActionTypes } from "../../pictures/actions/action-types";
 import { ActionTypes as AuthActionTypes } from "../../auth/actions/action-types";
 
 export const rootActions: ActionTree<RootState, RootState> & Actions = {

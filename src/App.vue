@@ -7,7 +7,7 @@
 import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import TheHeader from "./components/UI/TheHeader.vue";
-import { useTracker } from "./plugins/tracker";
+import { useTracker } from "./plugins/setup";
 
 export default defineComponent({
   setup() {

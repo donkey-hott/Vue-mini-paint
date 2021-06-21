@@ -9,13 +9,13 @@ import { store } from "./store";
 import { RootActions } from "@/store/modules/root/actions/action-types";
 
 import Spinner from "./components/UI/Spinner.vue";
-import Tracker from "./plugins/tracker";
+import Tracker from "./plugins/setup";
 
 let app: any;
 
 store.dispatch(RootActions.INIT).then((user: firebase.User | null) => {
   if (!app) {
-    const userName = store.state.auth.userProfile?.fullname;
+    const userName = store.state.auth.userProfile?.fullname || "";
     const email = user?.email;
     const uid = user?.uid;
 

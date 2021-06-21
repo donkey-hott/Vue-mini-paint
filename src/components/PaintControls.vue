@@ -102,7 +102,7 @@
 </template>
 
 <script lang="ts">
-import { useTracker } from "@/plugins/tracker";
+import { useTracker } from "@/plugins/setup";
 import { defineComponent, reactive, ref, watch } from "vue";
 import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
 
