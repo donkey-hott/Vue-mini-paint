@@ -15,4 +15,7 @@ export const mutations: MutationTree<State> & Mutations = {
       resolve();
     });
   },
+  [MutationTypes.SET_PLAN](state, payload) {
+    state.plan = payload;
+  },
 };

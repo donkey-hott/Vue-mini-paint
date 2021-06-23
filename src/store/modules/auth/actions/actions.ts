@@ -21,10 +21,11 @@ export const actions: ActionTree<State, RootState> & Actions = {
   async [ActionTypes.LOG_OUT]({ commit }) {
     commit(MutationTypes.SET_USER, null);
     commit(MutationTypes.SET_PROFILE, null);
+    commit(MutationTypes.SET_PLAN, null);
     await firebase.app().auth().signOut();
   },
   [ActionTypes.CREATE_PROFILE](context, payload) {
-    const currentUser = context.rootState.auth.currentUser;
+    const currentUser = context.state.currentUser;
     if (!payload || !currentUser) return;
 
     firebase.database().ref(currentUser.uid).child("profile").set(payload);
@@ -46,5 +47,20 @@ export const actions: ActionTree<State, RootState> & Actions = {
           resolve();
         });
     });
+  },
+  [ActionTypes.GET_USER_SUBSCRIPTION_PLAN](context) {
+    const userId = context.state.currentUser?.uid;
+    if (!userId) return;
+
+    const middlewareURL = new URL(
+      "http://localhost:3000/api/users/getUserSubscriptionPlan"
+    );
+    middlewareURL.searchParams.set("userId", userId);
+
+    fetch(middlewareURL.href)
+      .then((res) => res.json())
+      .then((data: string | null) =>
+        context.commit(MutationTypes.SET_PLAN, data)
+      );
   },
 };

@@ -26,3 +26,8 @@ export type PictureRecord = {
 export interface Pictures {
   [key: string]: PictureRecord;
 }
+
+export enum UserPlanTypes {
+  DEFAULT_PLAN = "default",
+  PREMIUM_PLAN = "premium",
+}
