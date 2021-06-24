@@ -1,17 +1,25 @@
 import firebase from "firebase";
 import {
   ITrackConfig,
-  ITracker,
   EventTypes,
   RouteChangeData,
   ButtonClickData,
   IEventData,
+  IEvent,
 } from "./trackerTypes";
 
-export function createTrackerModule(config: ITrackConfig): ITracker {
-  return {
-    currentEvent: null,
-    events: {
+export class TrackerModule {
+  public config: ITrackConfig;
+  public events: {
+    [key in EventTypes]: IEvent;
+  };
+  private currentEvent: IEvent | null;
+  private static instance: TrackerModule | null;
+
+  private constructor(config: ITrackConfig) {
+    this.config = config;
+    this.currentEvent = null;
+    this.events = {
       [EventTypes.ROUTE_CHANGE]: {
         handle(data: RouteChangeData) {
           const { route, enteredFrom, exceptions, ...userData } = data;
@@ -50,27 +58,40 @@ export function createTrackerModule(config: ITrackConfig): ITracker {
           firebase.database().ref("analytics").child("BUTTON_CLICK").push(info);
         },
       },
-    },
+    };
+  }
 
-    setEvent(event) {
-      this.currentEvent = event;
-    },
+  public static getInstance(config?: ITrackConfig): TrackerModule {
+    if (!TrackerModule.instance) {
+      if (!config)
+        throw new Error(
+          "To instantiate new tracker module a config object must be provided"
+        );
 
-    addUserInfo(dataObj: IEventData) {
-      Object.assign(dataObj, config.userInfo);
-    },
+      TrackerModule.instance = new TrackerModule(config);
+    }
 
-    track(eventType, data) {
-      if (
-        !eventType ||
-        !Object.prototype.hasOwnProperty.call(EventTypes, eventType)
-      ) {
-        throw new Error("Wrong or missing event name");
-      }
+    return TrackerModule.instance;
+  }
 
-      this.setEvent(this.events[eventType as keyof typeof EventTypes]);
-      this.addUserInfo(data);
-      this.currentEvent?.handle(data);
-    },
-  };
+  setEvent(event: IEvent): void {
+    this.currentEvent = event;
+  }
+
+  addUserInfo(dataObj: IEventData) {
+    Object.assign(dataObj, this.config.userInfo);
+  }
+
+  track(eventType: string, data: IEventData): void {
+    if (
+      !eventType ||
+      !Object.prototype.hasOwnProperty.call(EventTypes, eventType)
+    ) {
+      throw new Error("Wrong or missing event name");
+    }
+
+    this.setEvent(this.events[eventType as keyof typeof EventTypes]);
+    this.addUserInfo(data);
+    this.currentEvent?.handle(data);
+  }
 }

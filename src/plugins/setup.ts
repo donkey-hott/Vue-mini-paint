@@ -1,12 +1,12 @@
 import { App, inject } from "vue";
-import { createTrackerModule } from "./trackerModule";
+import { TrackerModule } from "./trackerModule";
 import { ITrackConfig, ITracker } from "./trackerTypes";
 
 const TRACKER_SYMBOL = Symbol("tracker");
 
 export default {
   install: (app: App, config: ITrackConfig): void => {
-    const trackerModule = createTrackerModule(config);
+    const trackerModule = TrackerModule.getInstance(config);
 
     app.provide(TRACKER_SYMBOL, trackerModule);
     app.config.globalProperties.$tracker = trackerModule;

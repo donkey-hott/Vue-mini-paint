@@ -15,10 +15,10 @@ let app: any;
 
 store.dispatch(RootActions.INIT).then((user: firebase.User | null) => {
   if (!app) {
+    console.log("main.ts");
     const userName = store.state.auth.userProfile?.fullname || "";
     const email = user?.email;
     const uid = user?.uid;
-
     app = createApp(App)
       .use(store)
       .use(router)

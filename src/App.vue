@@ -5,24 +5,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useRouter } from "vue-router";
 import TheHeader from "./components/UI/TheHeader.vue";
-import { useTracker } from "./plugins/setup";
 
 export default defineComponent({
-  setup() {
-    const router = useRouter();
-    const tracker = useTracker();
-
-    router.beforeEach((to, from, next) => {
-      tracker.track("ROUTE_CHANGE", {
-        route: to.fullPath,
-        enteredFrom: from.fullPath,
-        exceptions: ["/forbidden"],
-      });
-      next();
-    });
-  },
   components: {
     TheHeader,
   },
