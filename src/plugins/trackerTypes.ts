@@ -1,6 +1,6 @@
 export interface ITracker {
   currentEvent: IEvent | null;
-  addUserInfo(dataObj: IEventData): void;
+  getDataWithUserInfo(dataObj: IEventData): void;
   setEvent(strategy: IEvent): void;
   events: {
     [key in EventTypes]: IEvent;

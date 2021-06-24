@@ -9,6 +9,7 @@ export default {
     const trackerModule = TrackerModule.getInstance(config);
 
     app.provide(TRACKER_SYMBOL, trackerModule);
+    /* for accessing plugin from the global variable */
     app.config.globalProperties.$tracker = trackerModule;
   },
 };
@@ -20,7 +21,7 @@ export function useTracker(): ITracker {
   }
   return tracker;
 }
-
+/* for accessing plugin from the global variable */
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
     $tracker: ITracker;

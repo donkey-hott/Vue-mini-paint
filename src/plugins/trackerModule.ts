@@ -27,7 +27,8 @@ export class TrackerModule {
           if (!data.route) return;
           if (
             exceptions &&
-            (exceptions.includes(data.route) || exceptions.includes(data.enteredFrom))
+            (exceptions.includes(data.route) ||
+              exceptions.includes(data.enteredFrom))
           ) {
             return;
           }
@@ -38,10 +39,7 @@ export class TrackerModule {
             timestamp: new Date().toISOString(),
           };
 
-          firebase
-            .database()
-            .ref("analytics")
-            .push(extendedUserData);
+          firebase.database().ref("analytics").push(extendedUserData);
         },
       },
 
@@ -75,9 +73,9 @@ export class TrackerModule {
     this.currentEvent = event;
   }
 
-  /* TODO: RENAME TO 'getDataWithUserInfo' */
-  /* TODO: ADD RETURN TYPE */
-  addUserInfo(dataObj: IEventData) {
+  getDataWithUserInfo(
+    dataObj: IEventData
+  ): IEventData & ITrackConfig["userInfo"] {
     return {
       ...this.config.userInfo,
       ...dataObj,
@@ -95,7 +93,7 @@ export class TrackerModule {
 
     this.setEvent(this.events[eventType as keyof typeof EventTypes]);
 
-    const dataWithUserInfo = this.addUserInfo(data);
+    const dataWithUserInfo = this.getDataWithUserInfo(data);
     this.currentEvent?.handle(dataWithUserInfo);
   }
 }
