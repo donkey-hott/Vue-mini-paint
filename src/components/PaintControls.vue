@@ -102,7 +102,7 @@
 </template>
 
 <script lang="ts">
-import { useTracker } from "@/plugins/setup";
+import { useTracker } from "@/plugins/trackerInit";
 import { defineComponent, reactive, ref, watch } from "vue";
 import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
 
@@ -222,7 +222,8 @@ export default defineComponent({
       emit("changeDrawFunction", drawFunction);
       arePolygonsShown.value = false;
 
-      tracker.track("BUTTON_CLICK", {
+      tracker.track({
+        eventType: "BUTTON_CLICK",
         eventName: "toolChosen",
         toolName: mainInstruments.find(
           (tool) => tool.funcName === drawFunction.funcName

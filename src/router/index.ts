@@ -18,7 +18,8 @@ router.beforeEach((to, from, next) => {
   const userProfile = store.getters.userProfile;
   const tracker = TrackerModule.getInstance();
 
-  tracker.track("ROUTE_CHANGE", {
+  tracker.track({
+    eventType: "ROUTE_CHANGE",
     route: to.fullPath,
     enteredFrom: from.fullPath,
     exceptions: ["/forbidden"],

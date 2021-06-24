@@ -22,20 +22,18 @@ export class TrackerModule {
     this.events = {
       [EventTypes.ROUTE_CHANGE]: {
         handle(data: RouteChangeData) {
-          const { route, enteredFrom, exceptions, ...userData } = data;
+          const { exceptions, ...userData } = data;
 
-          if (!route) return;
+          if (!data.route) return;
           if (
             exceptions &&
-            (exceptions.includes(route) || exceptions.includes(enteredFrom))
+            (exceptions.includes(data.route) || exceptions.includes(data.enteredFrom))
           ) {
             return;
           }
 
-          const eventInfo = {
+          const extendedUserData = {
             ...userData,
-            route,
-            enteredFrom,
             enteredBy: config.userInfo.uid,
             timestamp: new Date().toISOString(),
           };
@@ -43,8 +41,7 @@ export class TrackerModule {
           firebase
             .database()
             .ref("analytics")
-            .child("ROUTE_CHANGE")
-            .push(eventInfo);
+            .push(extendedUserData);
         },
       },
 
@@ -55,7 +52,7 @@ export class TrackerModule {
             throw new Error("'eventName' property is required");
           }
 
-          firebase.database().ref("analytics").child("BUTTON_CLICK").push(info);
+          firebase.database().ref("analytics").push(info);
         },
       },
     };
@@ -78,15 +75,17 @@ export class TrackerModule {
     this.currentEvent = event;
   }
 
+  /* TODO: RENAME TO 'getDataWithUserInfo' */
+  /* TODO: ADD RETURN TYPE */
   addUserInfo(dataObj: IEventData) {
     return {
       ...this.config.userInfo,
       ...dataObj,
-    }
-    // Object.assign(dataObj, this.config.userInfo);
+    };
   }
 
-  track(eventType: string, data: IEventData): void {
+  track(data: IEventData): void {
+    const { eventType } = data;
     if (
       !eventType ||
       !Object.prototype.hasOwnProperty.call(EventTypes, eventType)
@@ -96,7 +95,7 @@ export class TrackerModule {
 
     this.setEvent(this.events[eventType as keyof typeof EventTypes]);
 
-    const dataWithUserInfo =  this.addUserInfo(data);
+    const dataWithUserInfo = this.addUserInfo(data);
     this.currentEvent?.handle(dataWithUserInfo);
   }
 }

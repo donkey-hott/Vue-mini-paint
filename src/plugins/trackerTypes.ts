@@ -5,7 +5,7 @@ export interface ITracker {
   events: {
     [key in EventTypes]: IEvent;
   };
-  track(eventType: string, data: IEventData): void;
+  track(data: IEventData): void;
 }
 
 export interface ITrackConfig {
@@ -19,10 +19,12 @@ export interface ITrackConfig {
 export type ButtonClickData = {
   [key in string | number]: any;
 } & {
+  eventType: "BUTTON_CLICK";
   eventName: string;
 };
 
 export type RouteChangeData = {
+  eventType: "ROUTE_CHANGE";
   route: string;
   enteredFrom: string;
   exceptions?: Array<string>;
