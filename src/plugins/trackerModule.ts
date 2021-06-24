@@ -79,7 +79,11 @@ export class TrackerModule {
   }
 
   addUserInfo(dataObj: IEventData) {
-    Object.assign(dataObj, this.config.userInfo);
+    return {
+      ...this.config.userInfo,
+      ...dataObj,
+    }
+    // Object.assign(dataObj, this.config.userInfo);
   }
 
   track(eventType: string, data: IEventData): void {
@@ -91,7 +95,8 @@ export class TrackerModule {
     }
 
     this.setEvent(this.events[eventType as keyof typeof EventTypes]);
-    this.addUserInfo(data);
-    this.currentEvent?.handle(data);
+
+    const dataWithUserInfo =  this.addUserInfo(data);
+    this.currentEvent?.handle(dataWithUserInfo);
   }
 }
