@@ -3,6 +3,9 @@
 </template>
 
 <script lang="ts">
+/* TODO: get rid of scss variables; pass configuration via props */
+/* TODO: change grid color */
+/* TODO: get rid of hardcoded values */
 import { defineComponent, onMounted } from "vue";
 import * as d3 from "d3";
 
@@ -47,19 +50,6 @@ export default defineComponent({
         .call(d3.axisBottom(xScale))
         .attr("transform", `translate(${margin}, ${height - margin / 2})`);
 
-      /* RENDER BARS */
-      chart
-        .selectAll("rect")
-        .data(Object.entries(data))
-        .enter()
-        .append("rect")
-        .attr("x", ([date, _]) => (xScale(date) as number) + margin)
-        .attr("y", ([_, times]) => yScale(times) + margin / 2)
-        .attr("width", xScale.bandwidth())
-        .attr("height", ([_, times]) => height - yScale(times) - margin)
-        /* TODO: get rid of scss variables; pass configuration via props */
-        .attr("fill", "var(--color-success-light)");
-
       /* RENDER LABELS */
 
       d3.select("svg")
@@ -91,6 +81,50 @@ export default defineComponent({
         .attr("y", height)
         .attr("text-anchor", "middle")
         .text("Time");
+
+      /* RENDER BARS AND TOOLTIP*/
+
+      const barGroups = chart
+        .selectAll()
+        .data(Object.entries(data))
+        .enter()
+        .append("g");
+
+      const tooltipWrapper = chart.append("g").attr("opacity", 0);
+      tooltipWrapper
+        .append("polygon")
+        .attr("id", "tooltip")
+        .attr("fill", "#cecece")
+        .attr("points", "0, 0, 60, 0, 60, 30, 40, 30, 30, 40, 20, 30, 0, 30");
+      const tooltipText = tooltipWrapper
+        .append("text")
+        .attr("fill", "white")
+        .attr("text-anchor", "middle")
+        .attr("x", "4.5%")
+        .attr("y", "5%")
+        .attr("dominant-baseline", "middle");
+
+      barGroups
+        .append("rect")
+        .attr("x", ([date, _]) => (xScale(date) as number) + margin)
+        .attr("y", ([_, times]) => yScale(times) + margin / 2)
+        .attr("width", xScale.bandwidth())
+        .attr("height", ([_, times]) => height - yScale(times) - margin)
+        .attr("fill", "var(--color-success-light)")
+        .on("mouseenter", (event: MouseEvent, [key, value]) => {
+          tooltipText.text(value);
+
+          const y = yScale(value);
+          const x = (xScale(key) as number) + xScale.bandwidth();
+          tooltipWrapper
+            .transition()
+            .duration(200)
+            .attr("opacity", 1)
+            .attr("transform", `translate(${x} ${y})`);
+        })
+        .on("mouseout", () => {
+          tooltipWrapper.transition().duration(200).attr("opacity", 0);
+        });
     }
 
     function getData() {
@@ -119,5 +153,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 #bar-chart {
   width: 75%;
+}
+
+#tooltip {
+  pointer-events: none;
 }
 </style>
