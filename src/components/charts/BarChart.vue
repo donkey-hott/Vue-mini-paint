@@ -6,22 +6,46 @@
 /* TODO: get rid of scss variables; pass configuration via props */
 /* TODO: change grid color */
 /* TODO: get rid of hardcoded values */
-import { defineComponent, onMounted } from "vue";
+/* TODO: fix tooltip position */
+import { defineComponent, onMounted, PropType, watch } from "vue";
 import * as d3 from "d3";
 
+interface BarChartConfig {
+  data: { [key: string]: number };
+  width?: number;
+  height?: number;
+  title?: string;
+  leftAxisLabel?: string;
+  bottomAxisLabel?: string;
+  labelFontSize?: string;
+  titleFontSize?: string;
+  bandColor?: string;
+  labelColor?: string;
+}
+
 export default defineComponent({
-  setup() {
-    function build(data: { [key: string]: number }) {
-      data = {
-        "Thu Jun 24 2021": 6,
-        "Sun Jun 27 2021": 96,
-        "Sat Jun 26 2021": 124,
-        "Mon Jun 28 2021": 100,
-        "Mon Jun 21 2021": 84,
-      };
+  props: {
+    config: {
+      type: Object as PropType<BarChartConfig>,
+      required: true,
+    },
+  },
+  setup(props) {
+    function build(data: typeof props.config.data) {
+      // data = {
+      //   "Mon Jun 21 2021": 84,
+      //   "Thu Jun 24 2021": 6,
+      //   "Sat Jun 26 2021": 124,
+      //   "Sun Jun 27 2021": 96,
+      //   "Mon Jun 28 2021": 100,
+      // };
+      console.log(props.config);
       const margin = 70;
-      const width = 800 - 2 * margin;
-      const height = 450 - 2 * margin;
+      let width = props.config.width ?? 800;
+      let height = props.config.height ?? 450;
+      width -= margin * 2;
+      height -= margin * 2;
+
       const chart = d3
         .select("#bar-chart")
         .append("svg")
@@ -32,18 +56,23 @@ export default defineComponent({
       const yScale = d3
         .scaleLinear()
         .range([yRange, 0])
-        .domain([0, d3.max(Object.values(data)) as number]);
+        .domain([0, d3.max(Object.values(props.config.data)) as number]);
       chart
         .append("g")
         .attr("transform", `translate(${margin}, ${margin / 2})`)
-        .call(d3.axisLeft(yScale).tickSize(-width + margin));
+        .call(
+          d3
+            .axisLeft(yScale)
+            .ticks(d3.max(Object.values(data)))
+            .tickSize(-width + margin)
+        );
 
       /* RENDER X-AXIS */
       const xRange = width - margin;
       const xScale = d3
         .scaleBand()
         .range([0, xRange])
-        .domain(Object.keys(data))
+        .domain(Object.keys(props.config.data))
         .padding(0.1);
       chart
         .append("g")
@@ -57,36 +86,36 @@ export default defineComponent({
         .attr("x", (width + margin) / 2)
         .attr("y", margin / 3)
         .attr("text-anchor", "middle")
-        .attr("fill", "white")
-        .attr("font-size", "1em")
-        .text("Daily visitors");
+        .attr("fill", props.config.labelColor || "#000000")
+        .attr("font-size", props.config.titleFontSize || "1em")
+        .text(props.config.title || "");
 
       d3.select("svg")
         .append("text")
-        .attr("fill", "white")
-        .attr("font-size", 14)
+        .attr("fill", props.config.labelColor || "#000000")
+        .attr("font-size", props.config.labelFontSize || "1em")
         .attr("font-style", "italic")
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
         .attr("y", margin / 2)
         .attr("text-anchor", "middle")
-        .text("Visits");
+        .text(props.config.leftAxisLabel || "");
 
       d3.select("svg")
         .append("text")
-        .attr("fill", "white")
-        .attr("font-size", 14)
+        .attr("fill", props.config.labelColor || "#000000")
+        .attr("font-size", props.config.labelFontSize || "1em")
         .attr("font-style", "italic")
         .attr("x", (width + margin) / 2)
         .attr("y", height)
         .attr("text-anchor", "middle")
-        .text("Time");
+        .text(props.config.bottomAxisLabel || "");
 
       /* RENDER BARS AND TOOLTIP*/
 
       const barGroups = chart
         .selectAll()
-        .data(Object.entries(data))
+        .data(Object.entries(props.config.data))
         .enter()
         .append("g");
 
@@ -98,7 +127,7 @@ export default defineComponent({
         .attr("points", "0, 0, 60, 0, 60, 30, 40, 30, 30, 40, 20, 30, 0, 30");
       const tooltipText = tooltipWrapper
         .append("text")
-        .attr("fill", "white")
+        .attr("fill", "#ffffff")
         .attr("text-anchor", "middle")
         .attr("x", "4.5%")
         .attr("y", "5%")
@@ -106,11 +135,11 @@ export default defineComponent({
 
       barGroups
         .append("rect")
-        .attr("x", ([date, _]) => (xScale(date) as number) + margin)
-        .attr("y", ([_, times]) => yScale(times) + margin / 2)
+        .attr("x", ([key, _]) => (xScale(key) as number) + margin)
+        .attr("y", ([_, value]) => yScale(value) + margin / 2)
         .attr("width", xScale.bandwidth())
-        .attr("height", ([_, times]) => height - yScale(times) - margin)
-        .attr("fill", "var(--color-success-light)")
+        .attr("height", ([_, value]) => height - yScale(value) - margin)
+        .attr("fill", props.config.bandColor || "#000000")
         .on("mouseenter", (event: MouseEvent, [key, value]) => {
           tooltipText.text(value);
 
@@ -126,26 +155,9 @@ export default defineComponent({
           tooltipWrapper.transition().duration(200).attr("opacity", 0);
         });
     }
-
-    function getData() {
-      return fetch(
-        "http://localhost:3000/api/analytics/getEventsByType?type=ROUTE_CHANGE"
-      ).then((res) => res.json());
-    }
-
-    onMounted(() =>
-      getData()
-        .then((data) => {
-          return data.reduce((acc: any, event: any) => {
-            const key = new Date(event.timestamp).toDateString();
-            if (key in acc) {
-              acc[key] += 1;
-            } else acc[key] = 1;
-            return acc;
-          }, {});
-        })
-        .then((handledData) => build(handledData))
-    );
+    onMounted(() => {
+      build(props.config.data);
+    });
   },
 });
 </script>
