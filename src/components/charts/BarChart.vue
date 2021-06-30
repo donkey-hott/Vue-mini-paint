@@ -3,43 +3,26 @@
 </template>
 
 <script lang="ts">
-/* TODO: get rid of scss variables; pass configuration via props */
-/* TODO: change grid color */
-/* TODO: get rid of hardcoded values */
-/* TODO: fix tooltip position */
-import { defineComponent, onMounted, PropType, watch } from "vue";
+import { defineComponent, onMounted, PropType } from "vue";
 import * as d3 from "d3";
-
-interface BarChartConfig {
-  data: { [key: string]: number };
-  width?: number;
-  height?: number;
-  title?: string;
-  leftAxisLabel?: string;
-  bottomAxisLabel?: string;
-  labelFontSize?: string;
-  titleFontSize?: string;
-  bandColor?: string;
-  labelColor?: string;
-}
+import { BarChartConfig } from "./ChartTypes";
 
 export default defineComponent({
   props: {
+    data: {
+      type: Object as PropType<{ [key: string]: number } | null>,
+      required: true,
+    },
     config: {
       type: Object as PropType<BarChartConfig>,
       required: true,
     },
   },
   setup(props) {
-    function build(data: typeof props.config.data) {
-      // data = {
-      //   "Mon Jun 21 2021": 84,
-      //   "Thu Jun 24 2021": 6,
-      //   "Sat Jun 26 2021": 124,
-      //   "Sun Jun 27 2021": 96,
-      //   "Mon Jun 28 2021": 100,
-      // };
-      console.log(props.config);
+    function build(data: typeof props.data) {
+      if (data === null) {
+        throw new TypeError("barChartData cannot be typeof null");
+      }
       const margin = 70;
       let width = props.config.width ?? 800;
       let height = props.config.height ?? 450;
@@ -56,23 +39,19 @@ export default defineComponent({
       const yScale = d3
         .scaleLinear()
         .range([yRange, 0])
-        .domain([0, d3.max(Object.values(props.config.data)) as number]);
+        .domain([0, d3.max(Object.values(data)) as number]);
+
       chart
         .append("g")
         .attr("transform", `translate(${margin}, ${margin / 2})`)
-        .call(
-          d3
-            .axisLeft(yScale)
-            .ticks(d3.max(Object.values(data)))
-            .tickSize(-width + margin)
-        );
+        .call(d3.axisLeft(yScale).tickSize(-width + margin));
 
       /* RENDER X-AXIS */
       const xRange = width - margin;
       const xScale = d3
         .scaleBand()
         .range([0, xRange])
-        .domain(Object.keys(props.config.data))
+        .domain(Object.keys(data))
         .padding(0.1);
       chart
         .append("g")
@@ -83,7 +62,7 @@ export default defineComponent({
 
       d3.select("svg")
         .append("text")
-        .attr("x", (width + margin) / 2)
+        .attr("x", width / 2)
         .attr("y", margin / 3)
         .attr("text-anchor", "middle")
         .attr("fill", props.config.labelColor || "#000000")
@@ -106,7 +85,7 @@ export default defineComponent({
         .attr("fill", props.config.labelColor || "#000000")
         .attr("font-size", props.config.labelFontSize || "1em")
         .attr("font-style", "italic")
-        .attr("x", (width + margin) / 2)
+        .attr("x", width / 2)
         .attr("y", height)
         .attr("text-anchor", "middle")
         .text(props.config.bottomAxisLabel || "");
@@ -115,7 +94,7 @@ export default defineComponent({
 
       const barGroups = chart
         .selectAll()
-        .data(Object.entries(props.config.data))
+        .data(Object.entries(data))
         .enter()
         .append("g");
 
@@ -135,16 +114,16 @@ export default defineComponent({
 
       barGroups
         .append("rect")
-        .attr("x", ([key, _]) => (xScale(key) as number) + margin)
-        .attr("y", ([_, value]) => yScale(value) + margin / 2)
+        .attr("x", ([key, value]) => (xScale(key) as number) + margin)
+        .attr("y", ([key, value]) => yScale(value) + margin / 2)
         .attr("width", xScale.bandwidth())
-        .attr("height", ([_, value]) => height - yScale(value) - margin)
+        .attr("height", ([key, value]) => height - yScale(value) - margin)
         .attr("fill", props.config.bandColor || "#000000")
         .on("mouseenter", (event: MouseEvent, [key, value]) => {
           tooltipText.text(value);
 
           const y = yScale(value);
-          const x = (xScale(key) as number) + xScale.bandwidth();
+          const x = (xScale(key) as number) + margin + xScale.bandwidth() / 2;
           tooltipWrapper
             .transition()
             .duration(200)
@@ -155,9 +134,7 @@ export default defineComponent({
           tooltipWrapper.transition().duration(200).attr("opacity", 0);
         });
     }
-    onMounted(() => {
-      build(props.config.data);
-    });
+    onMounted(() => build(props.data));
   },
 });
 </script>
@@ -165,9 +142,5 @@ export default defineComponent({
 <style lang="scss" scoped>
 #bar-chart {
   width: 75%;
-}
-
-#tooltip {
-  pointer-events: none;
 }
 </style>
