@@ -8,6 +8,7 @@ import Registration from "../views/Registration.vue";
 import Swiper from "../views/Swiper.vue";
 import ManagePictures from "../views/ManagePictures.vue";
 import Page403 from "../views/Page403.vue";
+import Charts from "../views/Charts.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -71,6 +72,11 @@ export const routes: Array<RouteRecordRaw> = [
     meta: {
       adminOnly: true,
     },
+  },
+  {
+    path: "/analytics",
+    name: "analytics",
+    component: Charts,
   },
   {
     path: "/forbidden",
