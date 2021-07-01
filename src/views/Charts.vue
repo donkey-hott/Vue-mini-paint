@@ -57,8 +57,9 @@ export default defineComponent({
     const isDataLoaded = ref(false);
 
     function fetchVisits() {
+      console.log(process.env);
       return fetch(
-        "http://localhost:3000/api/analytics/getEventsByType?type=ROUTE_CHANGE"
+        `${process.env.VUE_APP_SERVER_HOST}/api/analytics/getEventsByType?type=ROUTE_CHANGE`
       ).then((res) => res.json());
     }
 
