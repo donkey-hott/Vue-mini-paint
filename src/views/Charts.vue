@@ -1,11 +1,14 @@
 <template>
   <main v-if="isDataLoaded">
-    <bar-chart :data="barChartData" :config="barChartConfig"></bar-chart>
-    <pie-chart :data="pieChartData" :config="pieChartConfig"></pie-chart>
+    <bar-chart :config="barChartConfig"></bar-chart>
+    <pie-chart :config="pieChartConfig"></pie-chart>
   </main>
 </template>
 
 <script lang="ts">
+import { useStore } from "../store";
+import { ActionTypes } from "@/store/modules/analytics/actions/action-types";
+import { MutationTypes } from "@/store/modules/analytics/mutations/mutation-types";
 import { defineComponent, onMounted, ref } from "vue";
 import BarChart from "../components/charts/BarChart.vue";
 import {
@@ -20,7 +23,7 @@ export default defineComponent({
     PieChart,
   },
   setup() {
-    const barChartData = ref<{ [key: string]: number } | null>(null);
+    const store = useStore();
     const barChartConfig: BarChartConfig = {
       height: 500,
       title: "Daily visits",
@@ -31,8 +34,6 @@ export default defineComponent({
       bandColor: "var(--color-success-light)",
       labelColor: "var(--white)",
     };
-
-    const pieChartData = ref<{ [key: string]: number } | null>(null);
     const pieChartConfig: PieChartConfig = {
       title: "Page distribution by visits",
       titleColor: "#ffffff",
@@ -56,13 +57,6 @@ export default defineComponent({
 
     const isDataLoaded = ref(false);
 
-    function fetchVisits() {
-      console.log(process.env);
-      return fetch(
-        `${process.env.VUE_APP_SERVER_HOST}/api/analytics/getEventsByType?type=ROUTE_CHANGE`
-      ).then((res) => res.json());
-    }
-
     function aggregateData(
       dataset: Array<{ [key: string]: string }>,
       targetField: string
@@ -79,26 +73,38 @@ export default defineComponent({
       }, {});
     }
 
-    onMounted(() =>
-      fetchVisits()
-        .then((visits) => {
-          return {
-            visitsByTime: aggregateData(visits, "timestamp"),
-            visitsByPage: aggregateData(visits, "route"),
-          };
-        })
-        .then((mappedData) => {
-          barChartData.value = mappedData.visitsByTime;
-          pieChartData.value = mappedData.visitsByPage;
-          isDataLoaded.value = true;
-        })
-    );
+    onMounted(() => {
+      store.dispatch(ActionTypes.FETCH_VISITS).then((visits) => {
+        store.commit(
+          MutationTypes.SET_VISITS_BY_TIME,
+          aggregateData(visits, "timestamp")
+        );
+        store.commit(
+          MutationTypes.SET_VISITS_BY_PAGES,
+          aggregateData(visits, "route")
+        );
+        isDataLoaded.value = true;
+      });
+    });
+
+    // onMounted(() =>
+    //   fetchVisits()
+    //     .then((visits) => {
+    //       return {
+    //         visitsByTime: aggregateData(visits, "timestamp"),
+    //         visitsByPage: aggregateData(visits, "route"),
+    //       };
+    //     })
+    //     .then((mappedData) => {
+    //       barChartData.value = mappedData.visitsByTime;
+    //       pieChartData.value = mappedData.visitsByPage;
+    //       isDataLoaded.value = true;
+    //     })
+    // );
 
     return {
       isDataLoaded,
-      barChartData,
       barChartConfig,
-      pieChartData,
       pieChartConfig,
     };
   },

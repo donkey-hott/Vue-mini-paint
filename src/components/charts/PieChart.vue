@@ -5,26 +5,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, PropType } from "vue";
+import { defineComponent, onMounted, ref, PropType, computed } from "vue";
 import { Chart, registerables } from "chart.js";
 import { PieChartConfig } from "./ChartTypes";
+import { useStore } from "@/store";
 Chart.register(...registerables);
 
 export default defineComponent({
   props: {
-    data: {
-      type: Object as PropType<{ [key: string]: number } | null>,
-      required: true,
-    },
     config: {
       type: Object as PropType<PieChartConfig>,
       required: false,
     },
   },
   setup(props) {
+    const store = useStore();
     const chartElem = ref<HTMLCanvasElement | null>(null);
+    const visitsByPages = computed(() => store.state.analytics.visitsByPages);
 
-    function build(data: typeof props.data) {
+    function build(data: typeof visitsByPages.value) {
       if (!chartElem.value) {
         throw new Error("Rendering context must be provided");
       }
@@ -68,9 +67,7 @@ export default defineComponent({
       });
     }
 
-    onMounted(() => {
-      build(props.data);
-    });
+    onMounted(() => build(visitsByPages.value));
 
     return { chartElem };
   },

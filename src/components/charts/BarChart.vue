@@ -3,25 +3,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, PropType, ref } from "vue";
+import { computed, defineComponent, onMounted, PropType, ref } from "vue";
 import * as d3 from "d3";
 import { BarChartConfig } from "./ChartTypes";
+import { useStore } from "@/store";
 
 export default defineComponent({
   props: {
-    data: {
-      type: Object as PropType<{ [key: string]: number } | null>,
-      required: true,
-    },
     config: {
       type: Object as PropType<BarChartConfig>,
       required: true,
     },
   },
   setup(props) {
+    const store = useStore();
+    const visitsByTime = computed(() => store.state.analytics.visitsByTime);
     let chart: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
+
     const xScale = ref<d3.ScaleBand<string> | undefined>();
     const yScale = ref<d3.ScaleLinear<number, number, never> | undefined>();
+
     const tooltip = ref<{
       wrapper: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
       text: d3.Selection<SVGTextElement, unknown, HTMLElement, any>;
@@ -163,7 +164,7 @@ export default defineComponent({
       tooltip.value?.wrapper.transition().duration(200).attr("opacity", 0);
     }
 
-    function build(data: typeof props.data) {
+    function build(data: typeof visitsByTime.value) {
       if (data === null) {
         throw new TypeError("Bar chart data cannot be typeof null");
       }
@@ -189,7 +190,7 @@ export default defineComponent({
       bands?.on("mouseenter", (e, [key, value]) => showTooltip(e, key, value));
       bands?.on("mouseout", () => hideTooltip());
     }
-    onMounted(() => build(props.data));
+    onMounted(() => build(visitsByTime.value));
   },
 });
 </script>
