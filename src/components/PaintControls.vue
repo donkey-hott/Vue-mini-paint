@@ -120,6 +120,8 @@ import {
 } from "vue";
 import { useStore } from "../store";
 import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
+  import { useTracker } from "@/plugins/trackerInit";
+
 
 export default defineComponent({
   emits: [
@@ -131,6 +133,7 @@ export default defineComponent({
 
   setup(props, { emit }) {
     const store = useStore();
+    const tracker = useTracker();
     const styleOptions = reactive({
       lineWidth: 1,
       strokeColor: "#000000",
@@ -238,6 +241,14 @@ export default defineComponent({
       };
       emit("changeDrawFunction", drawFunction);
       arePolygonsShown.value = false;
+
+      tracker.track({
+        eventType: "BUTTON_CLICK",
+        eventName: "toolChosen",
+        toolName: mainInstruments.find(
+          (tool) => tool.funcName === drawFunction.funcName
+        )?.title,
+      });
     }
 
     function emitClearCanvasEvent() {
