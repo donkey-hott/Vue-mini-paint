@@ -25,32 +25,39 @@
       </li>
       <li class="item">
         <button
+          :disabled="!isUserPremium"
           title="More shapes"
           class="btn"
+          :class="{ 'btn-disabled': !isUserPremium }"
           @click="toggleAdditionalShapesBlock"
         >
           ...
         </button>
-        <div class="polygons" v-show="arePolygonsShown">
-          <button
-            v-for="(additInstrument, idx) in additionalInstruments"
-            :key="idx"
-            :title="additInstrument.title"
-            class="btn"
-            :class="{
-              '.btn--active': currentInstrument === additInstrument.title,
-            }"
-            @click="
-              setDrawFunction(
-                additInstrument.funcName,
-                additInstrument.polygonParams
-              );
-              currentInstrument = additInstrument.title;
-            "
-          >
-            <img :alt="additInstrument.title" :src="additInstrument.iconLink" />
-          </button>
-        </div>
+        <template v-if="isUserPremium">
+          <div class="polygons" v-show="arePolygonsShown">
+            <button
+              v-for="(additInstrument, idx) in additionalInstruments"
+              :key="idx"
+              :title="additInstrument.title"
+              class="btn"
+              :class="{
+                '.btn--active': currentInstrument === additInstrument.title,
+              }"
+              @click="
+                setDrawFunction(
+                  additInstrument.funcName,
+                  additInstrument.polygonParams
+                );
+                currentInstrument = additInstrument.title;
+              "
+            >
+              <img
+                :alt="additInstrument.title"
+                :src="additInstrument.iconLink"
+              />
+            </button>
+          </div>
+        </template>
       </li>
       <li class="item">
         <button class="btn btn-accent" @click="emitClearCanvasEvent">
@@ -102,9 +109,19 @@
 </template>
 
 <script lang="ts">
-import { useTracker } from "@/plugins/trackerInit";
-import { defineComponent, reactive, ref, watch } from "vue";
+import { ActionTypes } from "@/store/modules/auth/actions/action-types";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from "vue";
+import { useStore } from "../store";
 import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
+  import { useTracker } from "@/plugins/trackerInit";
+
 
 export default defineComponent({
   emits: [
@@ -115,6 +132,7 @@ export default defineComponent({
   ],
 
   setup(props, { emit }) {
+    const store = useStore();
     const tracker = useTracker();
     const styleOptions = reactive({
       lineWidth: 1,
@@ -207,6 +225,8 @@ export default defineComponent({
       },
     ];
 
+    const isUserPremium = computed(() => store.getters.isUserPremium);
+
     function toggleAdditionalShapesBlock() {
       arePolygonsShown.value = !arePolygonsShown.value;
     }
@@ -243,12 +263,15 @@ export default defineComponent({
       emit("setStyleOptions", oldVal);
     });
 
+    onMounted(() => store.dispatch(ActionTypes.GET_USER_SUBSCRIPTION_PLAN));
+
     return {
       styleOptions,
       arePolygonsShown,
       currentInstrument,
       mainInstruments,
       additionalInstruments,
+      isUserPremium,
       toggleAdditionalShapesBlock,
       setDrawFunction,
       emitClearCanvasEvent,

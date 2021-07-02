@@ -48,6 +48,16 @@
   }
 }
 
+.btn-disabled {
+  background: var(--gray-2);
+  color: var(--btn-color-caption);
+  cursor: default;
+
+  &:hover {
+    background: var(--gray-2);
+  }
+}
+
 /* sizing of buttons */
 
 .btn-sm {

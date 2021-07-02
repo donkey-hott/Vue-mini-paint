@@ -5,6 +5,7 @@ import firebase from "firebase";
 export enum MutationTypes {
   SET_USER = "SET_USER",
   SET_PROFILE = "SET_PROFILE",
+  SET_PLAN = "SET_PLAN",
 }
 
 export type Mutations<S = State> = {
@@ -13,4 +14,5 @@ export type Mutations<S = State> = {
     state: S,
     payload: UserProfile | null
   ): Promise<void>;
+  [MutationTypes.SET_PLAN](state: S, payload: string | null): void;
 };
