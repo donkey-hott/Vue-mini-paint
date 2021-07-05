@@ -4,6 +4,7 @@ import { ActionContext } from "vuex";
 import { Mutations } from "../mutations/mutation-types";
 import { State as RootState } from "@/store";
 import { State } from "../state";
+import { AxiosRequestConfig } from "axios";
 
 export enum ActionTypes {
   SIGN_UP = "SIGN_UP",
@@ -12,6 +13,7 @@ export enum ActionTypes {
   CREATE_PROFILE = "CREATE_PROFILE",
   LOAD_PROFILE = "LOAD_PROFILE",
   GET_USER_SUBSCRIPTION_PLAN = "GET_USER_SUBSCRIPTION_PLAN",
+  SET_AUTHORIZATION_HEADER = "SET_AUTHORIZATION_HEADER",
 }
 
 export interface Actions {
@@ -32,6 +34,10 @@ export interface Actions {
   [ActionTypes.GET_USER_SUBSCRIPTION_PLAN](
     context: AugmentedActionContext
   ): void;
+  [ActionTypes.SET_AUTHORIZATION_HEADER](
+    context: AugmentedActionContext,
+    axiosConfig: AxiosRequestConfig
+  ): Promise<AxiosRequestConfig | undefined>;
 }
 
 export type AugmentedActionContext = {

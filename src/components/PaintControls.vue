@@ -120,8 +120,7 @@ import {
 } from "vue";
 import { useStore } from "../store";
 import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
-  import { useTracker } from "@/plugins/trackerInit";
-
+import { useTracker } from "@/plugins/trackerInit";
 
 export default defineComponent({
   emits: [
