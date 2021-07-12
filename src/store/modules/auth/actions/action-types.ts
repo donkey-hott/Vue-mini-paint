@@ -12,6 +12,7 @@ export enum ActionTypes {
   CREATE_PROFILE = "CREATE_PROFILE",
   LOAD_PROFILE = "LOAD_PROFILE",
   GET_USER_SUBSCRIPTION_PLAN = "GET_USER_SUBSCRIPTION_PLAN",
+  SUBSCRIBE_TO_PREMIUM = "SUBSCRIBE_TO_PREMIUM",
 }
 
 export interface Actions {
@@ -32,6 +33,7 @@ export interface Actions {
   [ActionTypes.GET_USER_SUBSCRIPTION_PLAN](
     context: AugmentedActionContext
   ): void;
+  [ActionTypes.SUBSCRIBE_TO_PREMIUM](context: AugmentedActionContext): void;
 }
 
 export type AugmentedActionContext = {

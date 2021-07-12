@@ -63,4 +63,19 @@ export const actions: ActionTree<State, RootState> & Actions = {
         context.commit(MutationTypes.SET_PLAN, data)
       );
   },
+  async [ActionTypes.SUBSCRIBE_TO_PREMIUM](context) {
+    const { currentUser, userProfile } = context.state;
+    if (!currentUser || !userProfile) return;
+
+    const changeUserPlanURL = new URL(
+      `${process.env.VUE_APP_SERVER_HOST}/api/users/setUserSubscriptionPlan`
+    );
+    changeUserPlanURL.searchParams.set("userId", currentUser.uid);
+    changeUserPlanURL.searchParams.set("plan", "premium");
+
+    const res = await fetch(changeUserPlanURL.href);
+    const data = await res.json();
+
+    context.commit(MutationTypes.SET_PROFILE, data);
+  },
 };

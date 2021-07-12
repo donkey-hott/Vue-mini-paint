@@ -4,10 +4,20 @@
 
 <script>
 /* eslint-disable */
-import { onMounted } from "vue-demi";
+import { onMounted, computed } from "vue";
+import { ActionTypes } from "@/store/modules/auth/actions/action-types";
+import { useStore } from "@/store";
+import { useToast } from "vue-toastification";
+
 export default {
   setup() {
+    const store = useStore();
+    const toast = useToast();
+    const isUserPremium = computed(() => store.getters.isUserPremium);
+
     onMounted(() => {
+      if (isUserPremium) return;
+
       paypal
         .Buttons({
           createOrder: (data, actions) => {
@@ -23,11 +33,20 @@ export default {
           },
           onApprove: async (data, actions) => {
             const details = await actions.order.capture();
-            console.log("transaction completed:", details);
+
+            try {
+              await store.dispatch(ActionTypes.SUBSCRIBE_TO_PREMIUM);
+              toast.success("Thank you for the purchase!");
+            } catch (error) {
+              toast.error("Something went wrong. Please, try later");
+              console.error(error);
+            }
           },
         })
         .render("#paypal-button");
     });
+
+    return { isUserPremium };
   },
 };
 </script>
