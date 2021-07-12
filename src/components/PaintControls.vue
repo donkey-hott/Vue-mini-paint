@@ -109,7 +109,7 @@
 </template>
 
 <script lang="ts">
-import { ActionTypes } from "@/store/modules/auth/actions/action-types";
+import { ActionTypes } from "@/store/modules/payments/actions/action-types";
 import {
   computed,
   defineComponent,

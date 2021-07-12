@@ -5,7 +5,7 @@
 <script>
 /* eslint-disable */
 import { onMounted, computed } from "vue";
-import { ActionTypes } from "@/store/modules/auth/actions/action-types";
+import { ActionTypes } from "@/store/modules/payments/actions/action-types";
 import { useStore } from "@/store";
 import { useToast } from "vue-toastification";
 
