@@ -5,5 +5,8 @@ export enum MutationTypes {
 }
 
 export type Mutations<S = State> = {
-  [MutationTypes.SET_PLAN](state: S, payload: string | null): void;
+  [MutationTypes.SET_PLAN](
+    state: S,
+    payload: { type: string; price: number }
+  ): void;
 };

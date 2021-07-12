@@ -109,15 +109,7 @@
 </template>
 
 <script lang="ts">
-import { ActionTypes } from "@/store/modules/payments/actions/action-types";
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  reactive,
-  ref,
-  watch,
-} from "vue";
+import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { useStore } from "../store";
 import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
 import { useTracker } from "@/plugins/trackerInit";
@@ -261,8 +253,6 @@ export default defineComponent({
     watch(styleOptions, (newVal, oldVal) => {
       emit("setStyleOptions", oldVal);
     });
-
-    onMounted(() => store.dispatch(ActionTypes.GET_USER_SUBSCRIPTION_PLAN));
 
     return {
       styleOptions,

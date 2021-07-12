@@ -15,8 +15,11 @@ export default {
     const toast = useToast();
     const isUserPremium = computed(() => store.getters.isUserPremium);
 
-    onMounted(() => {
-      if (isUserPremium) return;
+    onMounted(async () => {
+      await store.dispatch(ActionTypes.GET_USER_SUBSCRIPTION_PLAN);
+      if (isUserPremium.value) return;
+
+      const premiumPrice = await store.dispatch(ActionTypes.GET_PREMIUM_PRICE);
 
       paypal
         .Buttons({
@@ -25,14 +28,14 @@ export default {
               purchase_units: [
                 {
                   amount: {
-                    value: "0.01",
+                    value: premiumPrice,
                   },
                 },
               ],
             });
           },
           onApprove: async (data, actions) => {
-            const details = await actions.order.capture();
+            await actions.order.capture();
 
             try {
               await store.dispatch(ActionTypes.SUBSCRIBE_TO_PREMIUM);

@@ -1,5 +1,5 @@
 export type State = {
-  plan: string | null;
+  plan: { type: string; price: number } | null;
 };
 
 export const state: State = {

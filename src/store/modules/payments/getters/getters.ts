@@ -6,9 +6,9 @@ import { UserPlanTypes } from "@/store/types";
 
 export const getters: GetterTree<State, RootState> & Getters = {
   isUserPremium(state) {
-    return state.plan === UserPlanTypes.PREMIUM_PLAN;
+    return state.plan?.type === UserPlanTypes.PREMIUM_PLAN;
   },
   isDefaultUser(state) {
-    return state.plan === UserPlanTypes.DEFAULT_PLAN;
+    return state.plan?.type === UserPlanTypes.DEFAULT_PLAN;
   },
 };
