@@ -5,6 +5,7 @@ import { Actions, ActionTypes } from "./action-types";
 import { State as RootState } from "@/store";
 import { State } from "../state";
 import { MutationTypes } from "../mutations/mutation-types";
+import axios from "axios";
 
 export const actions: ActionTree<State, RootState> & Actions = {
   [ActionTypes.SIGN_UP](context, payload: UserCredentials) {
@@ -48,19 +49,27 @@ export const actions: ActionTree<State, RootState> & Actions = {
         });
     });
   },
-  [ActionTypes.GET_USER_SUBSCRIPTION_PLAN](context) {
+  async [ActionTypes.GET_USER_SUBSCRIPTION_PLAN](context) {
     const userId = context.state.currentUser?.uid;
     if (!userId) return;
 
     const middlewareURL = new URL(
-      "http://localhost:3000/api/users/getUserSubscriptionPlan"
+      `${process.env.VUE_APP_SERVER_HOST}/api/users/getUserSubscriptionPlan`
     );
     middlewareURL.searchParams.set("userId", userId);
 
-    fetch(middlewareURL.href)
-      .then((res) => res.json())
-      .then((data: string | null) =>
-        context.commit(MutationTypes.SET_PLAN, data)
-      );
+    const response = await axios.get(middlewareURL.href);
+    context.commit(MutationTypes.SET_PLAN, response.data);
+  },
+  async [ActionTypes.SET_AUTHORIZATION_HEADER](context, config) {
+    const user = context.state.currentUser;
+    const { headers } = config;
+    if (!user || headers.common.Authorization) return;
+
+    const token = await user.getIdToken();
+    return new Promise((resolve) => {
+      headers.common.Authorization = `Bearer ${token}`;
+      resolve(config);
+    });
   },
 };

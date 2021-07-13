@@ -87,21 +87,6 @@ export default defineComponent({
       });
     });
 
-    // onMounted(() =>
-    //   fetchVisits()
-    //     .then((visits) => {
-    //       return {
-    //         visitsByTime: aggregateData(visits, "timestamp"),
-    //         visitsByPage: aggregateData(visits, "route"),
-    //       };
-    //     })
-    //     .then((mappedData) => {
-    //       barChartData.value = mappedData.visitsByTime;
-    //       pieChartData.value = mappedData.visitsByPage;
-    //       isDataLoaded.value = true;
-    //     })
-    // );
-
     return {
       isDataLoaded,
       barChartConfig,
