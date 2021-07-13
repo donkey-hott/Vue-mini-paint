@@ -16,7 +16,7 @@ export interface Actions {
   [ActionTypes.SUBSCRIBE_TO_PREMIUM](context: AugmentedActionContext): void;
   [ActionTypes.GET_PREMIUM_PRICE](
     context: AugmentedActionContext
-  ): Promise<any>;
+  ): Promise<number>;
 }
 
 export type AugmentedActionContext = {
