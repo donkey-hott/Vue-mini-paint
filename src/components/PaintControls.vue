@@ -105,6 +105,7 @@
         />
       </li>
     </ul>
+    <pay-pal></pay-pal>
   </aside>
 </template>
 
@@ -113,8 +114,12 @@ import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { useStore } from "../store";
 import { PolygonConfiguration, DrawFunctionType } from "./paint-types";
 import { useTracker } from "@/plugins/trackerInit";
+import PayPal from "../components/PayPal.vue";
 
 export default defineComponent({
+  components: {
+    PayPal,
+  },
   emits: [
     "changeDrawFunction",
     "clearCanvas",

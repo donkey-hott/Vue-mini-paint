@@ -54,7 +54,7 @@ export default {
       /* check whether a user has premium; if so, not render the button */
       await store.dispatch(ActionTypes.GET_USER_SUBSCRIPTION_PLAN);
 
-      if (isUserPremium.value) return;
+      // if (isUserPremium.value) return;
 
       paypal
         .Buttons({
@@ -62,6 +62,11 @@ export default {
             await paypalCreateOrder(data, actions),
           onApprove: async (data, actions) =>
             await paypalOnApprove(data, actions),
+          style: {
+            size: "pay",
+            layout: "horizontal",
+            tagline: false,
+          },
         })
         .render("#paypal-button");
     }
@@ -73,4 +78,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss">
+section {
+  margin-top: 1em;
+}
+</style>
