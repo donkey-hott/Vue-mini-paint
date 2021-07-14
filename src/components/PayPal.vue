@@ -9,14 +9,15 @@
 <script>
 /*
 Eslint goes disabled because it doesn't recognize
-PayPal API that is defined as a script in the index.html file 
+PayPal API that is defined as a script in the index.html file
 */
 
 /* eslint-disable */
-import { onMounted, computed } from "vue";
+import { computed, onMounted } from "vue";
 import { ActionTypes } from "@/store/modules/payments/actions/action-types";
 import { useStore } from "@/store";
 import { useToast } from "vue-toastification";
+import { UserPlanTypes } from "@/store/types";
 
 export default {
   setup() {
@@ -25,13 +26,16 @@ export default {
     const isUserPremium = computed(() => store.getters.isUserPremium);
 
     async function paypalCreateOrder(data, actions) {
-      const premiumPrice = await store.dispatch(ActionTypes.GET_PREMIUM_PRICE);
+      const premiumPlanDetails = await store.dispatch(
+        ActionTypes.GET_PLAN_DETAILS,
+        UserPlanTypes.PREMIUM_PLAN
+      );
 
       return actions.order.create({
         purchase_units: [
           {
             amount: {
-              value: premiumPrice,
+              value: premiumPlanDetails.price,
             },
           },
         ],
@@ -52,9 +56,7 @@ export default {
 
     async function initPaypal() {
       /* check whether a user has premium; if so, not render the button */
-      await store.dispatch(ActionTypes.GET_USER_SUBSCRIPTION_PLAN);
-
-      // if (isUserPremium.value) return;
+      if (isUserPremium.value) return;
 
       paypal
         .Buttons({

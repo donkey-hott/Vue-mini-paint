@@ -13,6 +13,7 @@ import { useStore } from "../../store";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import BaseAuthentication from "../../components/authentication/BaseAuthentication.vue";
+import { UserPlanTypes } from "@/store/types";
 
 export default defineComponent({
   components: {
@@ -35,9 +36,13 @@ export default defineComponent({
         );
         const email = userCredentials.user?.email;
         const role = router.currentRoute.value.meta.for as string;
+        const plan = {
+          type: UserPlanTypes.DEFAULT_PLAN,
+          price: 0,
+        };
         if (!email) return;
 
-        store.dispatch(ActionTypes.CREATE_PROFILE, { email, role });
+        store.dispatch(ActionTypes.CREATE_PROFILE, { email, role, plan });
         toast.success("Signed up successfully!");
         router.push("/");
       } catch (error) {

@@ -162,7 +162,7 @@
 <script lang="ts">
 import FileInput from "@/components/UI/FileInput.vue";
 import { ActionTypes } from "@/store/modules/auth/actions/action-types";
-import { UserProfile } from "@/store/types";
+import { UserProfile, UserPlanTypes } from "@/store/types";
 import {
   defineComponent,
   onMounted,
@@ -208,6 +208,10 @@ export default defineComponent({
       email: "",
       phone: "",
       role: "",
+      plan: {
+        type: UserPlanTypes.DEFAULT_PLAN,
+        price: 0,
+      },
     });
 
     const validationRules = {

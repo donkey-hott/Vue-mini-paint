@@ -15,6 +15,10 @@ export type UserProfile = {
   email: string;
   phone?: string;
   role: string;
+  plan: {
+    type: string;
+    price: number;
+  };
 };
 
 export type PictureRecord = {

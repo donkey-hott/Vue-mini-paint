@@ -2,23 +2,9 @@ import { ActionTree } from "vuex";
 import { Actions, ActionTypes } from "./action-types";
 import { State as RootState } from "@/store";
 import { State } from "../state";
-import { MutationTypes } from "../mutations/mutation-types";
+import { UserPlanTypes } from "@/store/types";
 
 export const actions: ActionTree<State, RootState> & Actions = {
-  async [ActionTypes.GET_USER_SUBSCRIPTION_PLAN](context) {
-    const userId = context.rootState.auth.currentUser?.uid;
-    if (!userId) return;
-
-    const middlewareURL = new URL(
-      `${process.env.VUE_APP_SERVER_HOST}/api/users/getUserSubscriptionPlan`
-    );
-    middlewareURL.searchParams.set("userId", userId);
-
-    const response = await fetch(middlewareURL.href);
-    const planDetails = await response.json();
-    context.commit(MutationTypes.SET_PLAN, planDetails);
-  },
-
   async [ActionTypes.SUBSCRIBE_TO_PREMIUM](context) {
     const { currentUser, userProfile } = context.rootState.auth;
     if (!currentUser || !userProfile) return;
@@ -28,26 +14,26 @@ export const actions: ActionTree<State, RootState> & Actions = {
       and get its details from the server
     */
     const URLToChangeUserPlan = new URL(
-      `${process.env.VUE_APP_SERVER_HOST}/api/users/setUserSubscriptionPlan`
+      `${process.env.VUE_APP_SERVER_HOST}/api/plans/subscribeUserToPremium`
     );
-    URLToChangeUserPlan.searchParams.set("userId", currentUser.uid);
-    URLToChangeUserPlan.searchParams.set("plan", "premium");
 
-    const res = await fetch(URLToChangeUserPlan.href);
-    const planDetails = await res.json();
-
-    /* update subscription plan on the client */
-    context.commit(MutationTypes.SET_PLAN, planDetails);
+    await fetch(URLToChangeUserPlan.href, {
+      method: "POST",
+      body: JSON.stringify({
+        userId: currentUser.uid,
+        planType: UserPlanTypes.PREMIUM_PLAN,
+      }),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
   },
 
-  async [ActionTypes.GET_PREMIUM_PRICE](context) {
-    const URLToGetPlanPrice = new URL(
-      `${process.env.VUE_APP_SERVER_HOST}/api/users/getPlanPrice`
+  async [ActionTypes.GET_PLAN_DETAILS](context, planType) {
+    const URLToGetPlanDetails = new URL(
+      `${process.env.VUE_APP_SERVER_HOST}/api/users/getPlanDetails`
     );
-    URLToGetPlanPrice.searchParams.set("plan", "premium");
+    URLToGetPlanDetails.searchParams.set("plan", planType);
 
-    const response = await fetch(URLToGetPlanPrice.href);
-    const price = await response.json();
-    return Number(price);
+    const response = await fetch(URLToGetPlanDetails.href);
+    return await response.json();
   },
 };

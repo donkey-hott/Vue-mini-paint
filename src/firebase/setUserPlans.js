@@ -18,7 +18,6 @@ const auth = admin.auth(app);
     const userPlanRef = database.ref(user.uid).child("profile").child("plan");
     const snapshot = await userPlanRef.once("value");
     const value = snapshot.val();
-    console.log(value);
 
     if (!value || typeof value === "string") {
       userPlanRef.set({

@@ -4,19 +4,16 @@ import { State as RootState } from "@/store";
 import { State } from "../state";
 
 export enum ActionTypes {
-  GET_USER_SUBSCRIPTION_PLAN = "GET_USER_SUBSCRIPTION_PLAN",
   SUBSCRIBE_TO_PREMIUM = "SUBSCRIBE_TO_PREMIUM",
-  GET_PREMIUM_PRICE = "GET_PREMIUM_PRICE",
+  GET_PLAN_DETAILS = "GET_PLAN_DETAILS",
 }
 
 export interface Actions {
-  [ActionTypes.GET_USER_SUBSCRIPTION_PLAN](
-    context: AugmentedActionContext
-  ): void;
   [ActionTypes.SUBSCRIBE_TO_PREMIUM](context: AugmentedActionContext): void;
-  [ActionTypes.GET_PREMIUM_PRICE](
-    context: AugmentedActionContext
-  ): Promise<number>;
+  [ActionTypes.GET_PLAN_DETAILS](
+    context: AugmentedActionContext,
+    payload: string
+  ): Promise<{ [key: string]: any }>;
 }
 
 export type AugmentedActionContext = {

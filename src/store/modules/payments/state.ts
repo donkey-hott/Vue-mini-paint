@@ -1,7 +1,3 @@
-export type State = {
-  plan: { type: string; price: number } | null;
-};
+export type State = any;
 
-export const state: State = {
-  plan: null,
-};
+export const state: State = {};
