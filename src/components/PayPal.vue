@@ -54,7 +54,7 @@ export default {
       /* check whether a user has premium; if so, not render the button */
       await store.dispatch(ActionTypes.GET_USER_SUBSCRIPTION_PLAN);
 
-      // if (isUserPremium.value) return;
+      if (isUserPremium.value) return;
 
       paypal
         .Buttons({
