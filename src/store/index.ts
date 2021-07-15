@@ -10,18 +10,23 @@ import { rootActions as actions } from "@/store/modules/root/actions/actions";
 import { analytics, Store as AnalyticsStore } from "./modules/analytics";
 import { State as AnalyticsState } from "./modules/analytics/state";
 
+import { payments, Store as PaymentsStore } from "./modules/payments";
+import { State as PaymentsState } from "./modules/payments/state";
+
 export type State = {
   auth: AuthState;
   pictures: PictureState;
   analytics: AnalyticsState;
+  payments: PaymentsState;
 };
 
 export type Store = AuthStore<Pick<State, "auth">> &
   PictureStore<Pick<State, "pictures">> &
-  AnalyticsStore<Pick<State, "analytics">>;
+  AnalyticsStore<Pick<State, "analytics">> &
+  PaymentsStore<Pick<State, "payments">>;
 
 export const store = createStore({
-  modules: { auth, pictures, analytics },
+  modules: { auth, pictures, analytics, payments },
   actions,
 });
 

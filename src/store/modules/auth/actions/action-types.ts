@@ -12,7 +12,6 @@ export enum ActionTypes {
   LOG_OUT = "LOG_OUT",
   CREATE_PROFILE = "CREATE_PROFILE",
   LOAD_PROFILE = "LOAD_PROFILE",
-  GET_USER_SUBSCRIPTION_PLAN = "GET_USER_SUBSCRIPTION_PLAN",
   SET_AUTHORIZATION_HEADER = "SET_AUTHORIZATION_HEADER",
 }
 
@@ -31,9 +30,6 @@ export interface Actions {
     payload: UserProfile
   ): void;
   [ActionTypes.LOAD_PROFILE](context: AugmentedActionContext): Promise<void>;
-  [ActionTypes.GET_USER_SUBSCRIPTION_PLAN](
-    context: AugmentedActionContext
-  ): void;
   [ActionTypes.SET_AUTHORIZATION_HEADER](
     context: AugmentedActionContext,
     axiosConfig: AxiosRequestConfig
