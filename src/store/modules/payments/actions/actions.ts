@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ActionTree } from "vuex";
 import { Actions, ActionTypes } from "./action-types";
 import { State as RootState } from "@/store";
@@ -16,14 +17,13 @@ export const actions: ActionTree<State, RootState> & Actions = {
     const URLToChangeUserPlan = new URL(
       `${process.env.VUE_APP_SERVER_HOST}/api/plans/subscribeUserToPremium`
     );
-
-    await fetch(URLToChangeUserPlan.href, {
+    await axios({
       method: "POST",
-      body: JSON.stringify({
+      url: URLToChangeUserPlan.href,
+      data: {
         userId: currentUser.uid,
         planType: UserPlanTypes.PREMIUM_PLAN,
-      }),
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      },
     });
   },
 
@@ -32,8 +32,7 @@ export const actions: ActionTree<State, RootState> & Actions = {
       `${process.env.VUE_APP_SERVER_HOST}/api/plans/getPlanDetails`
     );
     URLToGetPlanDetails.searchParams.set("plan", planType);
-
-    const response = await fetch(URLToGetPlanDetails.href);
-    return await response.json();
+    const response = await axios.get(URLToGetPlanDetails.href);
+    return response.data;
   },
 };

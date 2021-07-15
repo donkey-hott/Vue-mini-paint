@@ -30,7 +30,6 @@ export default {
         ActionTypes.GET_PLAN_DETAILS,
         UserPlanTypes.PREMIUM_PLAN
       );
-
       return actions.order.create({
         purchase_units: [
           {
