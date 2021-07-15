@@ -29,7 +29,7 @@ export const actions: ActionTree<State, RootState> & Actions = {
 
   async [ActionTypes.GET_PLAN_DETAILS](context, planType) {
     const URLToGetPlanDetails = new URL(
-      `${process.env.VUE_APP_SERVER_HOST}/api/users/getPlanDetails`
+      `${process.env.VUE_APP_SERVER_HOST}/api/plans/getPlanDetails`
     );
     URLToGetPlanDetails.searchParams.set("plan", planType);
 
