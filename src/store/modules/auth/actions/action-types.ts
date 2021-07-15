@@ -4,6 +4,7 @@ import { ActionContext } from "vuex";
 import { Mutations } from "../mutations/mutation-types";
 import { State as RootState } from "@/store";
 import { State } from "../state";
+import { AxiosRequestConfig } from "axios";
 
 export enum ActionTypes {
   SIGN_UP = "SIGN_UP",
@@ -11,6 +12,7 @@ export enum ActionTypes {
   LOG_OUT = "LOG_OUT",
   CREATE_PROFILE = "CREATE_PROFILE",
   LOAD_PROFILE = "LOAD_PROFILE",
+  SET_AUTHORIZATION_HEADER = "SET_AUTHORIZATION_HEADER",
 }
 
 export interface Actions {
@@ -28,6 +30,10 @@ export interface Actions {
     payload: UserProfile
   ): void;
   [ActionTypes.LOAD_PROFILE](context: AugmentedActionContext): Promise<void>;
+  [ActionTypes.SET_AUTHORIZATION_HEADER](
+    context: AugmentedActionContext,
+    axiosConfig: AxiosRequestConfig
+  ): Promise<AxiosRequestConfig | undefined>;
 }
 
 export type AugmentedActionContext = {

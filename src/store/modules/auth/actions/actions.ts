@@ -1,6 +1,7 @@
-import { UserCredentials, UserProfile } from "@/store/types";
 import firebase from "firebase";
+import axios from "axios";
 import { ActionTree } from "vuex";
+import { UserCredentials, UserProfile } from "@/store/types";
 import { Actions, ActionTypes } from "./action-types";
 import store, { State as RootState } from "@/store";
 import { State } from "../state";
@@ -47,6 +48,17 @@ export const actions: ActionTree<State, RootState> & Actions = {
           context.commit(MutationTypes.SET_PROFILE, profile);
           resolve();
         });
+    });
+  },
+  async [ActionTypes.SET_AUTHORIZATION_HEADER](context, config) {
+    const user = context.state.currentUser;
+    const { headers } = config;
+    if (!user || headers.common.Authorization) return;
+
+    const token = await user.getIdToken();
+    return new Promise((resolve) => {
+      headers.common.Authorization = `Bearer ${token}`;
+      resolve(config);
     });
   },
 };
